@@ -25,8 +25,29 @@ $ npm install @robomonk/lector
 
 ## Set up
 
+### Plug & play
 The simplest way you can hookup Lector to your document is like this:
 ```javascript
 lec = new Lector("#article")
+```
+
+This will trigger a pointer to the element's text, and generate a toolbar to control the pointer's settings.
+
+### Plug harder & play harder
+
+You can declare Lector with many settings:
+```javascript
+settings = {
+  // these are the default values
+  "toolbar": false,
+  "topbar": false,
+  "loop": false,
+  "autostart": false,
+  "interactive": true,
+  "shortcuts": true, // if interactive is false, this option doesnt do anything
+  "freadify": true // will convert plain text to .frd format (scroll to the .frd format section for more)
+}
+
+lec = new Lector("#article", settings)
 ```
 
