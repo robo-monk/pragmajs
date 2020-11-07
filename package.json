@@ -1,4 +1,14 @@
 {
 	"name": "@robomonk/lector",
 	"version": "0.0.1"
+	"description": "Removes all spaces from a string",
+	"license": "MIT",
+	"repository": "robo-monk/lector",
+	"main": "index.js",
+	"keywords": [
+	  "lector",
+	  "npm",
+	  "package",
+	  "fready"
+	]
 }
