@@ -1,6 +1,5 @@
-const sum = require('../src/index.js');
+import Lector from '../src'
 
-
-test('adds 1 + 2 to equal 3', () => {
-  expect(true);
+test('load Lector class correctly', () => {
+  expect(new Lector(""));
 });
