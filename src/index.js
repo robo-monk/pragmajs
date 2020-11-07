@@ -1,3 +1,4 @@
+import $ from "jquery"
 export default class Lector {
   constructor(target){
     this.target = $(target)
