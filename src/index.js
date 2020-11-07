@@ -1,4 +1,12 @@
-module.exports = function tiny(string) {
-  if (typeof string !== "string") throw new TypeError("Tiny wants a string!");
-  return string.replace(/\s/g, "");
-};
+class Lector {
+  constructor(target){
+    this.target = $(target)
+    this.turnRed()
+  }
+  turnRed(){
+    this.target.css({"background":"red"})
+  }
+}
+
+
+module.exports = Lector;

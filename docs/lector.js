@@ -1,0 +1,1 @@
+lec = new Lector("#article")

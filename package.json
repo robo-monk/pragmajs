@@ -6,9 +6,19 @@
 	"repository": "robo-monk/lector",
 	"main": "src/index.js",
 	"keywords": [
-	  "lector",
-	  "npm",
-	  "package",
-	  "fready"
-	]
+		"lector",
+		"npm",
+		"package",
+		"fready"
+	],
+	"devDependencies": {
+		"jest": "^26.6.3",
+		"tailwindcss": "^1.9.6"
+	},
+	"scripts": {
+		"test": "jest"
+	},
+	"dependencies": {
+		"jquery": "^3.5.1"
+	}
 }
