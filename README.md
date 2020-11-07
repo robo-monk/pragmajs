@@ -8,3 +8,25 @@ in the most efficient way possible to your melting brain.
 
 To achieve this, Lector attempts to move the pointer precisely as your eyes would move on the text. This creates a dynamic between the pointer, your eyes and
 your mind. This dynamic can be expressed as "wiring in". Also known as super fucking focused on the text.
+
+
+# Get Started
+
+## Install
+
+### Use npm or yarn:
+```bash
+$ npm install @robomonk/lector
+```
+### CDN:
+```html
+<script> coming soon </script>
+```
+
+## Set up
+
+The simplest way you can hookup Lector to your document is like this:
+```javascript
+lec = new Lector("#article")
+```
+
