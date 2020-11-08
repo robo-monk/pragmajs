@@ -9,4 +9,5 @@ let settings = {
   "shortcuts": true // if interactive is false, this option doesnt do anything
 }
 
-let lec = new Lector("#article", settings)
+let lec = new Lector($("#article"), settings)
+lec.read()

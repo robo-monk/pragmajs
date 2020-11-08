@@ -1,10 +1,12 @@
 import $ from "jquery"
 import { wfy } from "./helper.js"
-import Pragma from "./pragma"
+import Pragma from "./pragma.js"
+import Mark from "./mark.js"
+import Word from "./word.js"
 
-export default class Lector {
-  constructor(target, options={}){
-    this.target = $(target)
+export default class Lector extends Pragma{
+  constructor(element, options={}){
+    super(element)
 
     this.options = {
       // these are the default values
@@ -18,10 +20,15 @@ export default class Lector {
     }
 
     if (this.options.freadify){
-      this.target.replaceWith(wfy(this.target))
+      this.element.replaceWith(wfy(this.element))
     }
+    
 
+    this.reader = new Word(this.element, this, new Mark(this.element))
     // new Pragma(this.target, { mouseover: () => this.target.fadeOut() })
     
+  }
+  read(){
+    this.reader.read()
   }
 }

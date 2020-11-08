@@ -15,7 +15,8 @@ let settings = {
   "shortcuts": true // if interactive is false, this option doesnt do anything
 
 };
-let lec = new _src.default("#article", settings);
+let lec = new _src.default($("#article"), settings);
+lec.read();
 
 },{"../src":3}],2:[function(require,module,exports){
 /*!
@@ -10951,13 +10952,17 @@ var _jquery = _interopRequireDefault(require("jquery"));
 
 var _helper = require("./helper.js");
 
-var _pragma = _interopRequireDefault(require("./pragma"));
+var _pragma = _interopRequireDefault(require("./pragma.js"));
+
+var _mark = _interopRequireDefault(require("./mark.js"));
+
+var _word = _interopRequireDefault(require("./word.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-class Lector {
-  constructor(target, options = {}) {
-    this.target = (0, _jquery.default)(target);
+class Lector extends _pragma.default {
+  constructor(element, options = {}) {
+    super(element);
     this.options = {
       // these are the default values
       toolbar: options.toolbar || false,
@@ -10972,16 +10977,61 @@ class Lector {
     };
 
     if (this.options.freadify) {
-      this.target.replaceWith((0, _helper.wfy)(this.target));
-    } // new Pragma(this.target, { mouseover: () => this.target.fadeOut() })
+      this.element.replaceWith((0, _helper.wfy)(this.element));
+    }
 
+    this.reader = new _word.default(this.element, this, new _mark.default(this.element)); // new Pragma(this.target, { mouseover: () => this.target.fadeOut() })
+  }
+
+  read() {
+    this.reader.read();
   }
 
 }
 
 exports.default = Lector;
 
-},{"./helper.js":4,"./pragma":6,"jquery":2}],6:[function(require,module,exports){
+},{"./helper.js":4,"./mark.js":6,"./pragma.js":7,"./word.js":8,"jquery":2}],6:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _jquery = _interopRequireDefault(require("jquery"));
+
+var _pragma = _interopRequireDefault(require("./pragma"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// mark is responsible for marking words in the screen
+class Mark extends _pragma.default {
+  constructor(parent) {
+    super((0, _jquery.default)("<marker></marker>"));
+    this.parent = parent;
+    this.parent.append(this.element); // super(element, parent)
+
+    this.isBeingSummoned = false;
+  }
+
+  summon(dst) {
+    if (this.isBeingSummoned) return false;
+    return new Promise((resolve, reject) => {
+      this.isBeingSummoned = true;
+      setTimeout(() => {
+        console.log(`FROM MARK -> marking ${dst.text()}`);
+        this.isBeingSummoned = false;
+        resolve();
+      }, 50);
+    });
+  }
+
+}
+
+exports.default = Mark;
+
+},{"./pragma":7,"jquery":2}],7:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10998,8 +11048,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 class Pragma {
   constructor(element, listeners = {}) {
     this.element = (0, _jquery.default)(element);
-    console.log(this.element);
+    this.children = [];
     this.setup_listeners(listeners);
+  }
+
+  add(spragma) {
+    this.children.push(spragma);
   }
 
   setup_listeners(listeners) {
@@ -11008,8 +11062,58 @@ class Pragma {
     });
   }
 
+  text() {
+    return this.element.text();
+  }
+
 }
 
 exports.default = Pragma;
 
-},{"jquery":2}]},{},[1]);
+},{"jquery":2}],8:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _pragma = _interopRequireDefault(require("./pragma.js"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+class Word extends _pragma.default {
+  constructor(element, parent, mark = null) {
+    super(element);
+    this.mark = mark || this.parent.mark;
+    this.cursor = 0;
+    this.addKids();
+  }
+
+  addKids() {
+    this.element.find("w").each((index, el) => {
+      this.add(new Word(el, this, this.mark));
+    });
+  }
+
+  summon() {
+    console.log('im being fucken summoned');
+  }
+
+  read() {
+    if (this.children.length - this.cursor > 0) {
+      // this.children[this.cursor].read().then(() => this.read())
+      this.children[this.cursor].read().then(() => {
+        this.cursor += 1;
+        this.read();
+      });
+    } else {
+      return this.mark.summon(this.element);
+    }
+  }
+
+}
+
+exports.default = Word;
+
+},{"./pragma.js":7}]},{},[1]);
