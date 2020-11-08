@@ -1,1 +1,2 @@
-lec = new Lector("#article")
+import Lector from '../src'
+let lec = new Lector($("#article"))

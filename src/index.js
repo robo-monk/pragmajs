@@ -1,11 +1,3 @@
-import $ from "jquery"
-export default class Lector {
-  constructor(target){
-    this.target = $(target)
-    this.turnRed()
-  }
-  turnRed(){
-    this.target.css({"background":"red"})
-  }
-}
-
+import Lector from "./pragmas/lector.js"
+import { wfy } from "./pragmas/helper.js"
+export { Lector as default, wfy as wfy }
