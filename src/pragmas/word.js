@@ -11,7 +11,7 @@ export default class Word extends Pragma{
     this.addKids()
   }
   time(){
-    return crush(this.text().length)
+    return (this.text().length)*50
   }
 
   addKids(){
