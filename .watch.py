@@ -15,14 +15,15 @@ def ls_files(dir):
     return files
 
 
-filename = "./src/index.js"
-directory = "./src"
+script = [ "./docs/lector.js" ]
+package_directories = [ "./src" ]
 lastmodif = 0
 while (True):
-    for filename in ls_files("./src"):
-        statbuf = os.stat(filename)
-        if lastmodif < statbuf.st_mtime:
-            lastmodif = statbuf.st_mtime
-            os.system("browserify docs/lector.js -t babelify --outfile docs/bundle.js")
-            print("File " + filename + " was modifed!")
+    for directory in package_directories:
+        for filename in ls_files(directory) + script:
+            statbuf = os.stat(filename)
+            if lastmodif < statbuf.st_mtime:
+                lastmodif = statbuf.st_mtime
+                os.system("browserify docs/lector.js -t babelify --outfile docs/bundle.js")
+                print("File " + filename + " was modifed!")
     time.sleep(1)

@@ -5,7 +5,17 @@ var _src = _interopRequireDefault(require("../src"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-let lec = new _src.default($("#article"));
+let settings = {
+  // these are the default values
+  "toolbar": false,
+  "topbar": false,
+  "loop": false,
+  "autostart": false,
+  "interactive": true,
+  "shortcuts": true // if interactive is false, this option doesnt do anything
+
+};
+let lec = new _src.default("#article", settings);
 
 },{"../src":3}],2:[function(require,module,exports){
 /*!
@@ -10941,22 +10951,65 @@ var _jquery = _interopRequireDefault(require("jquery"));
 
 var _helper = require("./helper.js");
 
+var _pragma = _interopRequireDefault(require("./pragma"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 class Lector {
-  constructor(target) {
+  constructor(target, options = {}) {
     this.target = (0, _jquery.default)(target);
-    this.target.replaceWith((0, _helper.wfy)(this.target));
-  }
+    this.options = {
+      // these are the default values
+      toolbar: options.toolbar || false,
+      topbar: options.topbar || false,
+      loop: options.loop || false,
+      autostart: options.autostart || false,
+      interactive: options.interactive || true,
+      shortcuts: options.shortcuts || true,
+      // if interactive is false, this option doesnt do anything
+      freadify: options.freadify == null ? true : options.freadify // will convert plain text to .frd format (scroll to the .frd format section for more)
 
-  turnRed() {
-    this.target.css({
-      "background": "red"
-    });
+    };
+
+    if (this.options.freadify) {
+      this.target.replaceWith((0, _helper.wfy)(this.target));
+    } // new Pragma(this.target, { mouseover: () => this.target.fadeOut() })
+
   }
 
 }
 
 exports.default = Lector;
 
-},{"./helper.js":4,"jquery":2}]},{},[1]);
+},{"./helper.js":4,"./pragma":6,"jquery":2}],6:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _jquery = _interopRequireDefault(require("jquery"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// a pragma is defined as a concept, which has an actual physical object "connected"
+// with it
+class Pragma {
+  constructor(element, listeners = {}) {
+    this.element = (0, _jquery.default)(element);
+    console.log(this.element);
+    this.setup_listeners(listeners);
+  }
+
+  setup_listeners(listeners) {
+    Object.entries(listeners).forEach(([on, cb]) => {
+      this.element.on(on, () => cb());
+    });
+  }
+
+}
+
+exports.default = Pragma;
+
+},{"jquery":2}]},{},[1]);
