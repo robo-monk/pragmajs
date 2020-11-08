@@ -1,9 +1,10 @@
 import $ from "jquery"
+import { wfy } from "./helper.js"
 
 export default class Lector {
   constructor(target){
     this.target = $(target)
-    this.turnRed()
+    this.target.replaceWith(wfy(this.target))
   }
   
   turnRed(){
