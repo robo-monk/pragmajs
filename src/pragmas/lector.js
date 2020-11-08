@@ -7,7 +7,20 @@ import Word from "./word.js"
 export default class Lector extends Pragma{
   constructor(element, options={}){
     super(element)
+    this.setup_options(options)
+   
 
+    this.reader = new Word(this.element, this, new Mark(this.element))
+    // this.reader.children[7].read()
+    this.read()
+    // new Pragma(this.target, { mouseover: () => this.target.fadeOut() })
+    
+  }
+  read(){
+    this.reader.read()
+  }
+
+  setup_options(options){
     this.options = {
       // these are the default values
       toolbar: options.toolbar || false,
@@ -22,13 +35,6 @@ export default class Lector extends Pragma{
     if (this.options.freadify){
       this.element.replaceWith(wfy(this.element))
     }
-    
-
-    this.reader = new Word(this.element, this, new Mark(this.element))
-    // new Pragma(this.target, { mouseover: () => this.target.fadeOut() })
-    
-  }
-  read(){
-    this.reader.read()
+ 
   }
 }

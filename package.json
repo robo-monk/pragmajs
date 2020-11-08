@@ -24,6 +24,7 @@
 		"test": "jest"
 	},
 	"dependencies": {
+		"animejs": "^3.2.1",
 		"jquery": "^3.5.1"
 	}
 }

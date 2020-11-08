@@ -10,4 +10,4 @@ let settings = {
 }
 
 let lec = new Lector($("#article"), settings)
-lec.read()
+// lec.read()

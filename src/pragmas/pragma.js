@@ -19,4 +19,22 @@ export default class Pragma {
   text(){
     return this.element.text()
   }
+  offset(){
+    return this.element.offset()
+  }
+  left(){
+    return this.offset().left
+  }
+  top(){
+    return this.offset().top
+  }
+  height(){
+    return this.element.height()
+  }
+  width(){
+    return this.element.width()
+  }
+  x(relative_width){
+    return this.left() + this.width()/2 - relative_width/2
+  }
 }
