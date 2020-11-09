@@ -3,23 +3,37 @@ import { wfy } from "./helper.js"
 import Pragma from "./pragma.js"
 import Mark from "./mark.js"
 import Word from "./word.js"
+import Mousetrap from "mousetrap"
 
 export default class Lector extends Pragma{
   constructor(element, options={}){
     super(element)
     this.setup_options(options)
    
+    this.reading = false
 
     this.reader = new Word(this.element, this, new Mark(this.element))
     // this.reader.children[7].read()
     this.read()
     // new Pragma(this.target, { mouseover: () => this.target.fadeOut() })
     
+    Mousetrap.bind(["a", 'space'], () => {
+      if (!this.reading){
+        this.read()
+      }else{
+        this.pause()
+      }
+      // return false to prevent default browser behavior
+      // and stop event from bubbling
+      return false;
+    });
   }
   read(){
+    this.reading = true
     this.reader.read()
   }
   pause(){
+    this.reading = false
     this.reader.pause()
   }
 
@@ -38,6 +52,5 @@ export default class Lector extends Pragma{
     if (this.options.freadify){
       this.element.replaceWith(wfy(this.element))
     }
- 
   }
 }

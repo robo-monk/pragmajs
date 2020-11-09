@@ -30,7 +30,7 @@ export default class Mark extends Pragma {
     }
   }
   moveTo(blueprint, duration, complete=(()=>{})){
-    if (this.isBeingSummoned) return false;
+    if (this.isBeingSummoned) return new Promise((resolve, reject)=>resolve());
     return new Promise((resolve, reject) => {
       this.isBeingSummoned = true
       this.current_anime = anime({
@@ -48,7 +48,7 @@ export default class Mark extends Pragma {
       })
     })
   }
-  mark(word, time=90, ease="easeInOutExpo"){
+  mark(word, time=200, ease="easeInOutExpo"){
     return this.moveTo({ 
         top: word.top(), 
         left: word.x(this.width()),

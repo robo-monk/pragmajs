@@ -36,13 +36,15 @@ export default class Word extends Pragma{
     return new Promise((resolve, reject) => {
       this.stop_flag = false
       this.mark.pause()
+      // this.children[this.cursor].summon()
       resolve()
     })
   }
   summon(){
     if (!this.virgin()) return false
-    return this.parent.pause().then(()=>{
+    return this.parent.pause().then(() => {
       this.mark.mark(this)
+      this.parent.cursor = this.index
     })
   }
   read(){
@@ -56,6 +58,7 @@ export default class Word extends Pragma{
         return this.read()
       })
     }else{
+      if (this.virgin())
       return this.mark.guide(this)
     }
   }
@@ -70,7 +73,7 @@ export default class Word extends Pragma{
     return this.sibling(-1)
   }
   same_line(n){
-    return this.sibling(n) && ((this.sibling(n).top() - this.top())**2 < 10 )
+    return this.sibling(n) !=null && ((this.sibling(n).top() - this.top())**2 < 10 )
   }
   first_in_line(){
     return !this.same_line(-1)
