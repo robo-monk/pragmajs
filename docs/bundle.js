@@ -12302,6 +12302,10 @@ class Lector extends _pragma.default {
     this.reader.read();
   }
 
+  pause() {
+    this.reader.pause();
+  }
+
   setup_options(options) {
     this.options = {
       // these are the default values
@@ -12357,17 +12361,23 @@ class Mark extends _pragma.default {
       'border-radius': '3px'
     });
     this.parent = parent;
-    this.parent.append(this.element); // super(element, parent)
-
+    this.parent.append(this.element);
     this.isBeingSummoned = false;
     this.element.width("180px");
+  }
+
+  pause() {
+    if (this.current_anime) {
+      this.current_anime.remove('marker');
+      this.isBeingSummoned = false;
+    }
   }
 
   moveTo(blueprint, duration, complete = () => {}) {
     if (this.isBeingSummoned) return false;
     return new Promise((resolve, reject) => {
       this.isBeingSummoned = true;
-      (0, _animejs.default)({
+      this.current_anime = (0, _animejs.default)({
         targets: 'marker',
         left: blueprint.left,
         top: blueprint.top,
@@ -12405,7 +12415,6 @@ class Mark extends _pragma.default {
         ease: first_ease
       }, first_transition).then(() => {
         this.mark(word, word.time() * .6, "linear").then(() => {
-          console.log(`FROM MARK -> guided thru ${word.text()} and then ${word.next().text()}`);
           this.last_marked = word;
           resolve();
         });
@@ -12447,6 +12456,8 @@ class Pragma {
       this.element.on(on, () => cb());
     });
   }
+
+  click() {}
 
   text() {
     return this.element.text();
@@ -12502,31 +12513,57 @@ class Word extends _pragma.default {
     this.cursor = 0;
     this.index = index;
     this.addKids();
+
+    if (this.virgin()) {
+      let listeners = {
+        "click": () => this.click(),
+        "mouseover": () => this.mouseover(),
+        "mouseout": () => this.mouseout()
+      };
+      this.setup_listeners(listeners);
+    }
   }
 
-  time() {
-    return this.text().length * 50;
+  virgin() {
+    return this.children.length == 0;
   }
 
-  addKids() {
-    let index = 0;
-    this.element.find("w").each((x, el) => {
-      if (el.textContent.length > 0) {
-        this.add(new Word(el, this, this.mark, index));
-        index += 1;
-      }
+  click() {
+    this.summon();
+  }
+
+  mouseover() {}
+
+  mouseout() {}
+
+  pause() {
+    if (this.virgin()) return this.summon(); // word is not virgin
+
+    this.stop_flag = true;
+    return new Promise((resolve, reject) => {
+      this.stop_flag = false;
+      this.mark.pause();
+      resolve();
     });
   }
 
   summon() {
-    console.log('im being fucken summoned');
+    if (!this.virgin()) return false;
+    return this.parent.pause().then(() => {
+      this.mark.mark(this);
+    });
   }
 
   read() {
-    if (this.children.length - this.cursor > 0) {
+    // if (this.children.length - this.cursor > 0){
+    if (this.children.length - 1 - this.cursor > 0) {
+      if (this.stop_flag) {
+        return this.stop_flag = false;
+      }
+
       this.children[this.cursor].read().then(() => {
         this.cursor += 1;
-        this.read();
+        return this.read();
       });
     } else {
       return this.mark.guide(this);
@@ -12555,6 +12592,20 @@ class Word extends _pragma.default {
 
   last_in_line() {
     return !this.same_line(1);
+  }
+
+  time() {
+    return this.text().length * 50;
+  }
+
+  addKids() {
+    let index = 0;
+    this.element.find("w").each((x, el) => {
+      if (el.textContent.length > 0) {
+        this.add(new Word(el, this, this.mark, index));
+        index += 1;
+      }
+    });
   }
 
 }

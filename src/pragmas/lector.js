@@ -19,6 +19,9 @@ export default class Lector extends Pragma{
   read(){
     this.reader.read()
   }
+  pause(){
+    this.reader.pause()
+  }
 
   setup_options(options){
     this.options = {

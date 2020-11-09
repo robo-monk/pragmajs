@@ -19,16 +19,21 @@ export default class Mark extends Pragma {
     })
     this.parent = parent
     this.parent.append(this.element)
-    // super(element, parent)
     this.isBeingSummoned = false
     this.element.width("180px")
   }
 
+  pause(){
+    if (this.current_anime){
+      this.current_anime.remove('marker')
+      this.isBeingSummoned = false
+    }
+  }
   moveTo(blueprint, duration, complete=(()=>{})){
     if (this.isBeingSummoned) return false;
     return new Promise((resolve, reject) => {
       this.isBeingSummoned = true
-      anime({
+      this.current_anime = anime({
           targets: 'marker',
           left: blueprint.left,
           top: blueprint.top,
@@ -58,18 +63,17 @@ export default class Mark extends Pragma {
     return new Promise((resolve, reject) => { 
       let first_transition = word.first_in_line() ? 500 : this.last_marked ? this.last_marked.time()*.4 : 0
       let first_ease = word.first_in_line() ? "easeInOutExpo" : "linear"
-      return this.moveTo({ 
-            top: word.top(), 
-            left: word.x(this.width()) - word.width()/2,
-            height: word.height(), ease: first_ease
-          }, first_transition)
-            .then(() => { 
-              this.mark(word, word.time()*.6, "linear").then(()=>{
-                console.log(`FROM MARK -> guided thru ${word.text()} and then ${word.next().text()}`)
-                this.last_marked = word
-                resolve()
-              }) 
+      return  this.moveTo({ 
+                top: word.top(), 
+                left: word.x(this.width()) - word.width()/2,
+                height: word.height(), ease: first_ease
+              }, first_transition)
+              .then(() => { 
+                this.mark(word, word.time()*.6, "linear").then(()=>{
+                  this.last_marked = word
+                  resolve()
+                }) 
              })
       })
-    }
+  }
 }

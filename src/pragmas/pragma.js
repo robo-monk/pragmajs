@@ -16,6 +16,8 @@ export default class Pragma {
       this.element.on(on, () => cb())
     })
   }
+  click(){
+  }
   text(){
     return this.element.text()
   }
