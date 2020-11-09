@@ -97,9 +97,11 @@ export default class Word extends Pragma{
   last_in_line(){
     return !this.same_line(1)
   }
+
   time(wpm=250){
     return charsMsAt(wpm)*wordValue(this, generateDifficultyIndex(this))
   }
+
   addKids(){
     let index=0
     this.element.find("w").each((x, el)=>{

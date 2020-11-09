@@ -13338,7 +13338,7 @@ function generateDifficultyIndex(word) {
 }
 
 function wordValue(word, d) {
-  return word.text().length * (d + 1);
+  return crush(word.text().length) * (d + 1);
 }
 
 function charsMsAt(wpm) {
@@ -13376,6 +13376,10 @@ class Lector extends _pragma.default {
     this.reader = new _word.default(this.element, this, new _mark.default(this.element)); // this.reader.children[7].read()
 
     this.read(); // new Pragma(this.target, { mouseover: () => this.target.fadeOut() })
+
+    this.reader.mark.settings.add({
+      wpm: 250
+    });
 
     _mousetrap.default.bind(["a", 'space'], () => {
       if (!this.reading) {
@@ -13423,7 +13427,7 @@ class Lector extends _pragma.default {
 
 exports.default = Lector;
 
-},{"./helper.js":6,"./mark.js":8,"./pragma.js":9,"./word.js":10,"jquery":3,"mousetrap":4}],8:[function(require,module,exports){
+},{"./helper.js":6,"./mark.js":8,"./pragma.js":9,"./word.js":12,"jquery":3,"mousetrap":4}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13436,6 +13440,8 @@ var _jquery = _interopRequireDefault(require("jquery"));
 var _pragma = _interopRequireDefault(require("./pragma"));
 
 var _animejs = _interopRequireDefault(require("animejs"));
+
+var _settings = _interopRequireDefault(require("./settings"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -13458,15 +13464,45 @@ class Mark extends _pragma.default {
     this.parent.append(this.element);
     this.isBeingSummoned = false;
     this.element.width("180px");
-    this.settings = {
-      wpm: 250,
-      color: "red",
-      width: 5
+    let other = {
+      key: "settings",
+      elements: [{
+        key: "settings",
+        type: "button",
+        icon: "settings",
+        elements: [{
+          key: "color",
+          value: 1,
+          type: "choice",
+          element_template: (key, index) => {
+            return {
+              key: key,
+              value: index,
+              icon: key,
+              click: () => {
+                console.log({
+                  color: index
+                });
+              }
+            };
+          },
+          choices: ["red", "green", "blue"]
+        }]
+      }, {
+        key: "wpm",
+        value: 250,
+        type: "value_verbose",
+        min: 10,
+        max: 4000,
+        step: 10
+      }]
     };
+    other = {};
+    this.settings = new _settings.default(this, other);
   }
 
   get wpm() {
-    return this.settings.wpm;
+    return this.settings.get('wpm');
   }
 
   pause() {
@@ -13530,7 +13566,7 @@ class Mark extends _pragma.default {
 
 exports.default = Mark;
 
-},{"./pragma":9,"animejs":2,"jquery":3}],9:[function(require,module,exports){
+},{"./pragma":9,"./settings":10,"animejs":2,"jquery":3}],9:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13596,6 +13632,142 @@ class Pragma {
 exports.default = Pragma;
 
 },{"jquery":3}],10:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _jquery = _interopRequireDefault(require("jquery"));
+
+var _pragma = _interopRequireDefault(require("./pragma"));
+
+var _animejs = _interopRequireDefault(require("animejs"));
+
+var _settings_builder = require("./settings_builder");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+class Settings extends _pragma.default {
+  constructor(parent, map = {}, settings = {}) {
+    super((0, _settings_builder.buildSettingsFrom)(map));
+    this.s = settings;
+    this.element.appendTo(document.body);
+    this.parent = parent;
+    this.setup_listeners({
+      "mouseover": this.mouseover
+    });
+    console.log("ive been created");
+  }
+
+  onset(key, val) {
+    console.log(`set ${key} to ${val}`);
+  }
+
+  onget(key, val) {// console.log(`got ${val} from ${key}`)
+  }
+
+  get(n) {
+    this.onget(n, this.s[n]);
+    return this.s[n];
+  }
+
+  set(n) {
+    this.add(n);
+  }
+
+  add(n) {
+    Object.entries(n).forEach(([key, value]) => {
+      this.s[key] = value;
+      this.onset(key, value);
+    });
+  }
+
+  mouseover() {
+    console.log("i've been hovered");
+  }
+
+}
+
+exports.default = Settings;
+
+},{"./pragma":9,"./settings_builder":11,"animejs":2,"jquery":3}],11:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.buildSettingsFrom = buildSettingsFrom;
+
+var _jquery = _interopRequireDefault(require("jquery"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function genSettingBody(map) {
+  let tag = "div";
+  let class_bus = "";
+
+  switch (map.type) {
+    case "button":
+      class_bus += " settings-button";
+      break;
+
+    case "value":
+      class_bus += "settings-value";
+      break;
+
+    case "option":
+      class_bus += " settings-option";
+      break;
+
+    case "choice":
+      class_bus += " settings-choice";
+      break;
+
+    default:
+      break;
+  }
+
+  let element = (0, _jquery.default)(document.createElement(tag));
+  element.addClass(class_bus);
+  element.attr("id", map.key);
+  return element;
+}
+
+function buildSettingsFrom(map) {
+  let element = genSettingBody(map); // element += `<div class='${map.key}'>${map.key}`
+
+  if (map.elements && map.elements.length > 0) {
+    map.elements.forEach(el_map => {
+      buildSettingsFrom(el_map).appendTo(element);
+    });
+  }
+
+  if (map.choices) {
+    map.choices.forEach((choice, index) => {
+      console.log(choice);
+      let templ = map.element_template(choice, index);
+      templ.type = "option";
+      buildSettingsFrom(templ).appendTo(element);
+    });
+  }
+
+  if (map.click) {
+    element.on("click", map.click);
+  }
+
+  if (map.icon) {
+    let icon = (0, _jquery.default)(document.createElement("div"));
+    icon.html(map.icon);
+    element.append(icon);
+  }
+
+  console.log(element);
+  return element;
+}
+
+},{"jquery":3}],12:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {

@@ -5,8 +5,29 @@ import Lector from "../../src/pragmas/lector.js"
 import { createMock, mockWordNest } from "./test.helper.js"
 import $ from "jquery"
 
+describe("knows the hard words", () => {
+  let element
+  let word
+  let mark
+  function setup(w){
+    element = $(`<w>${w}</w>`)
+    mark = new Mark(element)
+    word = new Word(element, null, mark)
+  }
+  test("verbs are abstract", () =>{
+    setup("eat")
+    let verb_time = word.time()
+    setup("and")
+    expect(word.time()).toBeLessThan(verb_time)
+  })
+  test("medium complicated word", () =>{
+    setup("lysergic")
+    expect(word.time()).toBe(1)
+  })
 
-describe("word class is working", () => {
+})
+
+describe.skip("word class is working", () => {
    let element
    let master
    beforeEach(() => {
@@ -113,3 +134,4 @@ describe("word class is working", () => {
 
   })
 })
+

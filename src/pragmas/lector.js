@@ -16,7 +16,7 @@ export default class Lector extends Pragma{
     // this.reader.children[7].read()
     this.read()
     // new Pragma(this.target, { mouseover: () => this.target.fadeOut() })
-    
+    this.reader.mark.settings.add({wpm: 250})
     Mousetrap.bind(["a", 'space'], () => {
       if (!this.reading){
         this.read()

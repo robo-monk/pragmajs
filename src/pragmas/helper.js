@@ -22,7 +22,7 @@ function generateDifficultyIndex(word){
 }
 
 function wordValue(word, d){
-  return word.text().length*(d+1)
+  return crush(word.text().length)*(d+1)
 }
 
 function charsMsAt(wpm){

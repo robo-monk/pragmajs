@@ -2,8 +2,9 @@
 import $ from "jquery"
 import Pragma from "./pragma"
 import anime from "animejs"
+import Settings from "./settings"
 
-export default class Mark extends Pragma {
+export default class Mark extends Pragma{
   constructor(parent) {
     super($("<marker></marker>"))
     this.element.css({
@@ -21,13 +22,45 @@ export default class Mark extends Pragma {
     this.parent.append(this.element)
     this.isBeingSummoned = false
     this.element.width("180px")
-    this.settings = {
-      wpm: 250,
-      color: "red",
-      width: 5
-    }
+    let other = { 
+        key: "settings",
+        elements: [
+        {
+          key: "settings",
+          type: "button",
+          icon: "settings",
+          elements: [
+            {
+              key: "color",
+              value: 1,
+              type: "choice",
+              element_template: (key, index) => {
+                return {
+                  key: key,
+                  value: index,
+                  icon: key,
+                  click: () => { console.log({color: index}) }
+                }
+              },
+              choices: [ "red", "green", "blue" ]
+            }
+          ]
+        },
+        {
+          key: "wpm",
+          value: 250,
+          type: "value_verbose",
+          min: 10,
+          max: 4000,
+          step: 10
+        }]
+       }
+       other = {}
+    this.settings = new Settings(this, other)
+    
   }
-  get wpm() { return this.settings.wpm }
+
+  get wpm() { return this.settings.get('wpm') }
 
   pause(){
     if (this.current_anime){
