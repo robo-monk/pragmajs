@@ -16,4 +16,18 @@ function crush(n) {
   return ((yd - yc) / (xd - xc)) * (n - xc) + yc
 }
 
-export { wfy, crush }
+function generateDifficultyIndex(word){
+  // returns 0-1 with 0 being not difficult at all
+  return 0;
+}
+
+function wordValue(word, d){
+  return word.text().length*(d+1)
+}
+
+function charsMsAt(wpm){
+  const avgCharsInWord = 4.7
+  return 1000/((wpm/60)*avgCharsInWord)
+}
+
+export { wfy, crush, generateDifficultyIndex, wordValue, charsMsAt }

@@ -13298,6 +13298,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.wfy = wfy;
 exports.crush = crush;
+exports.generateDifficultyIndex = generateDifficultyIndex;
+exports.wordValue = wordValue;
+exports.charsMsAt = charsMsAt;
 
 var _jquery = _interopRequireDefault(require("jquery"));
 
@@ -13327,6 +13330,20 @@ function crush(n) {
   if (n <= xb) return (yb - ya) / (xb - xa) * (n - xa) + ya;
   if (n <= xc) return (yc - yb) / (xc - xb) * (n - xb) + yb;
   return (yd - yc) / (xd - xc) * (n - xc) + yc;
+}
+
+function generateDifficultyIndex(word) {
+  // returns 0-1 with 0 being not difficult at all
+  return 0;
+}
+
+function wordValue(word, d) {
+  return word.text().length * (d + 1);
+}
+
+function charsMsAt(wpm) {
+  const avgCharsInWord = 4.7;
+  return 1000 / (wpm / 60 * avgCharsInWord);
 }
 
 },{"jquery":3}],7:[function(require,module,exports){
@@ -13448,6 +13465,10 @@ class Mark extends _pragma.default {
     };
   }
 
+  get wpm() {
+    return this.settings.wpm;
+  }
+
   pause() {
     if (this.current_anime) {
       this.current_anime.remove('marker');
@@ -13486,8 +13507,10 @@ class Mark extends _pragma.default {
   }
 
   guide(word) {
+    const before_weight = .4;
+    const after_weight = 1 - before_weight;
     return new Promise((resolve, reject) => {
-      let first_transition = word.first_in_line() ? 500 : this.last_marked ? this.last_marked.time() * .4 : 0;
+      let first_transition = word.first_in_line() ? 500 : this.last_marked ? this.last_marked.time(this.wpm) * before_weight : 0;
       let first_ease = word.first_in_line() ? "easeInOutExpo" : "linear";
       return this.moveTo({
         top: word.top(),
@@ -13495,7 +13518,7 @@ class Mark extends _pragma.default {
         height: word.height(),
         ease: first_ease
       }, first_transition).then(() => {
-        this.mark(word, word.time() * .6, "linear").then(() => {
+        this.mark(word, word.time(this.wpm) * after_weight, "linear").then(() => {
           this.last_marked = word;
           resolve();
         });
@@ -13620,13 +13643,15 @@ class Word extends _pragma.default {
   pause() {
     if (this.virgin()) return new Promise((resolve, reject) => {
       this.summon();
+      this.onpause();
       resolve();
     }); // word is not virgin
 
     this.stop_flag = true;
     return new Promise((resolve, reject) => {
       this.stop_flag = false;
-      this.mark.pause(); // this.children[this.cursor].summon()
+      this.mark.pause();
+      this.onpause(); // this.children[this.cursor].summon()
 
       resolve();
     });
@@ -13642,9 +13667,17 @@ class Word extends _pragma.default {
 
   onread() {}
 
+  onpause() {
+    console.log('paused reading');
+  }
+
+  ondone() {
+    console.log('done reading');
+  }
+
   read() {
     // if (this.children.length - this.cursor > 0){
-    if (this.children.length - this.cursor > 0) {
+    if (!this.virgin() && this.children.length - this.cursor > 0) {
       if (this.stop_flag) {
         return new Promise((resolve, reject) => {
           this.stop_flag = false;
@@ -13657,9 +13690,12 @@ class Word extends _pragma.default {
         this.onread();
         return this.read();
       });
+      return;
     } else {
       if (this.virgin()) return this.mark.guide(this);
     }
+
+    this.ondone();
   }
 
   sibling(n) {
@@ -13686,8 +13722,8 @@ class Word extends _pragma.default {
     return !this.same_line(1);
   }
 
-  time() {
-    return this.text().length;
+  time(wpm = 250) {
+    return (0, _helper.charsMsAt)(wpm) * (0, _helper.wordValue)(this, (0, _helper.generateDifficultyIndex)(this));
   }
 
   addKids() {

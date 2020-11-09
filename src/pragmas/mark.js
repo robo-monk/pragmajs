@@ -27,6 +27,7 @@ export default class Mark extends Pragma {
       width: 5
     }
   }
+  get wpm() { return this.settings.wpm }
 
   pause(){
     if (this.current_anime){
@@ -65,8 +66,10 @@ export default class Mark extends Pragma {
   }
   
   guide(word){
+    const before_weight = .4
+    const after_weight = (1 - before_weight)
     return new Promise((resolve, reject) => { 
-      let first_transition = word.first_in_line() ? 500 : this.last_marked ? this.last_marked.time()*.4 : 0
+      let first_transition = word.first_in_line() ? 500 : this.last_marked ? this.last_marked.time(this.wpm)*before_weight : 0
       let first_ease = word.first_in_line() ? "easeInOutExpo" : "linear"
       return  this.moveTo({ 
                 top: word.top(), 
@@ -74,7 +77,7 @@ export default class Mark extends Pragma {
                 height: word.height(), ease: first_ease
               }, first_transition)
               .then(() => { 
-                this.mark(word, word.time()*.6, "linear").then(()=>{
+                this.mark(word, word.time(this.wpm)*after_weight, "linear").then(()=>{
                   this.last_marked = word
                   resolve()
                 }) 

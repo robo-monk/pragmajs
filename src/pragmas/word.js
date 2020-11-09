@@ -1,5 +1,5 @@
 import Pragma from "./pragma.js"
-import { crush } from "./helper.js"
+import { charsMsAt, crush, generateDifficultyIndex, wordValue } from "./helper.js"
 
 export default class Word extends Pragma{
   constructor(element, parent, mark=null, index=0){
@@ -31,6 +31,7 @@ export default class Word extends Pragma{
   pause(){
     if (this.virgin()) return new Promise((resolve, reject) => {
       this.summon()
+      this.onpause()
       resolve()
     })
         
@@ -39,6 +40,7 @@ export default class Word extends Pragma{
     return new Promise((resolve, reject) => {
       this.stop_flag = false
       this.mark.pause()
+      this.onpause()
       // this.children[this.cursor].summon()
       resolve()
     })
@@ -50,11 +52,14 @@ export default class Word extends Pragma{
       this.parent.cursor = this.index
     })
   }
-  onread(){
+  onread(){}
+  onpause(){
+    console.log('paused reading')
   }
+  ondone(){ console.log('done reading')}
   read(){
     // if (this.children.length - this.cursor > 0){
-    if (this.children.length -  this.cursor > 0){
+    if (!this.virgin() && (this.children.length -  this.cursor > 0)){
       if (this.stop_flag){
         return new Promise( (resolve, reject) =>{
           this.stop_flag = false
@@ -66,9 +71,12 @@ export default class Word extends Pragma{
         this.onread()
         return this.read()
       })
+      return
     }else{
       if (this.virgin()) return this.mark.guide(this)
     }
+    this.ondone()
+
   }
   
   sibling(n){
@@ -89,8 +97,8 @@ export default class Word extends Pragma{
   last_in_line(){
     return !this.same_line(1)
   }
-  time(){
-    return (this.text().length)
+  time(wpm=250){
+    return charsMsAt(wpm)*wordValue(this, generateDifficultyIndex(this))
   }
   addKids(){
     let index=0
