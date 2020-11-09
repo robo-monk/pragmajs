@@ -1,5 +1,6 @@
 import Word from '../../src/pragmas/word.js'
 import Mark from "../../src/pragmas/mark.js"
+import Pragma from "../../src/pragmas/pragma"
 import $ from "jquery"
 
 describe("knows the hard words", () => {
@@ -8,7 +9,7 @@ describe("knows the hard words", () => {
   let mark
   function setup(w){
     element = $(`<w>${w}</w>`)
-    mark = new Mark(element)
+    mark = new Mark(new Pragma(element))
     word = new Word(element, null, mark)
   }
 
@@ -71,7 +72,7 @@ describe("knows the hard words", () => {
       expect(word.time()).toBeLessThan(more_greek)
     })
   })
-  
+
   test.skip("medium complicated word", () =>{
     setup("lysergic")
     expect(word.time()).toBe(1)

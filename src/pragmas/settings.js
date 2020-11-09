@@ -1,7 +1,7 @@
 import $ from "jquery"
 import Pragma from "./pragma"
 import anime from "animejs"
-import { buildSettingsFrom } from "./settings_builder"
+import { buildSettingsFrom } from "../composers/settings_builder"
 
 export default class Settings extends Pragma {
   constructor(parent, map={}, settings={}){

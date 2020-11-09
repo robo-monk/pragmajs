@@ -2,7 +2,6 @@
 import $ from "jquery"
 import Pragma from "./pragma"
 import anime from "animejs"
-import Settings from "./settings"
 
 export default class Mark extends Pragma{
   constructor(parent) {
@@ -19,49 +18,33 @@ export default class Mark extends Pragma{
       'border-radius': '3px'
     })
     this.parent = parent
-    this.parent.append(this.element)
+    this.parent.element.append(this.element)
     this.isBeingSummoned = false
     this.element.width("180px")
-    let other = { 
-        key: "settings",
-        elements: [
-        {
-          key: "settings",
-          type: "button",
-          icon: "settings",
-          elements: [
-            {
-              key: "color",
-              value: 1,
-              type: "choice",
-              element_template: (key, index) => {
-                return {
-                  key: key,
-                  value: index,
-                  icon: key,
-                  click: () => { console.log({color: index}) }
-                }
-              },
-              choices: [ "red", "green", "blue" ]
-            }
-          ]
-        },
-        {
-          key: "wpm",
-          value: 250,
-          type: "value_verbose",
-          min: 10,
-          max: 4000,
-          step: 10
-        }]
-       }
-       other = {}
-    this.settings = new Settings(this, other)
-    
+    this.colors = [ "tomato", "#FFDFD6", "teal" ]
   }
 
-  get wpm() { return this.settings.get('wpm') }
-
+  get settings(){
+    return this.parent.settings
+  }
+  set color(index) {
+    this.settings.set({"color": this.colors[index]})
+    this.element.css({"background": this.colors[index]})
+  }
+  get fovea(){
+    return this.settings.get("fovea") || 4
+  }
+  set fovea(n){
+    console.table(['writing fovea', this.settings.get("fovea")])
+    this.settings.set({"fovea": n})
+    this.element.css({"width": this.settings.get("fovea")*30})
+  }
+  get wpm(){ 
+    return this.settings.get('wpm')
+  }
+  set wpm(n) { 
+    this.settings.set({"wpm": n})
+  }
   pause(){
     if (this.current_anime){
       this.current_anime.remove('marker')

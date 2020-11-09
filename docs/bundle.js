@@ -17,7 +17,7 @@ let settings = {
 };
 let lec = new _src.default($("#article"), settings); // lec.read()
 
-},{"../src":7}],2:[function(require,module,exports){
+},{"../src":8}],2:[function(require,module,exports){
 /*
  * anime.js v3.2.1
  * (c) 2020 Julian Garnier
@@ -27707,6 +27707,81 @@ exports.greek_prefixes = greek_prefixes;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.buildSettingsFrom = buildSettingsFrom;
+
+var _jquery = _interopRequireDefault(require("jquery"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function genSettingBody(map) {
+  let tag = "div";
+  let class_bus = "";
+
+  switch (map.type) {
+    case "button":
+      class_bus += " settings-button";
+      break;
+
+    case "value":
+      class_bus += "settings-value";
+      break;
+
+    case "option":
+      class_bus += " settings-option";
+      break;
+
+    case "choice":
+      class_bus += " settings-choice";
+      break;
+
+    default:
+      break;
+  }
+
+  let element = (0, _jquery.default)(document.createElement(tag));
+  element.addClass(class_bus);
+  element.attr("id", map.key);
+  return element;
+}
+
+function buildSettingsFrom(map) {
+  let element = genSettingBody(map); // element += `<div class='${map.key}'>${map.key}`
+
+  if (map.elements && map.elements.length > 0) {
+    map.elements.forEach(el_map => {
+      buildSettingsFrom(el_map).appendTo(element);
+    });
+  }
+
+  if (map.choices) {
+    map.choices.forEach((choice, index) => {
+      // console.log(choice)
+      let templ = map.element_template(choice, index);
+      templ.type = "option";
+      buildSettingsFrom(templ).appendTo(element);
+    });
+  }
+
+  if (map.click) {
+    element.on("click", map.click);
+  }
+
+  if (map.icon) {
+    let icon = (0, _jquery.default)(document.createElement("div"));
+    icon.html(map.icon);
+    element.append(icon);
+  } // console.log(element)
+
+
+  return element;
+}
+
+},{"jquery":4}],8:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 Object.defineProperty(exports, "default", {
   enumerable: true,
   get: function () {
@@ -27726,7 +27801,7 @@ var _helper = require("./pragmas/helper.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./pragmas/helper.js":8,"./pragmas/lector.js":9}],8:[function(require,module,exports){
+},{"./pragmas/helper.js":9,"./pragmas/lector.js":10}],9:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -27815,7 +27890,7 @@ function howGreek(word) {
   return 0;
 }
 
-},{"../composers/greek":6,"compromise":3,"jquery":4}],9:[function(require,module,exports){
+},{"../composers/greek":6,"compromise":3,"jquery":4}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -27835,6 +27910,8 @@ var _word = _interopRequireDefault(require("./word.js"));
 
 var _mousetrap = _interopRequireDefault(require("mousetrap"));
 
+var _settings = _interopRequireDefault(require("./settings"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 class Lector extends _pragma.default {
@@ -27842,10 +27919,80 @@ class Lector extends _pragma.default {
     super(element);
     this.setup_options(options);
     this.reading = false;
-    this.reader = new _word.default(this.element, this, new _mark.default(this.element)); // this.reader.children[7].read()
+    this.reader = new _word.default(this.element, this, new _mark.default(this)); // this.reader.children[7].read()
 
     this.read(); // new Pragma(this.target, { mouseover: () => this.target.fadeOut() })
 
+    let other = {
+      key: "settings",
+      elements: [{
+        key: "settings",
+        type: "button",
+        icon: "settings",
+        elements: [{
+          key: "color",
+          value: 1,
+          type: "choice",
+          element_template: (key, index) => {
+            return {
+              key: key,
+              value: index,
+              icon: `<div style='width:25px;height:25px;border-radius:25px;background:${key}'></div>`,
+              click: () => {
+                this.mark.color = index;
+              }
+            };
+          },
+          choices: this.mark.colors
+        }, {
+          key: "font",
+          value: 1,
+          type: "choice",
+          element_template: (key, index) => {
+            return {
+              key: key,
+              value: index,
+              icon: `<div style='width:25px;height:25px;border-radius:25px;font-family:${key}'>Aa</div>`,
+              click: () => {
+                this.font = key;
+              }
+            };
+          },
+          choices: this.fonts
+        }, {
+          key: "fovea",
+          value: 5,
+          elements: [{
+            key: "fovea -",
+            type: "button",
+            icon: "-",
+            click: () => {
+              this.mark.fovea -= 1;
+            }
+          }, {
+            key: "fovea-monitor"
+          }, {
+            key: "fovea +",
+            icon: "+",
+            click: () => {
+              this.mark.fovea += 1;
+            }
+          }],
+          type: "value",
+          min: 3,
+          max: 15,
+          step: 1
+        }]
+      }, {
+        key: "wpm",
+        value: 250,
+        type: "value_verbose",
+        min: 10,
+        max: 4000,
+        step: 10
+      }]
+    };
+    this.settings = new _settings.default(this, other);
     this.reader.mark.settings.add({
       wpm: 250
     });
@@ -27860,6 +28007,20 @@ class Lector extends _pragma.default {
 
 
       return false;
+    });
+  }
+
+  get mark() {
+    return this.reader.mark;
+  }
+
+  get fonts() {
+    return ["Open Sans", "Arial", "Helvetica", "Space Mono"];
+  }
+
+  set font(font) {
+    this.reader.element.css({
+      "font-family": font
     });
   }
 
@@ -27896,7 +28057,7 @@ class Lector extends _pragma.default {
 
 exports.default = Lector;
 
-},{"./helper.js":8,"./mark.js":10,"./pragma.js":11,"./word.js":14,"jquery":4,"mousetrap":5}],10:[function(require,module,exports){
+},{"./helper.js":9,"./mark.js":11,"./pragma.js":12,"./settings":13,"./word.js":14,"jquery":4,"mousetrap":5}],11:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -27909,8 +28070,6 @@ var _jquery = _interopRequireDefault(require("jquery"));
 var _pragma = _interopRequireDefault(require("./pragma"));
 
 var _animejs = _interopRequireDefault(require("animejs"));
-
-var _settings = _interopRequireDefault(require("./settings"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -27930,48 +28089,47 @@ class Mark extends _pragma.default {
       'border-radius': '3px'
     });
     this.parent = parent;
-    this.parent.append(this.element);
+    this.parent.element.append(this.element);
     this.isBeingSummoned = false;
     this.element.width("180px");
-    let other = {
-      key: "settings",
-      elements: [{
-        key: "settings",
-        type: "button",
-        icon: "settings",
-        elements: [{
-          key: "color",
-          value: 1,
-          type: "choice",
-          element_template: (key, index) => {
-            return {
-              key: key,
-              value: index,
-              icon: key,
-              click: () => {
-                console.log({
-                  color: index
-                });
-              }
-            };
-          },
-          choices: ["red", "green", "blue"]
-        }]
-      }, {
-        key: "wpm",
-        value: 250,
-        type: "value_verbose",
-        min: 10,
-        max: 4000,
-        step: 10
-      }]
-    };
-    other = {};
-    this.settings = new _settings.default(this, other);
+    this.colors = ["tomato", "#FFDFD6", "teal"];
+  }
+
+  get settings() {
+    return this.parent.settings;
+  }
+
+  set color(index) {
+    this.settings.set({
+      "color": this.colors[index]
+    });
+    this.element.css({
+      "background": this.colors[index]
+    });
+  }
+
+  get fovea() {
+    return this.settings.get("fovea") || 4;
+  }
+
+  set fovea(n) {
+    console.table(['writing fovea', this.settings.get("fovea")]);
+    this.settings.set({
+      "fovea": n
+    });
+    this.element.css({
+      "width": this.settings.get("fovea") * 30
+    });
   }
 
   get wpm() {
     return this.settings.get('wpm');
+  }
+
+  set wpm(n) {
+    this.settings.set({
+      "wpm": n
+    });
   }
 
   pause() {
@@ -28035,7 +28193,7 @@ class Mark extends _pragma.default {
 
 exports.default = Mark;
 
-},{"./pragma":11,"./settings":12,"animejs":2,"jquery":4}],11:[function(require,module,exports){
+},{"./pragma":12,"animejs":2,"jquery":4}],12:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -28100,7 +28258,7 @@ class Pragma {
 
 exports.default = Pragma;
 
-},{"jquery":4}],12:[function(require,module,exports){
+},{"jquery":4}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -28114,7 +28272,7 @@ var _pragma = _interopRequireDefault(require("./pragma"));
 
 var _animejs = _interopRequireDefault(require("animejs"));
 
-var _settings_builder = require("./settings_builder");
+var _settings_builder = require("../composers/settings_builder");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -28158,82 +28316,7 @@ class Settings extends _pragma.default {
 
 exports.default = Settings;
 
-},{"./pragma":11,"./settings_builder":13,"animejs":2,"jquery":4}],13:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.buildSettingsFrom = buildSettingsFrom;
-
-var _jquery = _interopRequireDefault(require("jquery"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function genSettingBody(map) {
-  let tag = "div";
-  let class_bus = "";
-
-  switch (map.type) {
-    case "button":
-      class_bus += " settings-button";
-      break;
-
-    case "value":
-      class_bus += "settings-value";
-      break;
-
-    case "option":
-      class_bus += " settings-option";
-      break;
-
-    case "choice":
-      class_bus += " settings-choice";
-      break;
-
-    default:
-      break;
-  }
-
-  let element = (0, _jquery.default)(document.createElement(tag));
-  element.addClass(class_bus);
-  element.attr("id", map.key);
-  return element;
-}
-
-function buildSettingsFrom(map) {
-  let element = genSettingBody(map); // element += `<div class='${map.key}'>${map.key}`
-
-  if (map.elements && map.elements.length > 0) {
-    map.elements.forEach(el_map => {
-      buildSettingsFrom(el_map).appendTo(element);
-    });
-  }
-
-  if (map.choices) {
-    map.choices.forEach((choice, index) => {
-      // console.log(choice)
-      let templ = map.element_template(choice, index);
-      templ.type = "option";
-      buildSettingsFrom(templ).appendTo(element);
-    });
-  }
-
-  if (map.click) {
-    element.on("click", map.click);
-  }
-
-  if (map.icon) {
-    let icon = (0, _jquery.default)(document.createElement("div"));
-    icon.html(map.icon);
-    element.append(icon);
-  } // console.log(element)
-
-
-  return element;
-}
-
-},{"jquery":4}],14:[function(require,module,exports){
+},{"../composers/settings_builder":7,"./pragma":12,"animejs":2,"jquery":4}],14:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -28380,4 +28463,4 @@ class Word extends _pragma.default {
 
 exports.default = Word;
 
-},{"./helper.js":8,"./pragma.js":11}]},{},[1]);
+},{"./helper.js":9,"./pragma.js":12}]},{},[1]);
