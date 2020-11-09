@@ -79,19 +79,36 @@ describe("word class is working", () => {
   describe("read works", () => {
     let element
     let master
+    let mark
     beforeEach(() => {
       element = wfy($("<div>Now there's a look in your eyes, like 2 black holes in the sky</div>"))
-      master = new Word(element, null, new Mark(element))
+      mark = new Mark(element)
+      mark.settings.wpm = 1000
+      master = new Word(element, null, mark)
       mockWordNest(master)
     })
 
-    test("read initiates correctly", ()=> {
+    test("word reads recursively", ()=> {
       master.read()
       return expect(new Promise((resolve, reject)=>{
         master.onread = () =>{
           if (master.children[master.cursor].text() == "eyes,") resolve('read')
         }
       })).resolves.toBe('read');
+    })
+
+    test("word can pause correctly", ()=> {
+      master.read()
+      return expect(new Promise((resolve, reject)=>{
+        master.onread = () => {
+          if (master.children[master.cursor].text() == "sky") {
+            return new Promise((resolve_pause, reject_pause) => {
+              master.pause().then(() => {
+                resolve_pause()
+              }).then(() => resolve('read'))
+          })
+        }
+      }})).resolves.toBe('read');
     })
 
   })

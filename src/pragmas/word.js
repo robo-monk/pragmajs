@@ -51,11 +51,10 @@ export default class Word extends Pragma{
     })
   }
   onread(){
-    console.log('im reading')
   }
   read(){
     // if (this.children.length - this.cursor > 0){
-    if (this.children.length-1 - this.cursor > 0){
+    if (this.children.length -  this.cursor > 0){
       if (this.stop_flag){
         return new Promise( (resolve, reject) =>{
           this.stop_flag = false
@@ -91,7 +90,7 @@ export default class Word extends Pragma{
     return !this.same_line(1)
   }
   time(){
-    return (this.text().length)*50
+    return (this.text().length)
   }
   addKids(){
     let index=0

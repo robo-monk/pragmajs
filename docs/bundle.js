@@ -13441,6 +13441,11 @@ class Mark extends _pragma.default {
     this.parent.append(this.element);
     this.isBeingSummoned = false;
     this.element.width("180px");
+    this.settings = {
+      wpm: 250,
+      color: "red",
+      width: 5
+    };
   }
 
   pause() {
@@ -13476,8 +13481,7 @@ class Mark extends _pragma.default {
       left: word.x(this.width()),
       height: word.height(),
       ease: ease
-    }, time, () => {
-      console.log(`FROM MARK -> marked ${word.text()}`);
+    }, time, () => {// console.log(`FROM MARK -> marked ${word.text()}`)
     });
   }
 
@@ -13614,7 +13618,10 @@ class Word extends _pragma.default {
   mouseout() {}
 
   pause() {
-    if (this.virgin()) return this.summon(); // word is not virgin
+    if (this.virgin()) return new Promise((resolve, reject) => {
+      this.summon();
+      resolve();
+    }); // word is not virgin
 
     this.stop_flag = true;
     return new Promise((resolve, reject) => {
@@ -13633,15 +13640,21 @@ class Word extends _pragma.default {
     });
   }
 
+  onread() {}
+
   read() {
     // if (this.children.length - this.cursor > 0){
-    if (this.children.length - 1 - this.cursor > 0) {
+    if (this.children.length - this.cursor > 0) {
       if (this.stop_flag) {
-        return this.stop_flag = false;
+        return new Promise((resolve, reject) => {
+          this.stop_flag = false;
+          resolve();
+        });
       }
 
       this.children[this.cursor].read().then(() => {
         this.cursor += 1;
+        this.onread();
         return this.read();
       });
     } else {
@@ -13662,7 +13675,7 @@ class Word extends _pragma.default {
   }
 
   same_line(n) {
-    return this.sibling(n) && (this.sibling(n).top() - this.top()) ** 2 < 10;
+    return this.sibling(n) != null && (this.sibling(n).top() - this.top()) ** 2 < 10;
   }
 
   first_in_line() {
@@ -13674,7 +13687,7 @@ class Word extends _pragma.default {
   }
 
   time() {
-    return this.text().length * 50;
+    return this.text().length;
   }
 
   addKids() {

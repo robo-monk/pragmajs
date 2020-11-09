@@ -21,6 +21,11 @@ export default class Mark extends Pragma {
     this.parent.append(this.element)
     this.isBeingSummoned = false
     this.element.width("180px")
+    this.settings = {
+      wpm: 250,
+      color: "red",
+      width: 5
+    }
   }
 
   pause(){
@@ -55,7 +60,7 @@ export default class Mark extends Pragma {
         height: word.height(),
         ease: ease
       }, time, ()=>{
-        console.log(`FROM MARK -> marked ${word.text()}`)
+        // console.log(`FROM MARK -> marked ${word.text()}`)
       })
   }
   

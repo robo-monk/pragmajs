@@ -1,6 +1,6 @@
 {
 	"name": "@robomonk/lector",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"description": "Removes all spaces from a string",
 	"license": "MIT",
 	"repository": "robo-monk/lector",
