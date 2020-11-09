@@ -29,7 +29,10 @@ export default class Word extends Pragma{
   mouseout(){
   }
   pause(){
-    if (this.virgin()) return this.summon()
+    if (this.virgin()) return new Promise((resolve, reject) => {
+      this.summon()
+      resolve()
+    })
         
     // word is not virgin
     this.stop_flag = true
@@ -47,19 +50,25 @@ export default class Word extends Pragma{
       this.parent.cursor = this.index
     })
   }
+  onread(){
+    console.log('im reading')
+  }
   read(){
     // if (this.children.length - this.cursor > 0){
     if (this.children.length-1 - this.cursor > 0){
       if (this.stop_flag){
-        return this.stop_flag = false
+        return new Promise( (resolve, reject) =>{
+          this.stop_flag = false
+          resolve()
+        })
       }
       this.children[this.cursor].read().then(() =>{
         this.cursor += 1
+        this.onread()
         return this.read()
       })
     }else{
-      if (this.virgin())
-      return this.mark.guide(this)
+      if (this.virgin()) return this.mark.guide(this)
     }
   }
   
