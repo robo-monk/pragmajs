@@ -36,7 +36,7 @@ function buildSettingsFrom(map){
 
   if (map.choices){
     map.choices.forEach((choice, index) => {
-      console.log(choice)
+      // console.log(choice)
       let templ = map.element_template(choice, index)
       templ.type = "option"
       buildSettingsFrom(templ).appendTo(element)
@@ -52,7 +52,7 @@ function buildSettingsFrom(map){
     icon.html(map.icon)
     element.append(icon)
   }
-  console.log(element)
+  // console.log(element)
   return element
 }
 

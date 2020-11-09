@@ -52,7 +52,9 @@ export default class Word extends Pragma{
       this.parent.cursor = this.index
     })
   }
-  onread(){}
+  onread(){
+    console.log('yyet')
+  }
   onpause(){
     console.log('paused reading')
   }

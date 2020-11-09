@@ -5,29 +5,8 @@ import Lector from "../../src/pragmas/lector.js"
 import { createMock, mockWordNest } from "./test.helper.js"
 import $ from "jquery"
 
-describe("knows the hard words", () => {
-  let element
-  let word
-  let mark
-  function setup(w){
-    element = $(`<w>${w}</w>`)
-    mark = new Mark(element)
-    word = new Word(element, null, mark)
-  }
-  test("verbs are abstract", () =>{
-    setup("eat")
-    let verb_time = word.time()
-    setup("and")
-    expect(word.time()).toBeLessThan(verb_time)
-  })
-  test("medium complicated word", () =>{
-    setup("lysergic")
-    expect(word.time()).toBe(1)
-  })
 
-})
-
-describe.skip("word class is working", () => {
+describe("word class is working", () => {
    let element
    let master
    beforeEach(() => {
@@ -104,7 +83,7 @@ describe.skip("word class is working", () => {
     beforeEach(() => {
       element = wfy($("<div>Now there's a look in your eyes, like 2 black holes in the sky</div>"))
       mark = new Mark(element)
-      mark.settings.wpm = 1000
+      mark.settings.add({wpm:100000})
       master = new Word(element, null, mark)
       mockWordNest(master)
     })
@@ -122,11 +101,11 @@ describe.skip("word class is working", () => {
       master.read()
       return expect(new Promise((resolve, reject)=>{
         master.onread = () => {
-          if (master.children[master.cursor].text() == "sky") {
+          if (master.children[master.cursor].text() == "look") {
             return new Promise((resolve_pause, reject_pause) => {
               master.pause().then(() => {
                 resolve_pause()
-              }).then(() => resolve('read'))
+              }).then(() => { return resolve('read')})
           })
         }
       }})).resolves.toBe('read');

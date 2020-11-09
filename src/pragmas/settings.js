@@ -15,10 +15,10 @@ export default class Settings extends Pragma {
       "mouseover": this.mouseover
     })
       
-    console.log("ive been created")
+    // console.log("ive been created")
   }
   onset(key, val){
-    console.log(`set ${key} to ${val}`)
+    // console.log(`set ${key} to ${val}`)
   }
   onget(key, val){
     // console.log(`got ${val} from ${key}`)
@@ -37,6 +37,6 @@ export default class Settings extends Pragma {
     })
   }
   mouseover(){
-    console.log("i've been hovered")
+    // console.log("i've been hovered")
   }
 }
