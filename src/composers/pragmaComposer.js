@@ -1,37 +1,25 @@
 import $ from "jquery"
 import Pragma from "../pragmas/pragma"
+
 export default class PragmaComposer extends Pragma{
-  constructor(map){
+  constructor(map, parent =null){
     super()
+    this.parentComposer = parent
     this.element = this.buildSettingsFrom(map)
     $(this.element).appendTo(document.body)
+  }
+  get parent() {
+    if (this.parentComposer == null || this.parentComposer.parentComposer == null) return this.parentComposer
+    return this.parentComposer.parentComposer
   }
 
   genSettingBody(map){
     let tag = "div"
-    let class_bus = ""
-    switch (map.type){
-      case "button":
-        class_bus += " settings-button"
-        break;
-      case "value":
-        class_bus += "settings-value"
-        break;
-      case "option":
-        class_bus += " settings-option"
-        break;
-      case "choice":
-        class_bus += " settings-choice"
-        break;
-      default:
-        break;
-    }
     let element = $(document.createElement(tag))
-    element.addClass(class_bus)
+    element.addClass("pragma-composer-" + map.type)
     element.attr("id", map.key)
     return element
   }
-
 
   buildSettingsFrom(map){
     let element = this.genSettingBody(map)
@@ -63,7 +51,6 @@ export default class PragmaComposer extends Pragma{
     // console.log(element)
     return element
   }
-
 }
 
 // export { buildSettingsFrom }

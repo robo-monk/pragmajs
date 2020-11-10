@@ -43,10 +43,13 @@ let someValue = 420
 let someChoices = ["green", "blue", "orange"]
 let pragma Map = {
   key: "settings", // name and id of the object
-  icon: "icons/settings", // from the default icons that pragma.js contains, grab the setttings one
+  icon: "icons/settings", 
+  // from the default icons that pragma.js contains, grab the setttings one
   
   elements: [ // elements is an array of pragmaMaps. 
-	// The html elements that these pragmaMaps generate will be appended to the upper object #recursion🎸
+  // The html elements that these pragmaMaps generate will 
+  // be appended to the upper object #recursion🎸
+
     {
       key: "someElement",
       type: "value_choice",
@@ -63,7 +66,8 @@ let pragma Map = {
         return {
           key: key,
           value: index,
-          icon: `<div style='width:25px;height:25px;border-radius:25px;background:${key}'></div>`,
+          icon: `<div style='width:25px;height:25px;
+              border-radius:25px;background:${key}'></div>`,
           click: (value) => { colorIndex = value }
         }
       },
@@ -72,4 +76,5 @@ let pragma Map = {
   ],
   
   type: "showonhover" // show the elements when hovered, in a nice popup
+}
  ```

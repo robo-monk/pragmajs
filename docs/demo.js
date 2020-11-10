@@ -6,6 +6,7 @@ let font = 0
 let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"]
 let map = {
   key: "settings",
+  type: "composer",
   elements: [
     {
       key: "settings",
@@ -21,7 +22,10 @@ let map = {
               key: key,
               value: index,
               icon: `<div style='width:25px;height:25px;border-radius:25px;background:${key}'></div>`,
-              click: () => { color = index }
+              click: () => { 
+                color = index;
+                $('.p-6').css("color", key)                 
+              }
             }
           },
           choices: colors

@@ -21652,28 +21652,8 @@ h1, h2, h3, h4, h5, h6 {
   font-family: "Merriweather";
 }
 
-.pragma-composer-composer{
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  justify-content: center;
-  align-items: center;
-  align-content: space-around;
-  width: -webkit-fit-content;
-  width: -moz-fit-content;
-  width: fit-content;
-  height: auto;
-  background-color: gray;
-  padding: 10px;
-  border-radius: 5px;
-}
-
-.pragma-composer-choice{
-  display: flex;
-  width: 100px;
-  flex-wrap: nowrap;
-  justify-content: space-around;
-  align-items: center;
+.settings-choice{
+  display: none;
 }
 
 @media (min-width: 640px) {

@@ -11,6 +11,7 @@ let font = 0;
 let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"];
 let map = {
   key: "settings",
+  type: "composer",
   elements: [{
     key: "settings",
     type: "button",
@@ -26,6 +27,7 @@ let map = {
           icon: `<div style='width:25px;height:25px;border-radius:25px;background:${key}'></div>`,
           click: () => {
             color = index;
+            $('.p-6').css("color", key);
           }
         };
       },
@@ -10970,39 +10972,22 @@ var _pragma = _interopRequireDefault(require("../pragmas/pragma"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 class PragmaComposer extends _pragma.default {
-  constructor(map) {
+  constructor(map, parent = null) {
     super();
+    this.parentComposer = parent;
     this.element = this.buildSettingsFrom(map);
     (0, _jquery.default)(this.element).appendTo(document.body);
   }
 
+  get parent() {
+    if (this.parentComposer == null || this.parentComposer.parentComposer == null) return this.parentComposer;
+    return this.parentComposer.parentComposer;
+  }
+
   genSettingBody(map) {
     let tag = "div";
-    let class_bus = "";
-
-    switch (map.type) {
-      case "button":
-        class_bus += " settings-button";
-        break;
-
-      case "value":
-        class_bus += "settings-value";
-        break;
-
-      case "option":
-        class_bus += " settings-option";
-        break;
-
-      case "choice":
-        class_bus += " settings-choice";
-        break;
-
-      default:
-        break;
-    }
-
     let element = (0, _jquery.default)(document.createElement(tag));
-    element.addClass(class_bus);
+    element.addClass("pragma-composer-" + map.type);
     element.attr("id", map.key);
     return element;
   }

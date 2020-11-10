@@ -1,6 +1,3 @@
-// import Lector from '../src'
-
-test('load Lector class correctly', () => {
+test('load tests correctly', () => {
   expect(true).toBe(true)
-  // expect(new Lector(""));
 });
