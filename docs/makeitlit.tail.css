@@ -21652,7 +21652,7 @@ h1, h2, h3, h4, h5, h6 {
   font-family: "Merriweather";
 }
 
-.pragma-composer-composer{
+.pragma-composer{
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
@@ -21668,7 +21668,7 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 5px;
 }
 
-.pragma-composer-choice{
+.pragma-choice{
   display: flex;
   width: 100px;
   flex-wrap: nowrap;

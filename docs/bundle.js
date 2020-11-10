@@ -50,15 +50,22 @@ let map = {
     }, {
       key: "fovea",
       value: 5,
+      set: (value, comp) => {
+        console.log(value); //console.log(comp) 
+      },
       elements: [{
         key: "fovea -",
         type: "button",
         icon: "-",
-        click: () => {
-          console.log(key);
+        value: 0,
+        click: comp => {
+          let fovea = comp.find("fovea");
+          fovea.value -= 1;
         }
       }, {
-        key: "fovea-monitor"
+        key: "fovea-monitor",
+        type: "monitor",
+        icon: "d"
       }, {
         key: "fovea +",
         icon: "+",
@@ -10974,14 +10981,91 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 class PragmaComposer extends _pragma.default {
   constructor(map, parent = null) {
     super();
-    this.parentComposer = parent;
-    this.element = this.buildSettingsFrom(map);
-    (0, _jquery.default)(this.element).appendTo(document.body);
+    this.actualValue = null;
+    this.parent = parent;
+    this.build(map);
   }
 
-  get parent() {
-    if (this.parentComposer == null || this.parentComposer.parentComposer == null) return this.parentComposer;
-    return this.parentComposer.parentComposer;
+  set value(v) {
+    if (this.onset) {
+      this.onset(v, this.master);
+    }
+
+    this.actualValue = v;
+  }
+
+  get value() {
+    return this.actualValue;
+  }
+
+  get master() {
+    if (this.parent == null || this.parent.parent == null) return this.parent;
+    return this.parent.master;
+  }
+
+  find(key) {
+    // recursively find a key
+    if (this.key == key) return this;
+
+    if (this.hasKids) {
+      for (let child of this.children) {
+        let potential_child = child.find(key);
+        if (potential_child) return potential_child;
+      }
+    }
+  }
+
+  add(child) {
+    super.add(child);
+    this.element.append(child.element);
+  }
+
+  build(map) {
+    this.element = (0, _jquery.default)(document.createElement("div"));
+    this.element.html("🐳");
+    (0, _jquery.default)(document.body).append(this.element);
+
+    if (map.elements) {
+      for (let element of map.elements) {
+        let child = new PragmaComposer(element, this);
+        this.add(child);
+      }
+    }
+
+    this.value = map.value;
+
+    if (map.key) {
+      this.key = map.key;
+      this.element.attr("id", this.key);
+    }
+
+    if (map.type) {
+      this.type = map.type;
+      this.element.addClass(`pragma-${map.type}`);
+    }
+
+    if (map.click) {
+      this.setup_listeners({
+        "click": () => {
+          map.click(this.master);
+        }
+      });
+    }
+
+    if (map.set) {
+      this.onset = map.set;
+    }
+  }
+
+  get allChildren() {
+    if (this.children == null) return 0;
+    let childs = this.children.length;
+
+    for (let child of this.children) {
+      childs += child.allChildren;
+    }
+
+    return childs;
   }
 
   genSettingBody(map) {
@@ -11024,8 +11108,7 @@ class PragmaComposer extends _pragma.default {
     return element;
   }
 
-} // export { buildSettingsFrom }
-
+}
 
 exports.default = PragmaComposer;
 
@@ -11077,6 +11160,10 @@ class Pragma {
 
   add(spragma) {
     this.children.push(spragma);
+  }
+
+  get hasKids() {
+    return this.children.length > 0;
   }
 
   setup_listeners(listeners) {

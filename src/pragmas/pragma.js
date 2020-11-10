@@ -11,6 +11,9 @@ export default class Pragma {
   add(spragma){
     this.children.push(spragma)
   }
+  get hasKids(){
+    return this.children.length > 0
+  }
   setup_listeners(listeners){
     Object.entries(listeners).forEach(([on, cb]) => {
       this.element.on(on, () => cb())

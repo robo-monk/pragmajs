@@ -45,15 +45,25 @@ let map = {
         }, {
           key: "fovea",
           value: 5,
+          set: (value, comp)=>{
+            console.log(value)
+            //console.log(comp) 
+          },
           elements: [
             {
               key: "fovea -",
               type: "button",
               icon: "-",
-              click: () => { console.log(key) }
+              value: 0,
+              click: (comp) => { 
+                let fovea = comp.find("fovea")
+                fovea.value -= 1
+              }
             },
             {
-              key: "fovea-monitor"
+              key: "fovea-monitor",
+              type: "monitor",
+              icon: "d", 
             },
             {
               key: "fovea +",
