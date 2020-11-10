@@ -15,7 +15,7 @@ def ls_files(dir):
     return files
 
 
-script = [ "./docs/lector.js" ]
+script = [ "./docs/demo.js" ]
 package_directories = [ "./src" ]
 lastmodif = 0
 while (True):
@@ -24,6 +24,6 @@ while (True):
             statbuf = os.stat(filename)
             if lastmodif < statbuf.st_mtime:
                 lastmodif = statbuf.st_mtime
-                os.system("browserify docs/lector.js -t babelify --outfile docs/bundle.js")
+                os.system("browserify docs/demo.js -t babelify --outfile docs/bundle.js")
                 print("File " + filename + " was modifed!")
     time.sleep(1)

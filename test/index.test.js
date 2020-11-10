@@ -1,4 +1,4 @@
-import Lector from '../src'
+// import Lector from '../src'
 
 test('load Lector class correctly', () => {
   expect(true).toBe(true)

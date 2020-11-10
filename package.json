@@ -10,6 +10,8 @@
   "main": "src/index.js",
   "keywords": [
     "lector",
+    "pragma",
+    "pragmajs",
     "npm",
     "package",
     "fready"
@@ -27,8 +29,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "animejs": "^3.2.1",
-    "compromise": "^13.7.0",
     "jquery": "^3.5.1",
     "mousetrap": "^1.6.5"
   },

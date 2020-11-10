@@ -3,7 +3,7 @@
 import $ from "jquery"
 
 export default class Pragma {
-  constructor(element, listeners={}){
+  constructor(element=null, listeners={}){
     this.element = $(element)
     this.children = []
     this.setup_listeners(listeners)
