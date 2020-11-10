@@ -1,32 +1,44 @@
 {
-	"name": "@robomonk/lector",
-	"version": "0.0.5",
-	"description": "Read like you're on aderall",
-	"license": "MIT",
-	"repository": "robo-monk/lector",
-	"main": "src/index.js",
-	"keywords": [
-		"lector",
-		"npm",
-		"package",
-		"fready"
-	],
-	"devDependencies": {
-		"@babel/core": "^7.12.3",
-		"@babel/preset-env": "^7.12.1",
-		"@types/jquery": "^3.5.4",
-		"babel-jest": "^26.6.3",
-		"babelify": "^10.0.0",
-		"jest": "^26.6.3",
-		"tailwindcss": "^1.9.6"
-	},
-	"scripts": {
-		"test": "jest"
-	},
-	"dependencies": {
-		"animejs": "^3.2.1",
-		"compromise": "^13.7.0",
-		"jquery": "^3.5.1",
-		"mousetrap": "^1.6.5"
-	}
+  "name": "pragmajs",
+  "version": "0.0.1",
+  "description": "Read like you're on aderall",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/robo-monk/lector.git"
+  },
+  "main": "src/index.js",
+  "keywords": [
+    "lector",
+    "npm",
+    "package",
+    "fready"
+  ],
+  "devDependencies": {
+    "@babel/core": "^7.12.3",
+    "@babel/preset-env": "^7.12.1",
+    "@types/jquery": "^3.5.4",
+    "babel-jest": "^26.6.3",
+    "babelify": "^10.0.0",
+    "jest": "^26.6.3",
+    "tailwindcss": "^1.9.6"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "dependencies": {
+    "animejs": "^3.2.1",
+    "compromise": "^13.7.0",
+    "jquery": "^3.5.1",
+    "mousetrap": "^1.6.5"
+  },
+  "bugs": {
+    "url": "https://github.com/robo-monk/lector/issues"
+  },
+  "homepage": "https://github.com/robo-monk/lector#readme",
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  },
+  "author": "robomonk"
 }

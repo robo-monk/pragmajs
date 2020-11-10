@@ -1,4 +1,4 @@
-import Lector from "./pragmas/lector.js"
-import { wfy } from "./pragmas/helper.js"
-export { Lector as default, wfy as wfy }
+import Pragma from "./pragmas/pragma.js"
+import PragmaComposer from "./composers/pragmaComposer.js"
+export { Pragma as default, PragmaComposer as PragmaComposer }
 
