@@ -7,59 +7,55 @@ function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return 
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
-let color = 0;
-let colors = ["tomato", "navy"];
-let font = 0;
+let colors = ["tomato", "navy", "lime"];
 let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"];
 let map = {
   key: "settings",
   type: "composer",
+  icon: "settings",
   elements: [{
     key: "settings",
-    type: "button",
-    icon: "settings",
-    elements: [{
+    type: "composer",
+    elements: [(0, _src.variants)({
       key: "color",
       value: 1,
-      type: "choice",
-      element_template: (key, index) => {
-        return {
-          key: key,
-          value: index,
-          icon: `<div style='width:25px;height:25px;border-radius:25px;background:${key}'></div>`,
-          click: () => {
-            color = index;
-            $('.p-6').css("color", key);
-          }
-        };
+      icon: (key, index) => {
+        return `<div style='width:25px;height:25px;border-radius:25px;background:${key}'></div>`;
       },
-      choices: colors
-    }, {
+      set: (comp, value) => {
+        console.log(comp);
+      },
+      click: comp => {
+        $('.p-6').css({
+          "color": colors[comp.find("color").value]
+        });
+      },
+      variants: colors
+    }), (0, _src.variants)({
       key: "font",
       value: 1,
-      type: "choice",
-      element_template: (key, index) => {
-        return {
-          key: key,
-          value: index,
-          icon: `<div style='width:25px;height:25px;border-radius:25px;font-family:${key}'>Aa</div>`,
-          click: () => {
-            font = key;
-          }
-        };
+      icon: (key, index) => {
+        return `<div style='width:25px;height:25px;border-radius:25px;font-family:${key}'>Aa</div>`;
       },
-      choices: fonts
-    }, (0, _src.valueControls)("fovea", 5, 2)]
-  }, {
-    key: "wpm",
-    value: 250,
-    type: "value_verbose",
-    min: 10,
-    max: 4000,
-    step: 10
-  }]
+      set: (comp, value) => {
+        console.log(comp);
+      },
+      click: comp => {
+        $('.p-6').css({
+          "font-family": fonts[comp.find("font").value]
+        });
+      },
+      variants: fonts
+    }), (0, _src.valueControls)("fovea", 5, 2)]
+  }, (0, _src.valueControls)("wpm", 250, 10)]
 };
-let master = new _src.default(map); // let lec = new Lector($("#article"), settings)
+let master = new _src.default(map);
+setInterval(() => {
+  master.find("color").value += 1;
+  master.find("font").value += 1;
+  master.find("wpm").value += 50;
+  console.log("yeet");
+}, 500); // let lec = new Lector($("#article"), settings)
 // lec.read()
 
 },{"../src":5}],2:[function(require,module,exports){
@@ -10959,6 +10955,7 @@ class PragmaComposer extends _pragma.default {
   }
 
   set value(v) {
+    // console.log(v)
     if (this.onset) {
       this.onset(v, this.master);
     }
@@ -10992,6 +10989,17 @@ class PragmaComposer extends _pragma.default {
     this.element.append(child.element);
   }
 
+  buildAndAdd(element) {
+    let child = new PragmaComposer(element, this);
+    this.add(child);
+  }
+
+  buildArray(ary) {
+    for (let element of ary) {
+      this.buildAndAdd(element);
+    }
+  }
+
   build(map) {
     this.element = (0, _jquery.default)(document.createElement("div"));
     (0, _jquery.default)(document.body).append(this.element);
@@ -11002,14 +11010,9 @@ class PragmaComposer extends _pragma.default {
       this.icon.appendTo(this.element);
     }
 
-    if (map.elements) {
-      for (let element of map.elements) {
-        let child = new PragmaComposer(element, this);
-        this.add(child);
-      }
-    }
-
-    this.value = map.value;
+    if (map.elements) this.buildArray(map.elements);
+    if (map.value) this.value = map.value;
+    if (map.set) this.onset = map.set;
 
     if (map.key) {
       this.key = map.key;
@@ -11029,8 +11032,13 @@ class PragmaComposer extends _pragma.default {
       });
     }
 
-    if (map.set) {
-      this.onset = map.set;
+    if (map.element_template && map.variants) {
+      map.variants.forEach((variant, index) => {
+        console.log(variant);
+        let templ = map.element_template(variant, index);
+        templ.type = "option";
+        this.buildAndAdd(templ);
+      });
     }
   }
 
@@ -11045,46 +11053,6 @@ class PragmaComposer extends _pragma.default {
     return childs;
   }
 
-  genSettingBody(map) {
-    let tag = "div";
-    let element = (0, _jquery.default)(document.createElement(tag));
-    element.addClass("pragma-composer-" + map.type);
-    element.attr("id", map.key);
-    return element;
-  }
-
-  buildSettingsFrom(map) {
-    let element = this.genSettingBody(map); // element += `<div class='${map.key}'>${map.key}`
-
-    if (map.elements && map.elements.length > 0) {
-      map.elements.forEach(el_map => {
-        this.buildSettingsFrom(el_map).appendTo(element);
-      });
-    }
-
-    if (map.choices) {
-      map.choices.forEach((choice, index) => {
-        // console.log(choice)
-        let templ = map.element_template(choice, index);
-        templ.type = "option";
-        this.buildSettingsFrom(templ).appendTo(element);
-      });
-    }
-
-    if (map.click) {
-      element.on("click", map.click);
-    }
-
-    if (map.icon) {
-      let icon = (0, _jquery.default)(document.createElement("div"));
-      icon.html(map.icon);
-      element.append(icon);
-    } // console.log(element)
-
-
-    return element;
-  }
-
 }
 
 exports.default = PragmaComposer;
@@ -11095,19 +11063,25 @@ exports.default = PragmaComposer;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.valueControls = exports.buttonValue = void 0;
+exports.variants = exports.valueControls = exports.buttonValue = void 0;
 
-const buttonValue = (key, value, step, icon) => {
+const buttonAction = (key, value, icon, action) => {
   return {
-    key: key + "_button",
+    key: key + "_button_" + value,
     type: "button",
     icon: icon,
     value: value,
     click: comp => {
-      let key_element = comp.find(key);
-      key_element.value += step;
+      action(comp);
     }
   };
+};
+
+const buttonValue = (key, value, step, icon) => {
+  return buttonAction(key, value, icon, comp => {
+    let key_element = comp.find(key);
+    key_element.value += step;
+  });
 }; // TODO add icons
 
 
@@ -11130,6 +11104,44 @@ const valueControls = (key, value, step) => {
 };
 
 exports.valueControls = valueControls;
+
+const variants = attr => {
+  // attr = {
+  //   key: key,
+  //   value: value,
+  //   icon: icon_html,
+  //   set: set_cb,
+  //   click: click_cb,
+  //   variants: variants
+  // }
+  return {
+    key: attr.key,
+    value: attr.value,
+    type: "choice",
+    element_template: (key, index) => {
+      return buttonAction(attr.key, index, attr.icon(key, index), comp => {
+        let element = comp.find(attr.key);
+        element.value = index;
+
+        for (let variant of element.children) {
+          variant.element.removeClass("pragma-active");
+        }
+
+        element.children[index].element.addClass("pragma-active");
+        attr.click(comp);
+      }, (value, comp) => {
+        console.log(value);
+      });
+    },
+    set: (value, comp) => {
+      console.log(value);
+      attr.click(comp);
+    },
+    variants: attr.variants
+  };
+};
+
+exports.variants = variants;
 
 },{}],5:[function(require,module,exports){
 "use strict";
@@ -11159,6 +11171,12 @@ Object.defineProperty(exports, "valueControls", {
   enumerable: true,
   get: function () {
     return _templates.valueControls;
+  }
+});
+Object.defineProperty(exports, "variants", {
+  enumerable: true,
+  get: function () {
+    return _templates.variants;
   }
 });
 

@@ -1,61 +1,49 @@
-import PragmaComposer, { valueControls } from '../src'
+import PragmaComposer, { valueControls, variants } from '../src'
 
-let color = 0
-let colors = [ "tomato", "navy"]
-let font = 0
+let colors = [ "tomato", "navy", "lime"]
 let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"]
+
 let map = {
   key: "settings",
   type: "composer",
+  icon: "settings",
   elements: [
     {
       key: "settings",
-      type: "button",
-      icon: "settings",
+      type: "composer",
       elements: [
-        {
-          key: "color",
-          value: 1,
-          type: "choice",
-          element_template: (key, index) => {
-            return {
-              key: key,
-              value: index,
-              icon: `<div style='width:25px;height:25px;border-radius:25px;background:${key}'></div>`,
-              click: () => { 
-                color = index;
-                $('.p-6').css("color", key)                 
-              }
-            }
-          },
-          choices: colors
-        }, {
-          key: "font",
-          value: 1,
-          type: "choice",
-          element_template: (key, index) => {
-            return {
-              key: key,
-              value: index,
-              icon: `<div style='width:25px;height:25px;border-radius:25px;font-family:${key}'>Aa</div>`,
-              click: () => { font = key }
-            }
-          },
-          choices: fonts
-        }, valueControls("fovea", 5, 2) 
+        variants({
+            key: "color",
+            value: 1,
+            icon: (key, index) => { return `<div style='width:25px;height:25px;border-radius:25px;background:${key}'></div>` },
+            set: (comp, value) => { 
+              console.log(comp) 
+            },
+            click: (comp) => {
+              $('.p-6').css({"color": colors[comp.find("color").value]})
+            },
+            variants: colors
+        }), variants({
+            key: "font",
+            value: 1,
+            icon: (key, index) => { return `<div style='width:25px;height:25px;border-radius:25px;font-family:${key}'>Aa</div>` },
+            set: (comp, value) => { console.log(comp) },
+            click: (comp) => {
+              $('.p-6').css({"font-family": fonts[comp.find("font").value]})
+            },
+            variants: fonts
+        }), valueControls("fovea", 5, 2) 
       ]
-    },
-    {
-      key: "wpm",
-      value: 250,
-      type: "value_verbose",
-      min: 10,
-      max: 4000,
-      step: 10
-    }]
+    }, valueControls("wpm", 250, 10)]
 }
 
 let master = new PragmaComposer(map)
 
+setInterval( () => {
+  master.find("color").value += 1
+  master.find("font").value += 1
+  master.find("wpm").value += 50
+  console.log("yeet")
+}, 500)
 // let lec = new Lector($("#article"), settings)
 // lec.read()

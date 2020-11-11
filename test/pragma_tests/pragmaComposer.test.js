@@ -119,4 +119,11 @@ describe("is correctly connected to its children", () => {
     expect(comp.find("sample-420").value).toBe(420)
     expect(comp.find("oof-1").value).toBe(1)
   })
+
+  test("knows master", () =>{
+    expect(comp.find("oof-1").master).toBe(comp) 
+    expect(comp.find("oof-2").master).not.toBe("oof-1") 
+    expect(comp.find("oof-2").master).toBe(comp) 
+    expect(comp.master).toBeFalsy() 
+  })
 })

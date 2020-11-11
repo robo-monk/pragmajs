@@ -9,6 +9,7 @@ export default class PragmaComposer extends Pragma {
     this.build(map)
   }
   set value(v){
+    // console.log(v)
     if (this.onset){
       this.onset(v, this.master)
     }
@@ -38,6 +39,16 @@ export default class PragmaComposer extends Pragma {
     this.element.append(child.element)
   }
 
+  buildAndAdd(element){
+      let child = new PragmaComposer(element, this)
+      this.add(child)
+  }
+  buildArray(ary){
+    for (let element of ary){
+      this.buildAndAdd(element)
+    }
+  }
+
   build(map){
     this.element = $(document.createElement("div"))
     $(document.body).append(this.element)
@@ -48,14 +59,9 @@ export default class PragmaComposer extends Pragma {
       this.icon.appendTo(this.element)
     }
 
-    if (map.elements){
-      for (let element of map.elements){
-        let child = new PragmaComposer(element, this)
-        this.add(child) 
-      }
-    }
-
-    this.value = map.value
+    if (map.elements) this.buildArray(map.elements)
+    if (map.value) this.value = map.value
+    if (map.set) this.onset = map.set
 
     if (map.key){
       this.key = map.key
@@ -67,7 +73,6 @@ export default class PragmaComposer extends Pragma {
       this.element.addClass(`pragma-${map.type}`)
     }
 
-
     if (map.click){
       this.setup_listeners({
         "click": () => { 
@@ -76,8 +81,13 @@ export default class PragmaComposer extends Pragma {
       })
     }
 
-    if (map.set){
-      this.onset = map.set
+    if (map.element_template && map.variants){
+      map.variants.forEach((variant, index) => {
+        console.log(variant)
+        let templ = map.element_template(variant, index)
+        templ.type = "option"
+        this.buildAndAdd(templ)
+      })
     }
   }
 
@@ -88,45 +98,6 @@ export default class PragmaComposer extends Pragma {
       childs += child.allChildren
     }
     return childs
-  }
-
-  genSettingBody(map){
-    let tag = "div"
-    let element = $(document.createElement(tag))
-    element.addClass("pragma-composer-" + map.type)
-    element.attr("id", map.key)
-    return element
-  }
-
-  buildSettingsFrom(map){
-    let element = this.genSettingBody(map)
-    // element += `<div class='${map.key}'>${map.key}`
-    if (map.elements && map.elements.length > 0){
-      map.elements.forEach((el_map) => {
-        this.buildSettingsFrom(el_map).appendTo(element)
-      })
-    }
-
-    if (map.choices){
-      map.choices.forEach((choice, index) => {
-        // console.log(choice)
-        let templ = map.element_template(choice, index)
-        templ.type = "option"
-        this.buildSettingsFrom(templ).appendTo(element)
-      })
-    }
-
-    if (map.click){
-      element.on("click", map.click)
-    }
-
-    if (map.icon){
-      let icon = $(document.createElement("div"))
-      icon.html(map.icon)
-      element.append(icon)
-    }
-    // console.log(element)
-    return element
   }
 }
 
