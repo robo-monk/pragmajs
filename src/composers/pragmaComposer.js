@@ -8,6 +8,12 @@ export default class PragmaComposer extends Pragma {
     this.parent = parent
     this.build(map)
   }
+
+  get log(){
+
+
+  }
+
   set value(v){
     this.actualValue = v 
     if (this.onset){
@@ -42,6 +48,7 @@ export default class PragmaComposer extends Pragma {
       let child = new PragmaComposer(element, this)
       this.add(child)
   }
+  
   buildArray(ary){
     for (let element of ary){
       this.buildAndAdd(element)
@@ -91,12 +98,27 @@ export default class PragmaComposer extends Pragma {
   }
 
   get allChildren(){
-    if (this.children == null) return 0
-    let childs = this.children.length
-    for (let child of this.children){
-      childs += child.allChildren
+    if (!this.hasKids) return null
+    let childs = this.children
+    for (let child of childs){
+      let descs = child.allChildren
+      if (descs) childs = childs.concat(descs)
     }
     return childs
+  }
+
+  shapePrefix(prefix=""){
+    let shape = `${prefix}| ${this.type} - ${this.key} \n`
+    if (this.hasKids) {
+        prefix += "| "
+      for (let child of this.children){
+        shape += child.shapePrefix(prefix)
+      }
+    }
+    return shape
+  }
+  get shape(){
+    return this.shapePrefix()
   }
 }
 

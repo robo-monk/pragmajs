@@ -9,41 +9,33 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 let colors = ["tomato", "navy", "lime"];
 let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"];
-let map = {
-  key: "settings",
-  type: "composer",
-  icon: "settings",
-  elements: [{
-    key: "settings",
-    type: "composer",
-    elements: [(0, _src.variants)({
-      key: "color",
-      value: 1,
-      icon: (key, index) => {
-        return `<div style='width:25px;height:25px;border-radius:25px;background:${key}'></div>`;
-      },
-      set: comp => {
-        $('.p-6').css({
-          "color": colors[comp.find("color").value]
-        });
-      },
-      variants: colors
-    }), (0, _src.variants)({
-      key: "font",
-      value: 1,
-      icon: (key, index) => {
-        return `<div style='width:25px;height:25px;border-radius:25px;font-family:${key}'>Aa</div>`;
-      },
-      set: comp => {
-        $('.p-6').css({
-          "font-family": fonts[comp.find("font").value]
-        });
-      },
-      variants: fonts
-    }), (0, _src.valueControls)("fovea", 5, 2)]
-  }, (0, _src.valueControls)("wpm", 250, 10)]
-};
-let master = new _src.default(map); // setInterval( () => {
+let map = (0, _src.composer)("toolbar", "icon", [(0, _src.composer)("settings", "settings", [(0, _src.variants)({
+  key: "color",
+  value: 1,
+  icon: (key, index) => {
+    return `<div style='width:25px;height:25px;border-radius:25px;background:${key}'></div>`;
+  },
+  set: comp => {
+    $('.p-6').css({
+      "color": colors[comp.find("color").value]
+    });
+  },
+  variants: colors
+}), (0, _src.variants)({
+  key: "font",
+  value: 1,
+  icon: (key, index) => {
+    return `<div style='width:25px;height:25px;border-radius:25px;font-family:${key}'>Aa</div>`;
+  },
+  set: comp => {
+    $('.p-6').css({
+      "font-family": fonts[comp.find("font").value]
+    });
+  },
+  variants: fonts
+}), (0, _src.valueControls)("fovea", 5, 2)]), (0, _src.valueControls)("wpm", 250, 10)]);
+let master = new _src.default(map);
+console.log(master.log); // setInterval( () => {
 //   master.find("color").value += 1
 //   master.find("font").value += 1
 //   master.find("wpm").value += 50
@@ -10947,6 +10939,8 @@ class PragmaComposer extends _pragma.default {
     this.build(map);
   }
 
+  get log() {}
+
   set value(v) {
     this.actualValue = v;
 
@@ -11035,14 +11029,33 @@ class PragmaComposer extends _pragma.default {
   }
 
   get allChildren() {
-    if (this.children == null) return 0;
-    let childs = this.children.length;
+    if (!this.hasKids) return null;
+    let childs = this.children;
 
-    for (let child of this.children) {
-      childs += child.allChildren;
+    for (let child of childs) {
+      let descs = child.allChildren;
+      if (descs) childs = childs.concat(descs);
     }
 
     return childs;
+  }
+
+  shapePrefix(prefix = "") {
+    let shape = `${prefix}| ${this.type} - ${this.key} \n`;
+
+    if (this.hasKids) {
+      prefix += "| ";
+
+      for (let child of this.children) {
+        shape += child.shapePrefix(prefix);
+      }
+    }
+
+    return shape;
+  }
+
+  get shape() {
+    return this.shapePrefix();
   }
 
 }
@@ -11055,7 +11068,7 @@ exports.default = PragmaComposer;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.variants = exports.valueControls = exports.buttonValue = void 0;
+exports.composer = exports.variants = exports.valueControls = exports.buttonValue = void 0;
 
 const buttonAction = (key, value, icon, action) => {
   return {
@@ -11142,6 +11155,17 @@ const variants = attr => {
 
 exports.variants = variants;
 
+const composer = (key, icon, elements) => {
+  return {
+    key: key,
+    type: "composer",
+    icon: icon,
+    elements: elements
+  };
+};
+
+exports.composer = composer;
+
 },{}],5:[function(require,module,exports){
 "use strict";
 
@@ -11176,6 +11200,12 @@ Object.defineProperty(exports, "variants", {
   enumerable: true,
   get: function () {
     return _templates.variants;
+  }
+});
+Object.defineProperty(exports, "composer", {
+  enumerable: true,
+  get: function () {
+    return _templates.composer;
   }
 });
 

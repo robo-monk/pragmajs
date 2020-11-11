@@ -78,4 +78,13 @@ const variants = (attr) =>{
   }
 }
 
-export { buttonValue, valueControls, variants}
+const composer = (key, icon, elements) => {
+  return {
+    key: key,
+    type: "composer",
+    icon: icon,
+    elements: elements
+  }
+}
+
+export { buttonValue, valueControls, variants, composer }

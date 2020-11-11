@@ -1,17 +1,13 @@
-import PragmaComposer, { valueControls, variants } from '../src'
+import PragmaComposer, { valueControls, variants, composer } from '../src'
 
 let colors = [ "tomato", "navy", "lime"]
 let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"]
 
-let map = {
-  key: "settings",
-  type: "composer",
-  icon: "settings",
-  elements: [
-    {
-      key: "settings",
-      type: "composer",
-      elements: [
+let map = composer(
+  "toolbar",
+  "icon",
+  [
+    composer("settings", "settings", [
         variants({
             key: "color",
             value: 1,
@@ -29,11 +25,11 @@ let map = {
             },
             variants: fonts
         }), valueControls("fovea", 5, 2) 
-      ]
-    }, valueControls("wpm", 250, 10)]
-}
+      ]), valueControls("wpm", 250, 10)]
+)
 
 let master = new PragmaComposer(map)
+console.log(master.log)
 
 // setInterval( () => {
 //   master.find("color").value += 1

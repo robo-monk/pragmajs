@@ -34,7 +34,30 @@ describe("Pragma composer builds correcly", () =>{
     })
     expect(comp.children.length).toBe(3)
   })
-
+  test("can count correctly all children", () => {
+    let subelement = {
+      key: "subelement",
+      type: "subelement",
+    }
+    let element = {
+      key: "element",
+      type: "choice",
+      elements: [
+       subelement 
+      ],
+      value: 1
+    }
+    setup({
+      key: "master",
+      type: "value",
+      elements: [
+        element, element, element
+      ]
+    })
+    expect(comp.children.length).toBe(3)
+    expect(comp.allChildren.length).toBe(6)
+    //console.log(comp.shape)
+  })
   test("can generate from more complex map", () => {
     let subsubelement = {
       key: "oof2",
@@ -51,7 +74,7 @@ describe("Pragma composer builds correcly", () =>{
       key: "sample",
       type: "choice",
       elements: [
-       subelement, subelement, subelement 
+       subelement, subelement, subelement
       ],
       value: 1
     }
@@ -63,8 +86,13 @@ describe("Pragma composer builds correcly", () =>{
       ]
     })
     expect(comp.children.length).toBe(3)
-    expect(comp.allChildren).toBe(39)
+    //console.log(comp.shape)
+    console.log(comp.allChildren.length)
+    expect(comp.allChildren.length).toBe(comp.shape.split("\n").length-2)
   })
+})
+describe("generates correct shape", () =>{
+  
 })
 describe("is correctly connected to its children", () => {
   let comp
