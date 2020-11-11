@@ -1,5 +1,6 @@
 # pragma.js
-dead simple powerful fast ui composer in javascript
+Dead simple, powerful, fast UI-composer in JavaScript <br>
+[Check out Demo](https://robo-monk.github.io/pragma.js)
 
 # Installation
 ```bash
@@ -12,7 +13,7 @@ cdn coming soon
 # Set Up & basic concepts
 
 `hello world`
-```Javascript
+```js
 import PragmaComposer from "pragmajs"
 let nice = 69
 let pragmaMap = {
