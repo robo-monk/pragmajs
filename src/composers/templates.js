@@ -1,3 +1,6 @@
+import PragmaComposer from "./pragmaComposer"
+import tippy from "tippy.js"
+
 const buttonAction = (key, value, icon, action) => {
   return {
     key: key + "_button_" + value,
@@ -87,4 +90,14 @@ const composer = (key, icon, elements) => {
   }
 }
 
-export { buttonValue, valueControls, variants, composer }
+const container = (a, b) => {
+  a = new PragmaComposer(a)
+  b = new PragmaComposer(b)
+  let t = tippy(a.element[0], {
+    content: b.element[0],
+    allowHTML: false,
+    interactive: true
+  })
+}
+
+export { buttonValue, valueControls, variants, composer, container }

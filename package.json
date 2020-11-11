@@ -30,7 +30,8 @@
   },
   "dependencies": {
     "jquery": "^3.5.1",
-    "mousetrap": "^1.6.5"
+    "mousetrap": "^1.6.5",
+    "tippy.js": "^6.2.7"
   },
   "bugs": {
     "url": "https://github.com/robo-monk/pragma.js/issues"

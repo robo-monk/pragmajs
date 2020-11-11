@@ -1,9 +1,10 @@
-import PragmaComposer, { valueControls, variants, composer } from '../src'
+import PragmaComposer, { valueControls, variants, composer, container } from '../src'
 
 let colors = [ "tomato", "navy", "lime"]
 let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"]
 
-let map = composer(
+let settings = composer("settingsWrapper","s", [])
+let master = container(settings, composer(
   "toolbar",
   "icon",
   [
@@ -16,7 +17,8 @@ let map = composer(
               $('.p-6').css({"color": colors[comp.find("color").value]})
             },
             variants: colors
-        }), variants({
+        }), 
+        variants({
             key: "font",
             value: 1,
             icon: (key, index) => { return `<div style='width:25px;height:25px;border-radius:25px;font-family:${key}'>Aa</div>` },
@@ -24,12 +26,21 @@ let map = composer(
               $('.p-6').css({"font-family": fonts[comp.find("font").value]})
             },
             variants: fonts
-        }), valueControls("fovea", 5, 2) 
-      ]), valueControls("wpm", 250, 10)]
-)
+        }), 
+        valueControls("fovea", 5, 2) 
+      ]), 
+    valueControls("wpm", 250, 10)
+  ]
+))
 
-let master = new PragmaComposer(map)
-console.log(master.log)
+
+
+// let master = new PragmaComposer(map)
+  // let t = tippy(`#${settings.key}`, {
+  //   content: master.element[0],
+  //   allowHTML: true,
+  //   interactive: true
+  // })
 
 // setInterval( () => {
 //   master.find("color").value += 1
