@@ -40,8 +40,13 @@ export default class PragmaComposer extends Pragma {
 
   build(map){
     this.element = $(document.createElement("div"))
-    this.element.html("🐳")
     $(document.body).append(this.element)
+
+    if (map.icon){
+      this.icon = $(document.createElement("div"))
+      this.icon.html(map.icon)
+      this.icon.appendTo(this.element)
+    }
 
     if (map.elements){
       for (let element of map.elements){
@@ -61,6 +66,7 @@ export default class PragmaComposer extends Pragma {
       this.type = map.type
       this.element.addClass(`pragma-${map.type}`)
     }
+
 
     if (map.click){
       this.setup_listeners({

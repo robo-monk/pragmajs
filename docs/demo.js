@@ -1,5 +1,5 @@
-import PragmaComposer from '../src'
-import Pragma from "../src"
+import PragmaComposer, { valueControls } from '../src'
+
 let color = 0
 let colors = [ "tomato", "navy"]
 let font = 0
@@ -42,40 +42,7 @@ let map = {
             }
           },
           choices: fonts
-        }, {
-          key: "fovea",
-          value: 5,
-          set: (value, comp)=>{
-            console.log(value)
-            //console.log(comp) 
-          },
-          elements: [
-            {
-              key: "fovea -",
-              type: "button",
-              icon: "-",
-              value: 0,
-              click: (comp) => { 
-                let fovea = comp.find("fovea")
-                fovea.value -= 1
-              }
-            },
-            {
-              key: "fovea-monitor",
-              type: "monitor",
-              icon: "d", 
-            },
-            {
-              key: "fovea +",
-              icon: "+",
-              click: () => { console.log("+") }
-            }
-          ],
-          type: "value",
-          min: 3,
-          max: 15,
-          step: 1
-        }
+        }, valueControls("fovea", 5, 2) 
       ]
     },
     {
@@ -87,6 +54,8 @@ let map = {
       step: 10
     }]
 }
-console.table(new PragmaComposer(map))
+
+let master = new PragmaComposer(map)
+
 // let lec = new Lector($("#article"), settings)
 // lec.read()

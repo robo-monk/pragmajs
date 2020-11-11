@@ -1,9 +1,11 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 "use strict";
 
-var _src = _interopRequireDefault(require("../src"));
+var _src = _interopRequireWildcard(require("../src"));
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 let color = 0;
 let colors = ["tomato", "navy"];
@@ -47,37 +49,7 @@ let map = {
         };
       },
       choices: fonts
-    }, {
-      key: "fovea",
-      value: 5,
-      set: (value, comp) => {
-        console.log(value); //console.log(comp) 
-      },
-      elements: [{
-        key: "fovea -",
-        type: "button",
-        icon: "-",
-        value: 0,
-        click: comp => {
-          let fovea = comp.find("fovea");
-          fovea.value -= 1;
-        }
-      }, {
-        key: "fovea-monitor",
-        type: "monitor",
-        icon: "d"
-      }, {
-        key: "fovea +",
-        icon: "+",
-        click: () => {
-          console.log("+");
-        }
-      }],
-      type: "value",
-      min: 3,
-      max: 15,
-      step: 1
-    }]
+    }, (0, _src.valueControls)("fovea", 5, 2)]
   }, {
     key: "wpm",
     value: 250,
@@ -87,10 +59,10 @@ let map = {
     step: 10
   }]
 };
-console.table(new _src.default(map)); // let lec = new Lector($("#article"), settings)
+let master = new _src.default(map); // let lec = new Lector($("#article"), settings)
 // lec.read()
 
-},{"../src":4}],2:[function(require,module,exports){
+},{"../src":5}],2:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v3.5.1
  * https://jquery.com/
@@ -11022,8 +10994,13 @@ class PragmaComposer extends _pragma.default {
 
   build(map) {
     this.element = (0, _jquery.default)(document.createElement("div"));
-    this.element.html("🐳");
     (0, _jquery.default)(document.body).append(this.element);
+
+    if (map.icon) {
+      this.icon = (0, _jquery.default)(document.createElement("div"));
+      this.icon.html(map.icon);
+      this.icon.appendTo(this.element);
+    }
 
     if (map.elements) {
       for (let element of map.elements) {
@@ -11112,7 +11089,49 @@ class PragmaComposer extends _pragma.default {
 
 exports.default = PragmaComposer;
 
-},{"../pragmas/pragma":5,"jquery":2}],4:[function(require,module,exports){
+},{"../pragmas/pragma":6,"jquery":2}],4:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.valueControls = exports.buttonValue = void 0;
+
+const buttonValue = (key, value, step, icon) => {
+  return {
+    key: key + "_button",
+    type: "button",
+    icon: icon,
+    value: value,
+    click: comp => {
+      let key_element = comp.find(key);
+      key_element.value += step;
+    }
+  };
+}; // TODO add icons
+
+
+exports.buttonValue = buttonValue;
+
+const valueControls = (key, value, step) => {
+  return {
+    key: key,
+    type: "value",
+    value: value,
+    set: (value, comp) => {
+      let key_monitor = comp.find(`${key}-monitor`);
+      key_monitor.element.html(value);
+    },
+    elements: [buttonValue(key, value, -step, "-"), {
+      key: `${key}-monitor`,
+      type: "monitor"
+    }, buttonValue(key, value, step, "+")]
+  };
+};
+
+exports.valueControls = valueControls;
+
+},{}],5:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11130,14 +11149,28 @@ Object.defineProperty(exports, "default", {
     return _pragmaComposer.default;
   }
 });
+Object.defineProperty(exports, "buttonValue", {
+  enumerable: true,
+  get: function () {
+    return _templates.buttonValue;
+  }
+});
+Object.defineProperty(exports, "valueControls", {
+  enumerable: true,
+  get: function () {
+    return _templates.valueControls;
+  }
+});
 
 var _pragma = _interopRequireDefault(require("./pragmas/pragma.js"));
 
 var _pragmaComposer = _interopRequireDefault(require("./composers/pragmaComposer.js"));
 
+var _templates = require("./composers/templates.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./composers/pragmaComposer.js":3,"./pragmas/pragma.js":5}],5:[function(require,module,exports){
+},{"./composers/pragmaComposer.js":3,"./composers/templates.js":4,"./pragmas/pragma.js":6}],6:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
