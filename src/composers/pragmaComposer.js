@@ -1,5 +1,7 @@
 import $ from "jquery"
 import Pragma from "../pragmas/pragma"
+import { composer } from "./templates"
+import tippy from "tippy.js"
 
 export default class PragmaComposer extends Pragma {
   constructor(map, parent = null){
@@ -44,6 +46,16 @@ export default class PragmaComposer extends Pragma {
     this.element.append(child.element)
   }
 
+  buildInside(map){
+    let comp = composer(map.key+"-composer", null, [map])
+    this.buildAndAdd(comp)
+    this.tippy = tippy(this.element[0], {
+      content: comp.element[0],
+      allowHTML: true,
+      interactive: true
+    })
+  }
+
   buildAndAdd(element){
       let child = new PragmaComposer(element, this)
       this.add(child)
@@ -66,6 +78,7 @@ export default class PragmaComposer extends Pragma {
     }
 
     if (map.elements) this.buildArray(map.elements)
+    if (map.hover_element) this.buildInside(map.hover_element)
     if (map.value) this.value = map.value
     if (map.set) this.onset = map.set
 

@@ -9,8 +9,8 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 let colors = ["tomato", "navy", "lime"];
 let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"];
-let settings = (0, _src.composer)("settingsWrapper", "s", []);
-let master = (0, _src.container)(settings, (0, _src.composer)("toolbar", "icon", [(0, _src.composer)("settings", "settings", [(0, _src.variants)({
+let settings = (0, _src.composer)("settingsWrapper", "⚙️", []);
+let master = (0, _src.container)(settings, (0, _src.composer)("toolbar", "⚙️", [(0, _src.composer)("settings", "", [(0, _src.variants)({
   key: "color",
   value: 1,
   icon: (key, index) => {
@@ -34,7 +34,12 @@ let master = (0, _src.container)(settings, (0, _src.composer)("toolbar", "icon",
     });
   },
   variants: fonts
-}), (0, _src.valueControls)("fovea", 5, 2)]), (0, _src.valueControls)("wpm", 250, 10)])); // let master = new PragmaComposer(map)
+}), (0, _src.valueControls)("fovea", 5, 2)]), (0, _src.valueControls)("font-size", 18, 2, (value, comp) => {
+  $('.p-6').css({
+    "font-size": value
+  });
+  console.log(value);
+})])); // let master = new PragmaComposer(map)
 // let t = tippy(`#${settings.key}`, {
 //   content: master.element[0],
 //   allowHTML: true,
@@ -15133,6 +15138,10 @@ var _jquery = _interopRequireDefault(require("jquery"));
 
 var _pragma = _interopRequireDefault(require("../pragmas/pragma"));
 
+var _templates = require("./templates");
+
+var _tippy = _interopRequireDefault(require("tippy.js"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 class PragmaComposer extends _pragma.default {
@@ -15179,6 +15188,16 @@ class PragmaComposer extends _pragma.default {
     this.element.append(child.element);
   }
 
+  buildInside(map) {
+    let comp = (0, _templates.composer)(map.key + "-composer", null, [map]);
+    this.buildAndAdd(comp);
+    this.tippy = (0, _tippy.default)(this.element[0], {
+      content: comp.element[0],
+      allowHTML: true,
+      interactive: true
+    });
+  }
+
   buildAndAdd(element) {
     let child = new PragmaComposer(element, this);
     this.add(child);
@@ -15201,6 +15220,7 @@ class PragmaComposer extends _pragma.default {
     }
 
     if (map.elements) this.buildArray(map.elements);
+    if (map.hover_element) this.buildInside(map.hover_element);
     if (map.value) this.value = map.value;
     if (map.set) this.onset = map.set;
 
@@ -15266,7 +15286,7 @@ class PragmaComposer extends _pragma.default {
 
 exports.default = PragmaComposer;
 
-},{"../pragmas/pragma":8,"jquery":3}],6:[function(require,module,exports){
+},{"../pragmas/pragma":8,"./templates":6,"jquery":3,"tippy.js":4}],6:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15302,7 +15322,7 @@ const buttonValue = (key, value, step, icon) => {
 
 exports.buttonValue = buttonValue;
 
-const valueControls = (key, value, step) => {
+const valueControls = (key, value, step, action = () => {}) => {
   return {
     key: key,
     type: "value",
@@ -15310,6 +15330,8 @@ const valueControls = (key, value, step) => {
     set: (value, comp) => {
       let key_monitor = comp.find(`${key}-monitor`);
       key_monitor.element.html(value);
+      console.log(value);
+      action(value, comp);
     },
     elements: [buttonValue(key, value, -step, "-"), {
       key: `${key}-monitor`,
@@ -15365,12 +15387,24 @@ const variants = attr => {
 
 exports.variants = variants;
 
+const text = (text, key = null, elements = []) => {
+  if (key == null) key = text;
+  console.log(text);
+  return {
+    key: key,
+    type: "text",
+    icon: text,
+    elements: elements
+  };
+};
+
 const composer = (key, icon, elements) => {
   return {
     key: key,
     type: "composer",
     icon: icon,
-    elements: elements
+    elements: elements // hover_element: text("dicks")
+
   };
 };
 
@@ -15384,9 +15418,25 @@ const container = (a, b) => {
     allowHTML: false,
     interactive: true
   });
+  return a;
 };
 
 exports.container = container;
+
+const build = a => {
+  return;
+};
+
+const buildInside = (a, b) => {
+  a = new _pragmaComposer.default(a);
+  b = new _pragmaComposer.default(b);
+  let t = (0, _tippy.default)(a.element[0], {
+    content: b.element[0],
+    allowHTML: false,
+    interactive: true
+  });
+  return a;
+};
 
 },{"./pragmaComposer":5,"tippy.js":4}],7:[function(require,module,exports){
 "use strict";

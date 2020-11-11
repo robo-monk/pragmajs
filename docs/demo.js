@@ -3,12 +3,12 @@ import PragmaComposer, { valueControls, variants, composer, container } from '..
 let colors = [ "tomato", "navy", "lime"]
 let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"]
 
-let settings = composer("settingsWrapper","s", [])
+let settings = composer("settingsWrapper", "⚙️", [])
 let master = container(settings, composer(
   "toolbar",
-  "icon",
+  "⚙️",
   [
-    composer("settings", "settings", [
+    composer("settings", "", [
         variants({
             key: "color",
             value: 1,
@@ -29,10 +29,12 @@ let master = container(settings, composer(
         }), 
         valueControls("fovea", 5, 2) 
       ]), 
-    valueControls("wpm", 250, 10)
+    valueControls("font-size", 18, 2, (value, comp)=>{
+      $('.p-6').css({"font-size": value})
+      console.log(value)
+    })
   ]
 ))
-
 
 
 // let master = new PragmaComposer(map)

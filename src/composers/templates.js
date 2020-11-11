@@ -20,7 +20,7 @@ const buttonValue = (key, value, step, icon) => {
 }
 
 // TODO add icons
-const valueControls =  (key, value, step) => {
+const valueControls =  (key, value, step, action=(()=>{})) => {
   return {
     key: key,
     type: "value",
@@ -28,6 +28,8 @@ const valueControls =  (key, value, step) => {
     set: (value, comp)=>{
       let key_monitor = comp.find(`${key}-monitor`)  
       key_monitor.element.html(value)
+      console.log(value)
+      action(value, comp)
     },
     elements: [
       buttonValue(key, value, -step, "-"),
@@ -81,12 +83,24 @@ const variants = (attr) =>{
   }
 }
 
+const text = (text, key=null, elements=[]) => {
+  if (key==null) key = text
+  console.log(text)
+  return {
+    key: key,
+    type: "text",
+    icon: text,
+    elements: elements
+  }
+}
+
 const composer = (key, icon, elements) => {
   return {
     key: key,
     type: "composer",
     icon: icon,
     elements: elements
+    // hover_element: text("dicks")
   }
 }
 
@@ -98,6 +112,22 @@ const container = (a, b) => {
     allowHTML: false,
     interactive: true
   })
+  return a
+}
+
+const build = (a) =>{
+  return 
+}
+
+const buildInside = (a, b) => {
+  a = new PragmaComposer(a)
+  b = new PragmaComposer(b)
+  let t = tippy(a.element[0], {
+    content: b.element[0],
+    allowHTML: false,
+    interactive: true
+  })
+  return a
 }
 
 export { buttonValue, valueControls, variants, composer, container }
