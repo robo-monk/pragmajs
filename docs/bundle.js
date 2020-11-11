@@ -22,10 +22,7 @@ let map = {
       icon: (key, index) => {
         return `<div style='width:25px;height:25px;border-radius:25px;background:${key}'></div>`;
       },
-      set: (comp, value) => {
-        console.log(comp);
-      },
-      click: comp => {
+      set: comp => {
         $('.p-6').css({
           "color": colors[comp.find("color").value]
         });
@@ -37,10 +34,7 @@ let map = {
       icon: (key, index) => {
         return `<div style='width:25px;height:25px;border-radius:25px;font-family:${key}'>Aa</div>`;
       },
-      set: (comp, value) => {
-        console.log(comp);
-      },
-      click: comp => {
+      set: comp => {
         $('.p-6').css({
           "font-family": fonts[comp.find("font").value]
         });
@@ -49,13 +43,12 @@ let map = {
     }), (0, _src.valueControls)("fovea", 5, 2)]
   }, (0, _src.valueControls)("wpm", 250, 10)]
 };
-let master = new _src.default(map);
-setInterval(() => {
-  master.find("color").value += 1;
-  master.find("font").value += 1;
-  master.find("wpm").value += 50;
-  console.log("yeet");
-}, 500); // let lec = new Lector($("#article"), settings)
+let master = new _src.default(map); // setInterval( () => {
+//   master.find("color").value += 1
+//   master.find("font").value += 1
+//   master.find("wpm").value += 50
+// }, 1500)
+// let lec = new Lector($("#article"), settings)
 // lec.read()
 
 },{"../src":5}],2:[function(require,module,exports){
@@ -10955,12 +10948,11 @@ class PragmaComposer extends _pragma.default {
   }
 
   set value(v) {
-    // console.log(v)
+    this.actualValue = v;
+
     if (this.onset) {
       this.onset(v, this.master);
     }
-
-    this.actualValue = v;
   }
 
   get value() {
@@ -11105,6 +11097,21 @@ const valueControls = (key, value, step) => {
 
 exports.valueControls = valueControls;
 
+const variantUIActivate = element => {
+  console.log(`activating ${element.key} to ${element.value}`);
+
+  for (let variant of element.children) {
+    variant.element.removeClass("pragma-active");
+  }
+
+  element.children[element.value].element.addClass("pragma-active");
+};
+
+const variantUIAction = (comp, index, attr) => {
+  let element = comp.find(attr.key);
+  element.value = index;
+};
+
 const variants = attr => {
   // attr = {
   //   key: key,
@@ -11120,22 +11127,14 @@ const variants = attr => {
     type: "choice",
     element_template: (key, index) => {
       return buttonAction(attr.key, index, attr.icon(key, index), comp => {
-        let element = comp.find(attr.key);
-        element.value = index;
-
-        for (let variant of element.children) {
-          variant.element.removeClass("pragma-active");
-        }
-
-        element.children[index].element.addClass("pragma-active");
-        attr.click(comp);
-      }, (value, comp) => {
-        console.log(value);
+        console.log("logged");
+        variantUIAction(comp, index, attr);
       });
     },
     set: (value, comp) => {
-      console.log(value);
-      attr.click(comp);
+      console.log(`setting ${attr.key} to ${value}`);
+      variantUIActivate(comp.find(attr.key));
+      attr.set(comp);
     },
     variants: attr.variants
   };

@@ -37,6 +37,19 @@ const valueControls =  (key, value, step) => {
   }
 }
 
+const variantUIActivate = (element) => {
+  console.log(`activating ${element.key} to ${element.value}`)
+  for (let variant of element.children){
+    variant.element.removeClass("pragma-active")
+  }
+  element.children[element.value].element.addClass("pragma-active")
+}
+
+const variantUIAction = (comp, index, attr) => {
+  let element = comp.find(attr.key)
+  element.value = index
+}
+
 const variants = (attr) =>{
   // attr = {
   //   key: key,
@@ -47,28 +60,22 @@ const variants = (attr) =>{
   //   variants: variants
   // }
   return {
-          key: attr.key,
-          value: attr.value,
-          type: "choice",
-          element_template: (key, index) => {
-            return buttonAction(attr.key, index, attr.icon(key, index), (comp) => {
-              let element = comp.find(attr.key)
-              element.value = index
-              for (let variant of element.children){
-                variant.element.removeClass("pragma-active")
-              }
-              element.children[index].element.addClass("pragma-active")
-              attr.click(comp)
-            }, (value, comp) =>{
-              console.log(value)
-            })
-          },
-          set: (value, comp) => { 
-            console.log(value)
-            attr.click(comp)
-          },
-          variants: attr.variants
-        }
+    key: attr.key,
+    value: attr.value,
+    type: "choice",
+    element_template: (key, index) => {
+      return buttonAction(attr.key, index, attr.icon(key, index), (comp) => {
+        console.log("logged")
+        variantUIAction(comp, index, attr)
+      })
+    },
+    set: (value, comp) => {
+      console.log(`setting ${attr.key} to ${value}`)
+      variantUIActivate(comp.find(attr.key)) 
+      attr.set(comp)
+    },
+    variants: attr.variants
+  }
 }
 
 export { buttonValue, valueControls, variants}

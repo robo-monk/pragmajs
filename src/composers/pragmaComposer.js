@@ -9,11 +9,10 @@ export default class PragmaComposer extends Pragma {
     this.build(map)
   }
   set value(v){
-    // console.log(v)
+    this.actualValue = v 
     if (this.onset){
       this.onset(v, this.master)
     }
-    this.actualValue = v 
   }
   get value(){
     return this.actualValue
