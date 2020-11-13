@@ -1,10 +1,17 @@
 //import Pragma, { valueControls, variants, composer, container } from '../src'
 //import Pragma, { valueControls, variants, composer, container } from '../src'
-import { variants, Comp, colorSelect, compose, contain } from "../src"
+import { Variants, Comp, ColorSelect, Compose, contain } from "../src"
 
 let colors = [ "tomato", "navy", "lime"]
 let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"]
 
+let colorsComp = ColorSelect("markercolors", colors, (v, comp, key) => {
+  $(document.body).css({"background": colors[comp.find(key).value]}) 
+})
+
+let fontComp = Variants("readerfont", fonts, (v, comp, key) => {
+   
+})
 
 // compose({} <- pragma map)
 // compose(key, icon, elements, type <- pragma map)
@@ -19,11 +26,9 @@ let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"]
             //variants: colors
         //}))
 
-let colorsComp = colorSelect("markercolors", colors, (v, comp, key) => {
-  $(document.body).css({"background": colors[comp.find(key).value]}) 
-})
 
-let settings = compose("settingsWrapper", "⚙️").contain(colorsComp)
+
+let settings = Compose("settingsWrapper", "⚙️").contain(colorsComp)
 settings.pragmatize()
 
 //

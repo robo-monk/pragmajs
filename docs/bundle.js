@@ -6,7 +6,13 @@ var _src = require("../src");
 //import Pragma, { valueControls, variants, composer, container } from '../src'
 //import Pragma, { valueControls, variants, composer, container } from '../src'
 let colors = ["tomato", "navy", "lime"];
-let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"]; // compose({} <- pragma map)
+let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"];
+let colorsComp = (0, _src.ColorSelect)("markercolors", colors, (v, comp, key) => {
+  $(document.body).css({
+    "background": colors[comp.find(key).value]
+  });
+});
+let fontComp = (0, _src.Variants)("readerfont", fonts, (v, comp, key) => {}); // compose({} <- pragma map)
 // compose(key, icon, elements, type <- pragma map)
 //
 //let colorsComp = new Comp(variants({
@@ -19,13 +25,7 @@ let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"]; // compose({} <-
 //variants: colors
 //}))
 
-let colorsComp = (0, _src.colorSelect)("markercolors", colors, (v, comp, key) => {
-  $(document.body).css({
-    "background": colors[comp.find(key).value]
-  });
-  console.log("touched colors");
-});
-let settings = (0, _src.compose)("settingsWrapper", "⚙️").contain(colorsComp);
+let settings = (0, _src.Compose)("settingsWrapper", "⚙️").contain(colorsComp);
 settings.pragmatize(); //
 //let settings = composer("settingsWrapper", "⚙️", [])
 //let master = container(settings, composer(
@@ -15152,7 +15152,7 @@ exports.sticky = sticky;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.colorSelect = exports.contain = exports.pragmatize = exports.compose = exports.variants = exports.valueControls = exports.buttonValue = void 0;
+exports.ColorSelect = exports.contain = exports.pragmatize = exports.Compose = exports.Variants = exports.valueControls = exports.buttonValue = void 0;
 
 var _comp = _interopRequireDefault(require("../pragmas/comp"));
 
@@ -15217,7 +15217,20 @@ const variantUIAction = (comp, index, attr) => {
   element.value = index;
 };
 
-const variants = attr => {
+const Variants = (key, value, icon, set, click, variants) => {
+  return new _comp.default(map_variants({
+    key: key,
+    value: value,
+    icon: icon,
+    set: set,
+    click: click,
+    variants: variants
+  }));
+};
+
+exports.Variants = Variants;
+
+const map_variants = attr => {
   // key, value, icon, set_cb, clickcb, variants
   return {
     key: attr.key,
@@ -15235,8 +15248,6 @@ const variants = attr => {
     variants: attr.variants
   };
 };
-
-exports.variants = variants;
 
 const text = (text, key = null, elements = []) => {
   if (key == null) key = text;
@@ -15279,8 +15290,8 @@ const buildInside = (a, b) => {
   return a;
 };
 
-const colorSelect = (key, colors, onset) => {
-  return new _comp.default(variants({
+const ColorSelect = (key, colors, onset) => {
+  return new _comp.default(map_variants({
     key: key,
     value: 1,
     icon: (key, index) => {
@@ -15294,7 +15305,7 @@ const colorSelect = (key, colors, onset) => {
 }; // base
 
 
-exports.colorSelect = colorSelect;
+exports.ColorSelect = ColorSelect;
 
 const map = (key, type, icon, elements = null) => {
   return {
@@ -15311,11 +15322,11 @@ const maps = (string, elements = null) => {
   return map(v[0], v[1], v[2], elements);
 };
 
-const compose = (key, icon, elements, type = "composer") => {
+const Compose = (key, icon, elements, type = "composer") => {
   return new _comp.default(map(key, type, icon, elements));
 };
 
-exports.compose = compose;
+exports.Compose = Compose;
 
 const pragmatize = comp => {
   comp.pragmatize();
@@ -15349,16 +15360,16 @@ Object.defineProperty(exports, "Comp", {
     return _comp.default;
   }
 });
-Object.defineProperty(exports, "colorSelect", {
+Object.defineProperty(exports, "ColorSelect", {
   enumerable: true,
   get: function () {
-    return _templates.colorSelect;
+    return _templates.ColorSelect;
   }
 });
-Object.defineProperty(exports, "compose", {
+Object.defineProperty(exports, "Compose", {
   enumerable: true,
   get: function () {
-    return _templates.compose;
+    return _templates.Compose;
   }
 });
 Object.defineProperty(exports, "pragmatize", {
@@ -15367,10 +15378,10 @@ Object.defineProperty(exports, "pragmatize", {
     return _templates.pragmatize;
   }
 });
-Object.defineProperty(exports, "variants", {
+Object.defineProperty(exports, "Variants", {
   enumerable: true,
   get: function () {
-    return _templates.variants;
+    return _templates.Variants;
   }
 });
 Object.defineProperty(exports, "contain", {

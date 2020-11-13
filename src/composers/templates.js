@@ -55,7 +55,10 @@ const variantUIAction = (comp, index, attr) => {
   element.value = index
 }
 
-const variants = (attr) =>{
+const Variants = (key, value, icon, set, click, variants) => {
+  return new Comp(map_variants({key:key,value:value,icon:icon,set:set,click:click,variants:variants}))
+}
+const map_variants = (attr) =>{
   // key, value, icon, set_cb, clickcb, variants
   return {
     key: attr.key,
@@ -115,8 +118,8 @@ const buildInside = (a, b) => {
   return a
 }
 
-const colorSelect = (key, colors, onset) => {
-  return new Comp(variants({
+const ColorSelect = (key, colors, onset) => {
+  return new Comp(map_variants({
       key: key,
       value: 1,
       icon: (key, index) => {
@@ -140,7 +143,7 @@ const maps = (string, elements=null) => {
   return map(v[0], v[1], v[2], elements)
 }
 
-const compose = (key, icon, elements, type="composer") => {
+const Compose = (key, icon, elements, type="composer") => {
   return new Comp(map(key, type, icon, elements))
 }
 
@@ -154,5 +157,5 @@ const contain = (a, b) => {
   return a
 }
 
-export { buttonValue, valueControls, variants, compose, pragmatize, contain, colorSelect }
+export { buttonValue, valueControls, Variants, Compose, pragmatize, contain, ColorSelect }
 
