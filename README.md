@@ -1,8 +1,10 @@
 <img width=320px src="docs/logos/pragmajs.png">
 
 <br>
+
 ## Dead simple, fast UI-composer in JavaScript 
-### [Check out Demo](https://robo-monk.github.io/pragma.js)
+
+### [Check out Demo](https://robo-monk.github.io/pragmajs)
 
 *pragma js is still heavily under development, come back next month for the finished project 
 
