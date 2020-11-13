@@ -62,8 +62,10 @@ describe("comp can correctly host another comp", ()=>{
 
     let settings = Compose("settingsWrapper", "⚙️").host(colorsComp)
     settings.pragmatize()
-    expectShape(settings, `| composer - settingsWrapper
-    | | composer - markercolors-composer
+
+    expectShape(settings, `
+        | composer - settingsWrapper
+    | | composer - settingsWrapper-host
     | | | choice - markercolors
     | | | | option - markercolors_button_0
     | | | | option - markercolors_button_1
@@ -78,17 +80,15 @@ describe("comp can correctly host another comp", ()=>{
     let test = daddy.host(element).host(element)
 
     let testfinal = Compose("dad of the daddy").host(test.host(element)).host(element)
+    
     expectShape(testfinal, `
     | composer - dad of the daddy
-    | | composer - daddy-composer
+    | | composer - dad of the daddy-host
     | | | composer - daddy
-    | | | | composer - kid-composer
+    | | | | composer - daddy-host
     | | | | | composer - kid
-    | | | | composer - kid-composer
     | | | | | composer - kid
-    | | | | composer - kid-composer
     | | | | | composer - kid
-    | | composer - kid-composer
     | | | composer - kid
     `)
   })
