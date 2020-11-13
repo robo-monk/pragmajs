@@ -58,6 +58,7 @@ const variantUIAction = (comp, index, attr) => {
 const Variants = (key, value, icon, set, click, variants) => {
   return new Comp(map_variants({key:key,value:value,icon:icon,set:set,click:click,variants:variants}))
 }
+
 const map_variants = (attr) =>{
   // key, value, icon, set_cb, clickcb, variants
   return {
@@ -118,18 +119,27 @@ const buildInside = (a, b) => {
   return a
 }
 
-const ColorSelect = (key, colors, onset) => {
+const AttrSelect = (key, attrs, onset, icon, value=0) => {
   return new Comp(map_variants({
       key: key,
-      value: 1,
+      value: value,
       icon: (key, index) => {
-        return `<div style='width:25px;height:25px;border-radius:25px;background:${key}'></div>`
+        let attr = icon(key, index)
+        return `<div style='width:25px;height:25px;border-radius:25px;${attr.css}'>${attr.html}</div>`
       },
       set: (v, comp, key) => {
-        onset(colors[v], comp, key)
+        onset(attrs[v], comp, key)
       },
-      variants: colors
+      variants: attrs
   }))
+}
+
+const ColorSelect = (key, colors, onset, value=0) => {
+  return AttrSelect(key, colors, onset, (key, index) => { return { css: `background:${key}`, html: "" } }, value) 
+}
+
+const FontSelect = (key, fonts, onset, value=0) => {
+  return AttrSelect(key, fonts, onset, (key, index) => { return { css: `font-family:${key}`, html: "Aa" } }, value) 
 }
 
 
@@ -161,5 +171,5 @@ const host = (a, b) => {
  return a.host(b)
 }
 
-export { buttonValue, valueControls, Variants, Compose, pragmatize, contain, ColorSelect, host }
+export { buttonValue, valueControls, Variants, Compose, pragmatize, contain, ColorSelect, FontSelect, host }
 

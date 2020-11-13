@@ -1,6 +1,6 @@
 //import Pragma, { valueControls, variants, composer, container } from '../src'
 //import Pragma, { valueControls, variants, composer, container } from '../src'
-import { Variants, Comp, ColorSelect, Compose, contain, host } from "../src"
+import { Variants, Comp, ColorSelect, FontSelect, Compose, contain, host } from "../src"
 
 let colors = [ "tomato", "navy", "lime"]
 let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"]
@@ -9,11 +9,13 @@ let colorsComp = ColorSelect("markercolors", colors, (v, comp, key) => {
   $(document.body).css({"background": colors[comp.find(key).value]}) 
 })
 
-let fontComp = Variants("readerfont", fonts, (v, comp, key) => {
-   $(document.body).css({"font-style": fonts[comp.find(key).value]}) 
+let fontComp = FontSelect("readerfont", fonts, (v, comp, key) => {
+   $(document.body).css({"font-family": fonts[comp.find(key).value]}) 
 })
 
-// compose({} <- pragma map)
+let popUpSettings = Compose("popupsettings", "⚙️").host(colorsComp)
+popUpSettings.pragmatize()
+// compose({} <- pragma maiiiipu)
 // compose(key, icon, elements, type <- pragma map)
 //
 //let colorsComp = new Comp(variants({
@@ -28,11 +30,11 @@ let fontComp = Variants("readerfont", fonts, (v, comp, key) => {
 
 
 
-let settings = Compose("settingsWrapper", "⚙️").host(colorsComp.host(fontComp))
-settings.pragmatize()
+// let settings = Compose("settingsWrapper").contain(popUpSettings)
+// settings.pragmatize()
 
 setInterval(() => {
-  console.log(settings.logs) 
+  console.log(popUpSettings.logs) 
 }, 1000)
 
 

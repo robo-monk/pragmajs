@@ -12,11 +12,13 @@ let colorsComp = (0, _src.ColorSelect)("markercolors", colors, (v, comp, key) =>
     "background": colors[comp.find(key).value]
   });
 });
-let fontComp = (0, _src.Variants)("readerfont", fonts, (v, comp, key) => {
+let fontComp = (0, _src.FontSelect)("readerfont", fonts, (v, comp, key) => {
   $(document.body).css({
-    "font-style": fonts[comp.find(key).value]
+    "font-family": fonts[comp.find(key).value]
   });
-}); // compose({} <- pragma map)
+});
+let popUpSettings = (0, _src.Compose)("popupsettings", "⚙️").host(colorsComp);
+popUpSettings.pragmatize(); // compose({} <- pragma maiiiipu)
 // compose(key, icon, elements, type <- pragma map)
 //
 //let colorsComp = new Comp(variants({
@@ -28,11 +30,11 @@ let fontComp = (0, _src.Variants)("readerfont", fonts, (v, comp, key) => {
 //},
 //variants: colors
 //}))
+// let settings = Compose("settingsWrapper").contain(popUpSettings)
+// settings.pragmatize()
 
-let settings = (0, _src.Compose)("settingsWrapper", "⚙️").host(colorsComp.host(fontComp));
-settings.pragmatize();
 setInterval(() => {
-  console.log(settings.logs);
+  console.log(popUpSettings.logs);
 }, 1000); //
 //let settings = composer("settingsWrapper", "⚙️", [])
 //let master = container(settings, composer(
@@ -15159,7 +15161,7 @@ exports.sticky = sticky;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.host = exports.ColorSelect = exports.contain = exports.pragmatize = exports.Compose = exports.Variants = exports.valueControls = exports.buttonValue = void 0;
+exports.host = exports.FontSelect = exports.ColorSelect = exports.contain = exports.pragmatize = exports.Compose = exports.Variants = exports.valueControls = exports.buttonValue = void 0;
 
 var _comp = _interopRequireDefault(require("../pragmas/comp"));
 
@@ -15297,22 +15299,43 @@ const buildInside = (a, b) => {
   return a;
 };
 
-const ColorSelect = (key, colors, onset) => {
+const AttrSelect = (key, attrs, onset, icon, value = 0) => {
   return new _comp.default(map_variants({
     key: key,
-    value: 1,
+    value: value,
     icon: (key, index) => {
-      return `<div style='width:25px;height:25px;border-radius:25px;background:${key}'></div>`;
+      let attr = icon(key, index);
+      return `<div style='width:25px;height:25px;border-radius:25px;${attr.css}'>${attr.html}</div>`;
     },
     set: (v, comp, key) => {
-      onset(colors[v], comp, key);
+      onset(attrs[v], comp, key);
     },
-    variants: colors
+    variants: attrs
   }));
+};
+
+const ColorSelect = (key, colors, onset, value = 0) => {
+  return AttrSelect(key, colors, onset, (key, index) => {
+    return {
+      css: `background:${key}`,
+      html: ""
+    };
+  }, value);
+};
+
+exports.ColorSelect = ColorSelect;
+
+const FontSelect = (key, fonts, onset, value = 0) => {
+  return AttrSelect(key, fonts, onset, (key, index) => {
+    return {
+      css: `font-family:${key}`,
+      html: "Aa"
+    };
+  }, value);
 }; // base
 
 
-exports.ColorSelect = ColorSelect;
+exports.FontSelect = FontSelect;
 
 const map = (key, type, icon, elements = null) => {
   return {
@@ -15377,6 +15400,12 @@ Object.defineProperty(exports, "ColorSelect", {
   enumerable: true,
   get: function () {
     return _templates.ColorSelect;
+  }
+});
+Object.defineProperty(exports, "FontSelect", {
+  enumerable: true,
+  get: function () {
+    return _templates.FontSelect;
   }
 });
 Object.defineProperty(exports, "Compose", {
@@ -15513,6 +15542,7 @@ class Comp extends _pragma.default {
 
   host(comp) {
     let icomp = (0, _templates.Compose)(comp.key + "-composer").contain(comp);
+    this.contain(icomp);
     this.tippy = (0, _tippy.default)(this.element[0], {
       content: icomp.element[0],
       allowHTML: true,

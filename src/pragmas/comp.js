@@ -76,12 +76,13 @@ export default class Comp extends Pragma {
 
   host(comp){
     let icomp = Compose(comp.key+"-composer").contain(comp)
+    this.contain(icomp)
     this.tippy = tippy(this.element[0], {
       content: icomp.element[0],
       allowHTML: true,
       interactive: true
     })
-    return this.contain(icomp)
+    return this
   }
 
   buildAndAdd(element){
