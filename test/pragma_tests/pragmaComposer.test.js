@@ -1,16 +1,11 @@
-import PragmaComposer from "../../src/"
-// wfy test
-
-test('Pragma composer is imported correctly', () => {
-  expect(new PragmaComposer({}))
-})
+import { Pragma, Comp } from "../../src"
 
 describe("Pragma composer builds correcly", () =>{
   let comp
   let obj
 
   function setup(map, obj={}) {
-    comp = new PragmaComposer(map) 
+    comp = new Comp(map) 
     obj = obj
   }
   
@@ -34,6 +29,7 @@ describe("Pragma composer builds correcly", () =>{
     })
     expect(comp.children.length).toBe(3)
   })
+
   test("can count correctly all children", () => {
     let subelement = {
       key: "subelement",
@@ -102,7 +98,7 @@ describe("is correctly connected to its children", () => {
   let element
 
   function setup(map, obj={}) {
-    comp = new PragmaComposer(map) 
+    comp = new Comp(map) 
     obj = obj
   }
   beforeEach(()=>{

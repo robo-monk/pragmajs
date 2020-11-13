@@ -1,8 +1,8 @@
 // a pragma is defined as a concept, which has an actual physical object "connected"
 // with it
-import $ from "jquery"
+import $, { expr } from "jquery"
 
-export default class Pragma {
+class Pragma {
   constructor(element=null, listeners={}){
     this.element = $(element)
     this.children = []
@@ -43,3 +43,5 @@ export default class Pragma {
     return this.left() + this.width()/2 - relative_width/2
   }
 }
+
+export { Pragma as default }

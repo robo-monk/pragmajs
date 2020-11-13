@@ -1,4 +1,4 @@
-import PragmaComposer from "./pragmaComposer"
+import Comp from "../pragmas/comp"
 import tippy from "tippy.js"
 
 const buttonAction = (key, value, icon, action) => {
@@ -105,8 +105,8 @@ const composer = (key, icon, elements) => {
 }
 
 const container = (a, b) => {
-  a = new PragmaComposer(a)
-  b = new PragmaComposer(b)
+  a = new Comp(a)
+  b = new Comp(b)
   let t = tippy(a.element[0], {
     content: b.element[0],
     allowHTML: false,
@@ -120,8 +120,8 @@ const build = (a) =>{
 }
 
 const buildInside = (a, b) => {
-  a = new PragmaComposer(a)
-  b = new PragmaComposer(b)
+  a = new Comp(a)
+  b = new Comp(b)
   let t = tippy(a.element[0], {
     content: b.element[0],
     allowHTML: false,

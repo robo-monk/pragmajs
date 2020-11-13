@@ -1,4 +1,4 @@
-import PragmaComposer, { valueControls, variants, composer, container } from '../src'
+import Pragma, { valueControls, variants, composer, container } from '../src'
 
 let colors = [ "tomato", "navy", "lime"]
 let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"]

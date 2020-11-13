@@ -1,9 +1,9 @@
 import $ from "jquery"
-import Pragma from "../pragmas/pragma"
-import { composer } from "./templates"
+import Pragma from "./pragma"
+import { composer } from "../composers/templates"
 import tippy from "tippy.js"
 
-export default class PragmaComposer extends Pragma {
+export default class Comp extends Pragma {
   constructor(map, parent = null){
     super()
     this.actualValue = null
@@ -57,7 +57,7 @@ export default class PragmaComposer extends Pragma {
   }
 
   buildAndAdd(element){
-      let child = new PragmaComposer(element, this)
+      let child = new Comp(element, this)
       this.add(child)
   }
   
