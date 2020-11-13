@@ -1,45 +1,65 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 "use strict";
 
-var _src = _interopRequireWildcard(require("../src"));
+var _src = require("../src");
 
-function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
-
+//import Pragma, { valueControls, variants, composer, container } from '../src'
+//import Pragma, { valueControls, variants, composer, container } from '../src'
 let colors = ["tomato", "navy", "lime"];
-let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"];
-let settings = (0, _src.composer)("settingsWrapper", "⚙️", []);
-let master = (0, _src.container)(settings, (0, _src.composer)("toolbar", "⚙️", [(0, _src.composer)("settings", "", [(0, _src.variants)({
-  key: "color",
-  value: 1,
-  icon: (key, index) => {
-    return `<div style='width:25px;height:25px;border-radius:25px;background:${key}'></div>`;
-  },
-  set: comp => {
-    $('.p-6').css({
-      "color": colors[comp.find("color").value]
-    });
-  },
-  variants: colors
-}), (0, _src.variants)({
-  key: "font",
-  value: 1,
-  icon: (key, index) => {
-    return `<div style='width:25px;height:25px;border-radius:25px;font-family:${key}'>Aa</div>`;
-  },
-  set: comp => {
-    $('.p-6').css({
-      "font-family": fonts[comp.find("font").value]
-    });
-  },
-  variants: fonts
-}), (0, _src.valueControls)("fovea", 5, 2)]), (0, _src.valueControls)("font-size", 18, 2, (value, comp) => {
-  $('.p-6').css({
-    "font-size": value
+let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"]; // compose({} <- pragma map)
+// compose(key, icon, elements, type <- pragma map)
+//
+//let colorsComp = new Comp(variants({
+//key: "color",
+//value: 1,
+//icon: (key, index) => { return `<div style='width:25px;height:25px;border-radius:25px;background:${key}'></div>` },
+//set: (v, comp) => {
+//$('.p-6').css({"color": colors[comp.find("color").value]})
+//},
+//variants: colors
+//}))
+
+let colorsComp = (0, _src.colorSelect)("markercolors", colors, (v, comp, key) => {
+  $(document.body).css({
+    "background": colors[comp.find(key).value]
   });
-  console.log(value);
-})])); // let master = new PragmaComposer(map)
+  console.log("touched colors");
+});
+let settings = (0, _src.compose)("settingsWrapper", "⚙️").contain(colorsComp);
+settings.pragmatize(); //
+//let settings = composer("settingsWrapper", "⚙️", [])
+//let master = container(settings, composer(
+//"toolbar",
+//"⚙️",
+//[
+//composer("settings", "", [
+//variants({
+//key: "color",
+//value: 1,
+//icon: (key, index) => { return `<div style='width:25px;height:25px;border-radius:25px;background:${key}'></div>` },
+//set: (comp) => {
+//$('.p-6').css({"color": colors[comp.find("color").value]})
+//},
+//variants: colors
+//}), 
+//variants({
+//key: "font",
+//value: 1,
+//icon: (key, index) => { return `<div style='width:25px;height:25px;border-radius:25px;font-family:${key}'>Aa</div>` },
+//set: (comp) => {
+//$('.p-6').css({"font-family": fonts[comp.find("font").value]})
+//},
+//variants: fonts
+//}), 
+//valueControls("fovea", 5, 2) 
+//]), 
+//valueControls("font-size", 18, 2, (value, comp)=>{
+//$('.p-6').css({"font-size": value})
+//console.log(value)
+//})
+//]
+//))
+// let master = new PragmaComposer(map)
 // let t = tippy(`#${settings.key}`, {
 //   content: master.element[0],
 //   allowHTML: true,
@@ -53,7 +73,7 @@ let master = (0, _src.container)(settings, (0, _src.composer)("toolbar", "⚙️
 // let lec = new Lector($("#article"), settings)
 // lec.read()
 
-},{"../src":7}],2:[function(require,module,exports){
+},{"../src":6}],2:[function(require,module,exports){
 (function (process){(function (){
 /**
  * @popperjs/core v2.5.4 - MIT License
@@ -15132,19 +15152,261 @@ exports.sticky = sticky;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports.colorSelect = exports.contain = exports.pragmatize = exports.compose = exports.variants = exports.valueControls = exports.buttonValue = void 0;
 
-var _jquery = _interopRequireDefault(require("jquery"));
-
-var _pragma = _interopRequireDefault(require("../pragmas/pragma"));
-
-var _templates = require("./templates");
+var _comp = _interopRequireDefault(require("../pragmas/comp"));
 
 var _tippy = _interopRequireDefault(require("tippy.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-class PragmaComposer extends _pragma.default {
+const buttonAction = (key, value, icon, action) => {
+  return {
+    key: key + "_button_" + value,
+    type: "button",
+    icon: icon,
+    value: value,
+    click: comp => {
+      action(comp);
+    }
+  };
+};
+
+const buttonValue = (key, value, step, icon) => {
+  return buttonAction(key, value, icon, comp => {
+    let key_element = comp.find(key);
+    key_element.value += step;
+  });
+}; // TODO add icons
+
+
+exports.buttonValue = buttonValue;
+
+const valueControls = (key, value, step, action = () => {}) => {
+  return {
+    key: key,
+    type: "value",
+    value: value,
+    set: (value, comp) => {
+      let key_monitor = comp.find(`${key}-monitor`);
+      key_monitor.element.html(value);
+      console.log(value);
+      action(value, comp);
+    },
+    elements: [buttonValue(key, value, -step, "-"), {
+      key: `${key}-monitor`,
+      type: "monitor"
+    }, buttonValue(key, value, step, "+")]
+  };
+};
+
+exports.valueControls = valueControls;
+
+const variantUIActivate = element => {
+  console.log(`activating ${element.key} to ${element.value}`);
+
+  for (let variant of element.children) {
+    variant.element.removeClass("pragma-active");
+  }
+
+  element.children[element.value].element.addClass("pragma-active");
+};
+
+const variantUIAction = (comp, index, attr) => {
+  let element = comp.find(attr.key);
+  element.value = index;
+};
+
+const variants = attr => {
+  // key, value, icon, set_cb, clickcb, variants
+  return {
+    key: attr.key,
+    value: attr.value,
+    type: "choice",
+    element_template: (key, index) => {
+      return buttonAction(attr.key, index, attr.icon(key, index), comp => {
+        variantUIAction(comp, index, attr);
+      });
+    },
+    set: (value, comp) => {
+      variantUIActivate(comp.find(attr.key));
+      attr.set(value, comp, attr.key);
+    },
+    variants: attr.variants
+  };
+};
+
+exports.variants = variants;
+
+const text = (text, key = null, elements = []) => {
+  if (key == null) key = text;
+  return {
+    key: key,
+    type: "text",
+    icon: text,
+    elements: elements
+  };
+};
+
+const composer = (key, icon, elements) => {
+  return {
+    key: key,
+    type: "composer",
+    icon: icon,
+    elements: elements
+  };
+};
+
+const container = (a, b) => {
+  a = new _comp.default(a);
+  b = new _comp.default(b);
+  let t = (0, _tippy.default)(a.element[0], {
+    content: b.element[0],
+    allowHTML: false,
+    interactive: true
+  });
+  return a;
+};
+
+const buildInside = (a, b) => {
+  a = new _comp.default(a);
+  b = new _comp.default(b);
+  let t = (0, _tippy.default)(a.element[0], {
+    content: b.element[0],
+    allowHTML: false,
+    interactive: true
+  });
+  return a;
+};
+
+const colorSelect = (key, colors, onset) => {
+  return new _comp.default(variants({
+    key: key,
+    value: 1,
+    icon: (key, index) => {
+      return `<div style='width:25px;height:25px;border-radius:25px;background:${key}'></div>`;
+    },
+    set: (v, comp, key) => {
+      onset(colors[v], comp, key);
+    },
+    variants: colors
+  }));
+}; // base
+
+
+exports.colorSelect = colorSelect;
+
+const map = (key, type, icon, elements = null) => {
+  return {
+    key: key,
+    type: type,
+    icon: icon,
+    elements: elements
+  };
+};
+
+const maps = (string, elements = null) => {
+  // "key type icon"
+  let v = string.split(" ");
+  return map(v[0], v[1], v[2], elements);
+};
+
+const compose = (key, icon, elements, type = "composer") => {
+  return new _comp.default(map(key, type, icon, elements));
+};
+
+exports.compose = compose;
+
+const pragmatize = comp => {
+  comp.pragmatize();
+  return comp;
+};
+
+exports.pragmatize = pragmatize;
+
+const contain = (a, b) => {
+  a.contain(b);
+  return a;
+};
+
+exports.contain = contain;
+
+},{"../pragmas/comp":7,"tippy.js":4}],6:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+Object.defineProperty(exports, "Pragma", {
+  enumerable: true,
+  get: function () {
+    return _pragma.default;
+  }
+});
+Object.defineProperty(exports, "Comp", {
+  enumerable: true,
+  get: function () {
+    return _comp.default;
+  }
+});
+Object.defineProperty(exports, "colorSelect", {
+  enumerable: true,
+  get: function () {
+    return _templates.colorSelect;
+  }
+});
+Object.defineProperty(exports, "compose", {
+  enumerable: true,
+  get: function () {
+    return _templates.compose;
+  }
+});
+Object.defineProperty(exports, "pragmatize", {
+  enumerable: true,
+  get: function () {
+    return _templates.pragmatize;
+  }
+});
+Object.defineProperty(exports, "variants", {
+  enumerable: true,
+  get: function () {
+    return _templates.variants;
+  }
+});
+Object.defineProperty(exports, "contain", {
+  enumerable: true,
+  get: function () {
+    return _templates.contain;
+  }
+});
+
+var _pragma = _interopRequireDefault(require("./pragmas/pragma.js"));
+
+var _comp = _interopRequireDefault(require("./pragmas/comp.js"));
+
+var _templates = require("./composers/templates.js");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+},{"./composers/templates.js":5,"./pragmas/comp.js":7,"./pragmas/pragma.js":8}],7:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _jquery = _interopRequireDefault(require("jquery"));
+
+var _pragma = _interopRequireDefault(require("./pragma"));
+
+var _templates = require("../composers/templates");
+
+var _tippy = _interopRequireDefault(require("tippy.js"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+class Comp extends _pragma.default {
   constructor(map, parent = null) {
     super();
     this.actualValue = null;
@@ -15183,6 +15445,26 @@ class PragmaComposer extends _pragma.default {
     }
   }
 
+  compose(force = false) {
+    //if (this.force || !this.element) 
+    this.element = (0, _jquery.default)(document.createElement("div"));
+    return this;
+  }
+
+  pragmatize() {
+    //this.compose()
+    console.log("pragmatize");
+    (0, _jquery.default)(document.body).append(this.element);
+    return this;
+  }
+
+  contain(comp) {
+    console.log('containing');
+    this.add(comp);
+    comp.parent = this;
+    return this;
+  }
+
   add(child) {
     super.add(child);
     this.element.append(child.element);
@@ -15199,7 +15481,7 @@ class PragmaComposer extends _pragma.default {
   }
 
   buildAndAdd(element) {
-    let child = new PragmaComposer(element, this);
+    let child = new Comp(element, this);
     this.add(child);
   }
 
@@ -15210,8 +15492,8 @@ class PragmaComposer extends _pragma.default {
   }
 
   build(map) {
-    this.element = (0, _jquery.default)(document.createElement("div"));
-    (0, _jquery.default)(document.body).append(this.element);
+    //this.pragmatize()
+    this.compose(true);
 
     if (map.icon) {
       this.icon = (0, _jquery.default)(document.createElement("div"));
@@ -15284,218 +15566,9 @@ class PragmaComposer extends _pragma.default {
 
 }
 
-exports.default = PragmaComposer;
+exports.default = Comp;
 
-},{"../pragmas/pragma":8,"./templates":6,"jquery":3,"tippy.js":4}],6:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.container = exports.composer = exports.variants = exports.valueControls = exports.buttonValue = void 0;
-
-var _pragmaComposer = _interopRequireDefault(require("./pragmaComposer"));
-
-var _tippy = _interopRequireDefault(require("tippy.js"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-const buttonAction = (key, value, icon, action) => {
-  return {
-    key: key + "_button_" + value,
-    type: "button",
-    icon: icon,
-    value: value,
-    click: comp => {
-      action(comp);
-    }
-  };
-};
-
-const buttonValue = (key, value, step, icon) => {
-  return buttonAction(key, value, icon, comp => {
-    let key_element = comp.find(key);
-    key_element.value += step;
-  });
-}; // TODO add icons
-
-
-exports.buttonValue = buttonValue;
-
-const valueControls = (key, value, step, action = () => {}) => {
-  return {
-    key: key,
-    type: "value",
-    value: value,
-    set: (value, comp) => {
-      let key_monitor = comp.find(`${key}-monitor`);
-      key_monitor.element.html(value);
-      console.log(value);
-      action(value, comp);
-    },
-    elements: [buttonValue(key, value, -step, "-"), {
-      key: `${key}-monitor`,
-      type: "monitor"
-    }, buttonValue(key, value, step, "+")]
-  };
-};
-
-exports.valueControls = valueControls;
-
-const variantUIActivate = element => {
-  console.log(`activating ${element.key} to ${element.value}`);
-
-  for (let variant of element.children) {
-    variant.element.removeClass("pragma-active");
-  }
-
-  element.children[element.value].element.addClass("pragma-active");
-};
-
-const variantUIAction = (comp, index, attr) => {
-  let element = comp.find(attr.key);
-  element.value = index;
-};
-
-const variants = attr => {
-  // attr = {
-  //   key: key,
-  //   value: value,
-  //   icon: icon_html,
-  //   set: set_cb,
-  //   click: click_cb,
-  //   variants: variants
-  // }
-  return {
-    key: attr.key,
-    value: attr.value,
-    type: "choice",
-    element_template: (key, index) => {
-      return buttonAction(attr.key, index, attr.icon(key, index), comp => {
-        console.log("logged");
-        variantUIAction(comp, index, attr);
-      });
-    },
-    set: (value, comp) => {
-      console.log(`setting ${attr.key} to ${value}`);
-      variantUIActivate(comp.find(attr.key));
-      attr.set(comp);
-    },
-    variants: attr.variants
-  };
-};
-
-exports.variants = variants;
-
-const text = (text, key = null, elements = []) => {
-  if (key == null) key = text;
-  console.log(text);
-  return {
-    key: key,
-    type: "text",
-    icon: text,
-    elements: elements
-  };
-};
-
-const composer = (key, icon, elements) => {
-  return {
-    key: key,
-    type: "composer",
-    icon: icon,
-    elements: elements // hover_element: text("dicks")
-
-  };
-};
-
-exports.composer = composer;
-
-const container = (a, b) => {
-  a = new _pragmaComposer.default(a);
-  b = new _pragmaComposer.default(b);
-  let t = (0, _tippy.default)(a.element[0], {
-    content: b.element[0],
-    allowHTML: false,
-    interactive: true
-  });
-  return a;
-};
-
-exports.container = container;
-
-const build = a => {
-  return;
-};
-
-const buildInside = (a, b) => {
-  a = new _pragmaComposer.default(a);
-  b = new _pragmaComposer.default(b);
-  let t = (0, _tippy.default)(a.element[0], {
-    content: b.element[0],
-    allowHTML: false,
-    interactive: true
-  });
-  return a;
-};
-
-},{"./pragmaComposer":5,"tippy.js":4}],7:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-Object.defineProperty(exports, "Pragma", {
-  enumerable: true,
-  get: function () {
-    return _pragma.default;
-  }
-});
-Object.defineProperty(exports, "default", {
-  enumerable: true,
-  get: function () {
-    return _pragmaComposer.default;
-  }
-});
-Object.defineProperty(exports, "buttonValue", {
-  enumerable: true,
-  get: function () {
-    return _templates.buttonValue;
-  }
-});
-Object.defineProperty(exports, "valueControls", {
-  enumerable: true,
-  get: function () {
-    return _templates.valueControls;
-  }
-});
-Object.defineProperty(exports, "variants", {
-  enumerable: true,
-  get: function () {
-    return _templates.variants;
-  }
-});
-Object.defineProperty(exports, "composer", {
-  enumerable: true,
-  get: function () {
-    return _templates.composer;
-  }
-});
-Object.defineProperty(exports, "container", {
-  enumerable: true,
-  get: function () {
-    return _templates.container;
-  }
-});
-
-var _pragma = _interopRequireDefault(require("./pragmas/pragma.js"));
-
-var _pragmaComposer = _interopRequireDefault(require("./composers/pragmaComposer.js"));
-
-var _templates = require("./composers/templates.js");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-},{"./composers/pragmaComposer.js":5,"./composers/templates.js":6,"./pragmas/pragma.js":8}],8:[function(require,module,exports){
+},{"../composers/templates":5,"./pragma":8,"jquery":3,"tippy.js":4}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15503,9 +15576,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _jquery = _interopRequireDefault(require("jquery"));
+var _jquery = _interopRequireWildcard(require("jquery"));
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 // a pragma is defined as a concept, which has an actual physical object "connected"
 // with it

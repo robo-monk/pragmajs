@@ -12,8 +12,6 @@ export default class Comp extends Pragma {
   }
 
   get log(){
-
-
   }
 
   set value(v){
@@ -41,6 +39,25 @@ export default class Comp extends Pragma {
     }
   }
 
+  compose(force=false){
+    //if (this.force || !this.element) 
+    this.element = $(document.createElement("div"))
+    return this
+  }
+
+  pragmatize(){
+    //this.compose()
+    console.log("pragmatize")
+    $(document.body).append(this.element)
+    return this
+  }
+
+  contain(comp){
+    console.log('containing')
+    this.add(comp)
+    comp.parent = this
+    return this
+  }
   add(child){
     super.add(child)
     this.element.append(child.element)
@@ -68,8 +85,8 @@ export default class Comp extends Pragma {
   }
 
   build(map){
-    this.element = $(document.createElement("div"))
-    $(document.body).append(this.element)
+    //this.pragmatize()
+    this.compose(true)
 
     if (map.icon){
       this.icon = $(document.createElement("div"))

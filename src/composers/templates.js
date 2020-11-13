@@ -20,7 +20,7 @@ const buttonValue = (key, value, step, icon) => {
 }
 
 // TODO add icons
-const valueControls =  (key, value, step, action=(()=>{})) => {
+const valueControls = (key, value, step, action=(()=>{})) => {
   return {
     key: key,
     type: "value",
@@ -56,28 +56,19 @@ const variantUIAction = (comp, index, attr) => {
 }
 
 const variants = (attr) =>{
-  // attr = {
-  //   key: key,
-  //   value: value,
-  //   icon: icon_html,
-  //   set: set_cb,
-  //   click: click_cb,
-  //   variants: variants
-  // }
+  // key, value, icon, set_cb, clickcb, variants
   return {
     key: attr.key,
     value: attr.value,
     type: "choice",
     element_template: (key, index) => {
       return buttonAction(attr.key, index, attr.icon(key, index), (comp) => {
-        console.log("logged")
         variantUIAction(comp, index, attr)
       })
     },
     set: (value, comp) => {
-      console.log(`setting ${attr.key} to ${value}`)
       variantUIActivate(comp.find(attr.key)) 
-      attr.set(comp)
+      attr.set(value, comp, attr.key)
     },
     variants: attr.variants
   }
@@ -85,7 +76,6 @@ const variants = (attr) =>{
 
 const text = (text, key=null, elements=[]) => {
   if (key==null) key = text
-  console.log(text)
   return {
     key: key,
     type: "text",
@@ -100,7 +90,6 @@ const composer = (key, icon, elements) => {
     type: "composer",
     icon: icon,
     elements: elements
-    // hover_element: text("dicks")
   }
 }
 
@@ -115,10 +104,6 @@ const container = (a, b) => {
   return a
 }
 
-const build = (a) =>{
-  return 
-}
-
 const buildInside = (a, b) => {
   a = new Comp(a)
   b = new Comp(b)
@@ -130,4 +115,44 @@ const buildInside = (a, b) => {
   return a
 }
 
-export { buttonValue, valueControls, variants, composer, container }
+const colorSelect = (key, colors, onset) => {
+  return new Comp(variants({
+      key: key,
+      value: 1,
+      icon: (key, index) => {
+        return `<div style='width:25px;height:25px;border-radius:25px;background:${key}'></div>`
+      },
+      set: (v, comp, key) => {
+        onset(colors[v], comp, key)
+      },
+      variants: colors
+  }))
+}
+
+
+// base
+const map = (key, type, icon, elements=null) => {
+  return {key:key,type:type,icon:icon,elements:elements}
+}
+const maps = (string, elements=null) => {
+  // "key type icon"
+  let v = string.split(" ")
+  return map(v[0], v[1], v[2], elements)
+}
+
+const compose = (key, icon, elements, type="composer") => {
+  return new Comp(map(key, type, icon, elements))
+}
+
+const pragmatize = (comp) => {
+  comp.pragmatize()
+  return comp
+}
+
+const contain = (a, b) => {
+  a.contain(b)
+  return a
+}
+
+export { buttonValue, valueControls, variants, compose, pragmatize, contain, colorSelect }
+

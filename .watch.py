@@ -38,7 +38,7 @@ while (True):
         for filename in ls_files(directory) + script:
             check = modified_since(filename, lastmodif)
             if check:
-                lastmodif = check
+                lastmodif = check+10
                 os.system("browserify docs/demo.js -t babelify --outfile docs/bundle.js")
                 print("File " + filename + " was modifed!")
     time.sleep(1)
