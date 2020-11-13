@@ -37,6 +37,6 @@ describe("Pragma Composer stress test", () =>{
 
     let performancems = new Date().getTime() - time
     console.log(performancems)
-    expect(performancems).toBeLessThan(40) // generate this in under 40 milliseconds
+    expect(performancems).toBeLessThan(100) // generate this in under 100 milliseconds
   })
 })
