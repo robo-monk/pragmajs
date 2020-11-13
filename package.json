@@ -1,19 +1,19 @@
 {
   "name": "pragmajs",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Simple way to make UI connect well with your code",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/robo-monk/lector.git"
+    "url": "git+https://github.com/robo-monk/pragmajs.git"
   },
   "main": "src/index.js",
   "keywords": [
-    "lector",
     "pragma",
     "pragmajs",
     "npm",
     "package",
+    "lector",
     "fready"
   ],
   "devDependencies": {
