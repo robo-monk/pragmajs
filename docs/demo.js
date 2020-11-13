@@ -13,7 +13,7 @@ let fontComp = FontSelect("readerfont", fonts, (v, comp, key) => {
    $(document.body).css({"font-family": fonts[comp.find(key).value]}) 
 })
 
-let popUpSettings = Compose("popupsettings", "⚙️").host(colorsComp)
+let popUpSettings = Compose("popupsettings", "⚙️").host(colorsComp).host(fontComp)
 popUpSettings.pragmatize()
 // compose({} <- pragma maiiiipu)
 // compose(key, icon, elements, type <- pragma map)
@@ -30,11 +30,11 @@ popUpSettings.pragmatize()
 
 
 
-// let settings = Compose("settingsWrapper").contain(popUpSettings)
-// settings.pragmatize()
+let settings = Compose("settingsWrapper").contain(popUpSettings)
+settings.pragmatize()
 
 setInterval(() => {
-  console.log(popUpSettings.logs) 
+  console.log(settings.logs) 
 }, 1000)
 
 

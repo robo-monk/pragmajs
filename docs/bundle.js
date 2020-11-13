@@ -17,7 +17,7 @@ let fontComp = (0, _src.FontSelect)("readerfont", fonts, (v, comp, key) => {
     "font-family": fonts[comp.find(key).value]
   });
 });
-let popUpSettings = (0, _src.Compose)("popupsettings", "⚙️").host(colorsComp);
+let popUpSettings = (0, _src.Compose)("popupsettings", "⚙️").host(colorsComp).host(fontComp);
 popUpSettings.pragmatize(); // compose({} <- pragma maiiiipu)
 // compose(key, icon, elements, type <- pragma map)
 //
@@ -30,11 +30,11 @@ popUpSettings.pragmatize(); // compose({} <- pragma maiiiipu)
 //},
 //variants: colors
 //}))
-// let settings = Compose("settingsWrapper").contain(popUpSettings)
-// settings.pragmatize()
 
+let settings = (0, _src.Compose)("settingsWrapper").contain(popUpSettings);
+settings.pragmatize();
 setInterval(() => {
-  console.log(popUpSettings.logs);
+  console.log(settings.logs);
 }, 1000); //
 //let settings = composer("settingsWrapper", "⚙️", [])
 //let master = container(settings, composer(
@@ -15541,8 +15541,18 @@ class Comp extends _pragma.default {
   }
 
   host(comp) {
-    let icomp = (0, _templates.Compose)(comp.key + "-composer").contain(comp);
-    this.contain(icomp);
+    const hostCompKey = this.key + "-host";
+    let icomp;
+
+    if (this.tippy) {
+      // if already hosts something
+      icomp = this.find(hostCompKey);
+      icomp.contain(comp);
+    } else {
+      icomp = (0, _templates.Compose)(hostCompKey).contain(comp);
+      this.contain(icomp);
+    }
+
     this.tippy = (0, _tippy.default)(this.element[0], {
       content: icomp.element[0],
       allowHTML: true,

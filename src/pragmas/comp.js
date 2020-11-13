@@ -75,8 +75,18 @@ export default class Comp extends Pragma {
   }
 
   host(comp){
-    let icomp = Compose(comp.key+"-composer").contain(comp)
-    this.contain(icomp)
+    const hostCompKey = this.key + "-host"
+    let icomp
+
+    if (this.tippy){
+      // if already hosts something
+      icomp = this.find(hostCompKey)
+      icomp.contain(comp)
+    }else{
+      icomp = Compose(hostCompKey).contain(comp)
+      this.contain(icomp)
+    }
+
     this.tippy = tippy(this.element[0], {
       content: icomp.element[0],
       allowHTML: true,
