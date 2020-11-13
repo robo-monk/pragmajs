@@ -157,5 +157,9 @@ const contain = (a, b) => {
   return a
 }
 
-export { buttonValue, valueControls, Variants, Compose, pragmatize, contain, ColorSelect }
+const host = (a, b) => {
+ return a.host(b)
+}
+
+export { buttonValue, valueControls, Variants, Compose, pragmatize, contain, ColorSelect, host }
 

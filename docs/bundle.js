@@ -12,7 +12,11 @@ let colorsComp = (0, _src.ColorSelect)("markercolors", colors, (v, comp, key) =>
     "background": colors[comp.find(key).value]
   });
 });
-let fontComp = (0, _src.Variants)("readerfont", fonts, (v, comp, key) => {}); // compose({} <- pragma map)
+let fontComp = (0, _src.Variants)("readerfont", fonts, (v, comp, key) => {
+  $(document.body).css({
+    "font-style": fonts[comp.find(key).value]
+  });
+}); // compose({} <- pragma map)
 // compose(key, icon, elements, type <- pragma map)
 //
 //let colorsComp = new Comp(variants({
@@ -25,7 +29,7 @@ let fontComp = (0, _src.Variants)("readerfont", fonts, (v, comp, key) => {}); //
 //variants: colors
 //}))
 
-let settings = (0, _src.Compose)("settingsWrapper", "⚙️").contain(colorsComp);
+let settings = (0, _src.Compose)("settingsWrapper", "⚙️").host(colorsComp.host(fontComp));
 settings.pragmatize();
 setInterval(() => {
   console.log(settings.logs);
@@ -15155,7 +15159,7 @@ exports.sticky = sticky;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.ColorSelect = exports.contain = exports.pragmatize = exports.Compose = exports.Variants = exports.valueControls = exports.buttonValue = void 0;
+exports.host = exports.ColorSelect = exports.contain = exports.pragmatize = exports.Compose = exports.Variants = exports.valueControls = exports.buttonValue = void 0;
 
 var _comp = _interopRequireDefault(require("../pragmas/comp"));
 
@@ -15345,6 +15349,12 @@ const contain = (a, b) => {
 
 exports.contain = contain;
 
+const host = (a, b) => {
+  return a.host(b);
+};
+
+exports.host = host;
+
 },{"../pragmas/comp":7,"tippy.js":4}],6:[function(require,module,exports){
 "use strict";
 
@@ -15391,6 +15401,12 @@ Object.defineProperty(exports, "contain", {
   enumerable: true,
   get: function () {
     return _templates.contain;
+  }
+});
+Object.defineProperty(exports, "host", {
+  enumerable: true,
+  get: function () {
+    return _templates.host;
   }
 });
 
@@ -15490,13 +15506,19 @@ class Comp extends _pragma.default {
   }
 
   buildInside(map) {
-    let comp = (0, _templates.composer)(map.key + "-composer", null, [map]);
+    let comp = (0, _templates.Compose)(map.key + "-composer", null, [map]);
     this.buildAndAdd(comp);
+    this.host(comp);
+  }
+
+  host(comp) {
+    let icomp = (0, _templates.Compose)(comp.key + "-composer").contain(comp);
     this.tippy = (0, _tippy.default)(this.element[0], {
-      content: comp.element[0],
+      content: icomp.element[0],
       allowHTML: true,
       interactive: true
     });
+    return this;
   }
 
   buildAndAdd(element) {

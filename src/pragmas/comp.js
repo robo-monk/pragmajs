@@ -1,6 +1,6 @@
 import $ from "jquery"
 import Pragma from "./pragma"
-import { composer } from "../composers/templates"
+import { Compose } from "../composers/templates"
 import tippy from "tippy.js"
 
 export default class Comp extends Pragma {
@@ -62,19 +62,26 @@ export default class Comp extends Pragma {
     comp.parent = this
     return this
   }
+
   add(child){
     super.add(child)
     this.element.append(child.element)
   }
 
   buildInside(map){
-    let comp = composer(map.key+"-composer", null, [map])
+    let comp = Compose(map.key+"-composer", null, [map])
     this.buildAndAdd(comp)
+    this.host(comp)
+  }
+
+  host(comp){
+    let icomp = Compose(comp.key+"-composer").contain(comp)
     this.tippy = tippy(this.element[0], {
-      content: comp.element[0],
+      content: icomp.element[0],
       allowHTML: true,
       interactive: true
     })
+    return this.contain(icomp)
   }
 
   buildAndAdd(element){
