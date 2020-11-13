@@ -4,8 +4,12 @@ const TerserPlugin = require("terser-webpack-plugin")
 module.exports = {
   entry: './src/index.js',
   output: {
-    filename: 'index.js',
     path: path.resolve(__dirname, 'dist'),
+    filename: 'index.js',
+    library: "@pragmajs",
+    libraryTarget: 'umd',
+    globalObject: 'this',
+    umdNamedDefine: true
   },
   optimization: {
     minimize:true,

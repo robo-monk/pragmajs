@@ -1,14 +1,17 @@
 {
   "name": "pragmajs",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Simple way to make UI connect well with your code",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/robo-monk/pragmajs.git"
   },
-  "main": "dist/index.js",
+
+  "main": "dist/pragmajs.js",
+  "types": "/dist/pragmajs.d.ts",
   "files": [ "dist/" ],
+
   "keywords": [
     "pragma",
     "pragmajs",
