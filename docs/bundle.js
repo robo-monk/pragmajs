@@ -5,8 +5,13 @@ var _src = require("../src");
 
 //import Pragma, { valueControls, variants, composer, container } from '../src'
 //import Pragma, { valueControls, variants, composer, container } from '../src'
+// TODO do code blocks like this, and print them to an element
+// import doBlock from "./demos/helloworld"
+// doBlock()
+// console.log(doBlock.toString())
 let colors = ["tomato", "navy", "lime"];
 let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"];
+let modes = ["HotBox", "Underneath", "Faded"];
 let colorsComp = (0, _src.ColorSelect)("markercolors", colors, (v, comp, key) => {
   $(document.body).css({
     "background": colors[comp.find(key).value]
@@ -17,8 +22,20 @@ let fontComp = (0, _src.FontSelect)("readerfont", fonts, (v, comp, key) => {
     "font-family": fonts[comp.find(key).value]
   });
 });
-let popUpSettings = (0, _src.Compose)("popupsettings", "⚙️").host(colorsComp).host(fontComp);
-popUpSettings.pragmatize(); // compose({} <- pragma maiiiipu)
+let modeComp = (0, _src.AttrSelect)("markermode", modes, (v, comp, key) => {
+  // on set
+  console.log(v);
+}, (key, index) => {
+  // icon
+  return {
+    type: "pointerModeOption",
+    html: "M"
+  };
+});
+let popUpSettings = (0, _src.Compose)("popupsettings", "⚙️").host(colorsComp).host(fontComp).host(modeComp); // popUpSettings.pragmatize()
+
+let settings = (0, _src.Compose)("settingsWrapper").contain(popUpSettings);
+settings.pragmatize(); // compose({} <- pragma maiiiipu)
 // compose(key, icon, elements, type <- pragma map)
 //
 //let colorsComp = new Comp(variants({
@@ -31,11 +48,10 @@ popUpSettings.pragmatize(); // compose({} <- pragma maiiiipu)
 //variants: colors
 //}))
 
-let settings = (0, _src.Compose)("settingsWrapper").contain(popUpSettings);
-settings.pragmatize();
 setInterval(() => {
   console.log(settings.logs);
-}, 1000); //
+}, 1000);
+console.log("yyet"); //
 //let settings = composer("settingsWrapper", "⚙️", [])
 //let master = container(settings, composer(
 //"toolbar",
@@ -15161,7 +15177,7 @@ exports.sticky = sticky;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.host = exports.FontSelect = exports.ColorSelect = exports.contain = exports.pragmatize = exports.Compose = exports.Variants = exports.valueControls = exports.buttonValue = void 0;
+exports.AttrSelect = exports.host = exports.FontSelect = exports.ColorSelect = exports.contain = exports.pragmatize = exports.Compose = exports.Variants = exports.valueControls = exports.buttonValue = void 0;
 
 var _comp = _interopRequireDefault(require("../pragmas/comp"));
 
@@ -15305,7 +15321,7 @@ const AttrSelect = (key, attrs, onset, icon, value = 0) => {
     value: value,
     icon: (key, index) => {
       let attr = icon(key, index);
-      return `<div style='width:25px;height:25px;border-radius:25px;${attr.css}'>${attr.html}</div>`;
+      return `<div class="${attr.type}" style='width:25px;height:25px;border-radius:25px;${attr.css}'>${attr.html}</div>`;
     },
     set: (v, comp, key) => {
       onset(attrs[v], comp, key);
@@ -15313,6 +15329,8 @@ const AttrSelect = (key, attrs, onset, icon, value = 0) => {
     variants: attrs
   }));
 };
+
+exports.AttrSelect = AttrSelect;
 
 const ColorSelect = (key, colors, onset, value = 0) => {
   return AttrSelect(key, colors, onset, (key, index) => {
@@ -15394,6 +15412,12 @@ Object.defineProperty(exports, "Comp", {
   enumerable: true,
   get: function () {
     return _comp.default;
+  }
+});
+Object.defineProperty(exports, "AttrSelect", {
+  enumerable: true,
+  get: function () {
+    return _templates.AttrSelect;
   }
 });
 Object.defineProperty(exports, "ColorSelect", {

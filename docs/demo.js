@@ -1,9 +1,18 @@
 //import Pragma, { valueControls, variants, composer, container } from '../src'
 //import Pragma, { valueControls, variants, composer, container } from '../src'
-import { Variants, Comp, ColorSelect, FontSelect, Compose, contain, host } from "../src"
+// TODO do code blocks like this, and print them to an element
+// import doBlock from "./demos/helloworld"
+
+// doBlock()
+// console.log(doBlock.toString())
+
+import { Variants, Comp, AttrSelect, ColorSelect, FontSelect, Compose, contain, host } from "../src"
+
+
 
 let colors = [ "tomato", "navy", "lime"]
 let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"]
+let modes = ["HotBox", "Underneath", "Faded"]
 
 let colorsComp = ColorSelect("markercolors", colors, (v, comp, key) => {
   $(document.body).css({"background": colors[comp.find(key).value]}) 
@@ -13,8 +22,21 @@ let fontComp = FontSelect("readerfont", fonts, (v, comp, key) => {
    $(document.body).css({"font-family": fonts[comp.find(key).value]}) 
 })
 
-let popUpSettings = Compose("popupsettings", "⚙️").host(colorsComp).host(fontComp)
-popUpSettings.pragmatize()
+let modeComp = AttrSelect("markermode", modes, (v, comp, key) => {
+  // on set
+  console.log(v)
+}, (key, index) => {
+  // icon
+  return { type: "pointerModeOption", html: "M" }
+})
+
+let popUpSettings = Compose("popupsettings", "⚙️").host(colorsComp).host(fontComp).host(modeComp)
+// popUpSettings.pragmatize()
+
+let settings = Compose("settingsWrapper").contain(popUpSettings)
+settings.pragmatize()
+
+
 // compose({} <- pragma maiiiipu)
 // compose(key, icon, elements, type <- pragma map)
 //
@@ -30,13 +52,11 @@ popUpSettings.pragmatize()
 
 
 
-let settings = Compose("settingsWrapper").contain(popUpSettings)
-settings.pragmatize()
-
 setInterval(() => {
   console.log(settings.logs) 
 }, 1000)
 
+console.log("yyet")
 
 //
 //let settings = composer("settingsWrapper", "⚙️", [])
