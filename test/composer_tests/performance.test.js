@@ -1,89 +1,42 @@
-describe.skip("Pragma Composer stress test", () =>{
-  let comp
-  let obj
-  let element = {
-    key: "element"
-  }
+import { Variants, Comp, ColorSelect, Compose, contain } from "../../src"
+describe("Pragma Composer stress test", () =>{
+  test("stress test", () => {
+    let time = new Date().getTime()
+    let colors = [
+      "red", "orange", "blue", "brown", "violet", "green",
+      "yellow", "rose", "dk", "shit", "i", "ran", "out", "of",
+      "shit", "to", "write"
+    ]
 
-  function setup(map, obj={}) {
-    comp = new PragmaComposer(map) 
-    obj = obj
-  }
-  
-  test("can exist with no elements", () => {
-    setup({})
-    expect(comp.children.length).toBe(0)
-  })
+    let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"]
 
-  test("can generate from simple map", () => {
-    let element = {
-      key: "sample",
-      type: "choice",
-      value: 1
-    }
-    setup({
-      key: "value",
-      type: "value",
-      elements: [
-        element, element, element
-      ]
+    let colorsComp = Compose("colors").contain(ColorSelect("markercolors", colors, (v, comp, key) => {
+      $(document.body).css({"background": colors[comp.find(key).value]}) 
+    }))
+
+    let fontComp = Variants("readerfont", fonts, (v, comp, key) => {
+       
     })
-    expect(comp.children.length).toBe(3)
-  })
-  test("can count correctly all children", () => {
-    let subelement = {
-      key: "subelement",
-      type: "subelement",
-    }
-    let element = {
-      key: "element",
-      type: "choice",
-      elements: [
-       subelement 
-      ],
-      value: 1
-    }
-    setup({
-      key: "master",
-      type: "value",
-      elements: [
-        element, element, element
-      ]
-    })
-    expect(comp.children.length).toBe(3)
-    expect(comp.allChildren.length).toBe(6)
-    //console.log(comp.shape)
-  })
-  test("can generate from more complex map", () => {
-    let subsubelement = {
-      key: "oof2",
-      type: "value2"
-    }
-    let subelement = {
-      key: "oof",
-      type: "value",
-      elements: [
-        subsubelement, subsubelement, subsubelement 
-      ]
-    }
-    let element = {
-      key: "sample",
-      type: "choice",
-      elements: [
-       subelement, subelement, subelement
-      ],
-      value: 1
-    }
-    setup({
-      key: "value",
-      type: "value",
-      elements: [
-        element, element, element
-      ]
-    })
-    expect(comp.children.length).toBe(3)
-    //console.log(comp.shape)
-    console.log(comp.allChildren.length)
-    expect(comp.allChildren.length).toBe(comp.shape.split("\n").length-2)
+
+    // compose({} <- pragma map)
+    // compose(key, icon, elements, type <- pragma map)
+    //
+    //let colorsComp = new Comp(variants({
+                //key: "color",
+                //value: 1,
+                //icon: (key, index) => { return `<div style='width:25px;height:25px;border-radius:25px;background:${key}'></div>` },
+                //set: (v, comp) => {
+                  //$('.p-6').css({"color": colors[comp.find("color").value]})
+                //},
+                //variants: colors
+            //}))
+
+    colorsComp.contain(fontComp).contain(fontComp).contain(fontComp)
+    let settings = Compose("settingsWrapper", "⚙️").contain(colorsComp).contain(fontComp).contain(colorsComp)
+    settings.pragmatize()
+
+    let performancems = new Date().getTime() - time
+    console.log(performancems)
+    expect(performancems).toBeLessThan(40) // generate this in under 40 milliseconds
   })
 })

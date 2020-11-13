@@ -31,6 +31,10 @@ let fontComp = Variants("readerfont", fonts, (v, comp, key) => {
 let settings = Compose("settingsWrapper", "⚙️").contain(colorsComp)
 settings.pragmatize()
 
+setInterval(()=>{
+  console.log(settings.logs) 
+}, 1000)
+
 //
 //let settings = composer("settingsWrapper", "⚙️", [])
 //let master = container(settings, composer(

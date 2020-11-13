@@ -9,9 +9,15 @@ export default class Comp extends Pragma {
     this.actualValue = null
     this.parent = parent
     this.build(map)
+    this.log_txt = ""
   }
 
-  get log(){
+  log(n){
+    this.log_txt = this.log_txt.concat(" | " + n)
+  }
+
+  get logs(){
+    return this.log_txt
   }
 
   set value(v){
@@ -47,13 +53,11 @@ export default class Comp extends Pragma {
 
   pragmatize(){
     //this.compose()
-    console.log("pragmatize")
     $(document.body).append(this.element)
     return this
   }
 
   contain(comp){
-    console.log('containing')
     this.add(comp)
     comp.parent = this
     return this
@@ -97,7 +101,7 @@ export default class Comp extends Pragma {
     if (map.elements) this.buildArray(map.elements)
     if (map.hover_element) this.buildInside(map.hover_element)
     if (map.value) this.value = map.value
-    if (map.set) this.onset = map.set
+    if (map.set) this.onset = (v, comp) => { this.master.log(`${map.key} -> ${v}`); map.set(v, comp) }
 
     if (map.key){
       this.key = map.key
@@ -119,7 +123,6 @@ export default class Comp extends Pragma {
 
     if (map.element_template && map.variants){
       map.variants.forEach((variant, index) => {
-        console.log(variant)
         let templ = map.element_template(variant, index)
         templ.type = "option"
         this.buildAndAdd(templ)
