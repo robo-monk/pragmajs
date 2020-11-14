@@ -5,7 +5,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/robo-monk/pragmajs.git"
+    "url": "git://github.com/robo-monk/pragmajs.git"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/" 
