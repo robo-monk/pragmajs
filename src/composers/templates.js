@@ -171,5 +171,10 @@ const host = (a, b) => {
  return a.host(b)
 }
 
+const hideable = (a, delay) => {
+
+}
+
+
 export { buttonValue, valueControls, Variants, Compose, pragmatize, contain, ColorSelect, FontSelect, host, AttrSelect }
 

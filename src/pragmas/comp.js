@@ -10,21 +10,42 @@ export default class Comp extends Pragma {
     this.parent = parent
     this.build(map)
     this.log_txt = ""
+
+    this.addToChain((
+    (v, master, comp=this) => { 
+      if (this.master) {
+        master.doChain(v, master, comp) // let master know something changed
+        master.log(`${comp.key} -> ${v}`)
+      }
+    }))
   }
 
   log(n){
     this.log_txt = this.log_txt.concat(" | " + n)
+    console.log(this.log_txt)
   }
 
+  doChain(v, master){
+    if (!this.actionChain) return null
+    for (let cb of this.actionChain){
+      cb(v, master, this)
+    }
+  }
+
+  addToChain(cb){
+    if (!this.actionChain) this.actionChain = []
+    this.actionChain.push(cb)
+  }
+
+    
   get logs(){
     return this.log_txt
   }
 
   set value(v){
     this.actualValue = v 
-    if (this.onset){
-      this.onset(v, this.master)
-    }
+    this.doChain(v, this.master) 
+    // console.log('did the chain')
   }
   get value(){
     return this.actualValue
@@ -45,11 +66,7 @@ export default class Comp extends Pragma {
     }
   }
 
-  compose(force=false){
-    //if (this.force || !this.element) 
-    this.element = $(document.createElement("div"))
-    return this
-  }
+  // actions kinda 
 
   pragmatize(){
     //this.compose()
@@ -57,9 +74,13 @@ export default class Comp extends Pragma {
     return this
   }
 
-  contain(comp){
-    this.add(comp)
-    comp.parent = this
+  chain(comp){ 
+    this.actionChain = this.actionChain.concat(comp.actionChain) 
+    return this
+  }
+  compose(force=false){
+    //if (this.force || !this.element) 
+    this.element = $(document.createElement("div"))
     return this
   }
 
@@ -72,6 +93,12 @@ export default class Comp extends Pragma {
     let comp = Compose(map.key+"-composer", null, [map])
     this.buildAndAdd(comp)
     this.host(comp)
+  }
+
+  contain(comp){
+    this.add(comp)
+    comp.parent = this
+    return this
   }
 
   host(comp){
@@ -119,7 +146,12 @@ export default class Comp extends Pragma {
     if (map.elements) this.buildArray(map.elements)
     if (map.hover_element) this.buildInside(map.hover_element)
     if (map.value) this.value = map.value
-    if (map.set) this.onset = (v, comp) => { this.master.log(`${map.key} -> ${v}`); map.set(v, comp) }
+    if (map.set) this.addToChain((v, comp) => map.set(v, comp))
+    // if (map.set) this.onset = (v, comp) => { 
+
+    //   this.master.log(`${map.key} -> ${v}`); 
+    //   map.set(v, comp) 
+    // }
 
     if (map.key){
       this.key = map.key
@@ -158,6 +190,13 @@ export default class Comp extends Pragma {
     return childs
   }
 
+  get depthKey(){
+    if (this.parent) {
+      return this.parent.depthKey+"<~<"+this.key
+    }
+    return this.key
+  }
+
   shapePrefix(prefix=""){
     let shape = `${prefix}| ${this.type} - ${this.key} \n`
     if (this.hasKids) {
@@ -168,8 +207,8 @@ export default class Comp extends Pragma {
     }
     return shape
   }
+
   get shape(){
     return this.shapePrefix()
   }
 }
-

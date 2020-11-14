@@ -9,6 +9,7 @@
 import { Variants, Comp, AttrSelect, ColorSelect, FontSelect, Compose, contain, host } from "../src"
 
 
+require("../src/third_party/idle")
 
 let colors = [ "tomato", "navy", "lime"]
 let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"]
@@ -36,7 +37,35 @@ let popUpSettings = Compose("popupsettings", "⚙️").host(colorsComp).host(fon
 let settings = Compose("settingsWrapper").contain(popUpSettings)
 settings.pragmatize()
 
+let fader = Compose("fader")
 
+// addproperty
+// fader.addToChain(((v, master, comp) => {
+//   console.log('fading out')
+//   console.table([v, master, comp])
+//   if (comp) comp.element.fadeOut() 
+// }))
+
+// to sync the toolbar
+// build a Syncer(post=get, get)
+
+// settings.chain(fader)
+
+$(document).idle({
+  onIdle: (() => {
+    console.log("idlem mofo")
+  }),
+  onActive: (() => {
+    console.log("active")
+  }),
+  idle: 5000
+})
+
+setTimeout(() => {
+  fader.value = 0
+}, 600)
+// fader.chain(settings)
+// settings.chain(fader)
 // compose({} <- pragma maiiiipu)
 // compose(key, icon, elements, type <- pragma map)
 //
@@ -52,12 +81,15 @@ settings.pragmatize()
 
 
 
-setInterval(() => {
-  console.log(settings.logs) 
-}, 1000)
+// setInterval(() => {
+//   console.log(settings.logs) 
+// }, 1000)
 
-console.log("yyet")
+console.time(".find()")
+console.log(settings.find("markermode"))
+console.timeEnd(".find()")
 
+console.log(colorsComp.depthKey)
 //
 //let settings = composer("settingsWrapper", "⚙️", [])
 //let master = container(settings, composer(

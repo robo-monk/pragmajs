@@ -6,21 +6,21 @@ class Pragma {
   constructor(element=null, listeners={}){
     this.element = $(element)
     this.children = []
+    this.childMap = {}
     this.setup_listeners(listeners)
   }
   add(spragma){
     this.children.push(spragma)
   }
-  get hasKids(){
-    return this.children.length > 0
-  }
+  get hasKids() { return this.children.length > 0 }
+
   setup_listeners(listeners){
     Object.entries(listeners).forEach(([on, cb]) => {
       this.element.on(on, () => cb())
     })
   }
-  click(){
-  }
+  click(){}
+
   text(){
     return this.element.text()
   }

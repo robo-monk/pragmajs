@@ -9,6 +9,8 @@ var _src = require("../src");
 // import doBlock from "./demos/helloworld"
 // doBlock()
 // console.log(doBlock.toString())
+require("../src/third_party/idle");
+
 let colors = ["tomato", "navy", "lime"];
 let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"];
 let modes = ["HotBox", "Underneath", "Faded"];
@@ -35,7 +37,31 @@ let modeComp = (0, _src.AttrSelect)("markermode", modes, (v, comp, key) => {
 let popUpSettings = (0, _src.Compose)("popupsettings", "⚙️").host(colorsComp).host(fontComp).host(modeComp); // popUpSettings.pragmatize()
 
 let settings = (0, _src.Compose)("settingsWrapper").contain(popUpSettings);
-settings.pragmatize(); // compose({} <- pragma maiiiipu)
+settings.pragmatize();
+let fader = (0, _src.Compose)("fader"); // addproperty
+// fader.addToChain(((v, master, comp) => {
+//   console.log('fading out')
+//   console.table([v, master, comp])
+//   if (comp) comp.element.fadeOut() 
+// }))
+// to sync the toolbar
+// build a Syncer(post=get, get)
+// settings.chain(fader)
+
+$(document).idle({
+  onIdle: () => {
+    console.log("idlem mofo");
+  },
+  onActive: () => {
+    console.log("active");
+  },
+  idle: 5000
+});
+setTimeout(() => {
+  fader.value = 0;
+}, 600); // fader.chain(settings)
+// settings.chain(fader)
+// compose({} <- pragma maiiiipu)
 // compose(key, icon, elements, type <- pragma map)
 //
 //let colorsComp = new Comp(variants({
@@ -47,11 +73,14 @@ settings.pragmatize(); // compose({} <- pragma maiiiipu)
 //},
 //variants: colors
 //}))
+// setInterval(() => {
+//   console.log(settings.logs) 
+// }, 1000)
 
-setInterval(() => {
-  console.log(settings.logs);
-}, 1000);
-console.log("yyet"); //
+console.time(".find()");
+console.log(settings.find("markermode"));
+console.timeEnd(".find()");
+console.log(colorsComp.depthKey); //
 //let settings = composer("settingsWrapper", "⚙️", [])
 //let master = container(settings, composer(
 //"toolbar",
@@ -98,7 +127,7 @@ console.log("yyet"); //
 // let lec = new Lector($("#article"), settings)
 // lec.read()
 
-},{"../src":6}],2:[function(require,module,exports){
+},{"../src":6,"../src/third_party/idle":9}],2:[function(require,module,exports){
 (function (process){(function (){
 /**
  * @popperjs/core v2.5.4 - MIT License
@@ -1968,7 +1997,7 @@ exports.preventOverflow = preventOverflow$1;
 
 
 }).call(this)}).call(this,require('_process'))
-},{"_process":9}],3:[function(require,module,exports){
+},{"_process":10}],3:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v3.5.1
  * https://jquery.com/
@@ -15171,7 +15200,7 @@ exports.sticky = sticky;
 
 
 }).call(this)}).call(this,require('_process'))
-},{"@popperjs/core":2,"_process":9}],5:[function(require,module,exports){
+},{"@popperjs/core":2,"_process":10}],5:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15396,6 +15425,8 @@ const host = (a, b) => {
 
 exports.host = host;
 
+const hideable = (a, delay) => {};
+
 },{"../pragmas/comp":7,"tippy.js":4}],6:[function(require,module,exports){
 "use strict";
 
@@ -15496,10 +15527,31 @@ class Comp extends _pragma.default {
     this.parent = parent;
     this.build(map);
     this.log_txt = "";
+    this.addToChain((v, master, comp = this) => {
+      if (this.master) {
+        master.doChain(v, master, comp); // let master know something changed
+
+        master.log(`${comp.key} -> ${v}`);
+      }
+    });
   }
 
   log(n) {
     this.log_txt = this.log_txt.concat(" | " + n);
+    console.log(this.log_txt);
+  }
+
+  doChain(v, master) {
+    if (!this.actionChain) return null;
+
+    for (let cb of this.actionChain) {
+      cb(v, master, this);
+    }
+  }
+
+  addToChain(cb) {
+    if (!this.actionChain) this.actionChain = [];
+    this.actionChain.push(cb);
   }
 
   get logs() {
@@ -15508,10 +15560,7 @@ class Comp extends _pragma.default {
 
   set value(v) {
     this.actualValue = v;
-
-    if (this.onset) {
-      this.onset(v, this.master);
-    }
+    this.doChain(v, this.master); // console.log('did the chain')
   }
 
   get value() {
@@ -15533,13 +15582,8 @@ class Comp extends _pragma.default {
         if (potential_child) return potential_child;
       }
     }
-  }
+  } // actions kinda 
 
-  compose(force = false) {
-    //if (this.force || !this.element) 
-    this.element = (0, _jquery.default)(document.createElement("div"));
-    return this;
-  }
 
   pragmatize() {
     //this.compose()
@@ -15547,9 +15591,14 @@ class Comp extends _pragma.default {
     return this;
   }
 
-  contain(comp) {
-    this.add(comp);
-    comp.parent = this;
+  chain(comp) {
+    this.actionChain = this.actionChain.concat(comp.actionChain);
+    return this;
+  }
+
+  compose(force = false) {
+    //if (this.force || !this.element) 
+    this.element = (0, _jquery.default)(document.createElement("div"));
     return this;
   }
 
@@ -15562,6 +15611,12 @@ class Comp extends _pragma.default {
     let comp = (0, _templates.Compose)(map.key + "-composer", null, [map]);
     this.buildAndAdd(comp);
     this.host(comp);
+  }
+
+  contain(comp) {
+    this.add(comp);
+    comp.parent = this;
+    return this;
   }
 
   host(comp) {
@@ -15609,10 +15664,10 @@ class Comp extends _pragma.default {
     if (map.elements) this.buildArray(map.elements);
     if (map.hover_element) this.buildInside(map.hover_element);
     if (map.value) this.value = map.value;
-    if (map.set) this.onset = (v, comp) => {
-      this.master.log(`${map.key} -> ${v}`);
-      map.set(v, comp);
-    };
+    if (map.set) this.addToChain((v, comp) => map.set(v, comp)); // if (map.set) this.onset = (v, comp) => { 
+    //   this.master.log(`${map.key} -> ${v}`); 
+    //   map.set(v, comp) 
+    // }
 
     if (map.key) {
       this.key = map.key;
@@ -15651,6 +15706,14 @@ class Comp extends _pragma.default {
     }
 
     return childs;
+  }
+
+  get depthKey() {
+    if (this.parent) {
+      return this.parent.depthKey + "<~<" + this.key;
+    }
+
+    return this.key;
   }
 
   shapePrefix(prefix = "") {
@@ -15695,6 +15758,7 @@ class Pragma {
   constructor(element = null, listeners = {}) {
     this.element = (0, _jquery.default)(element);
     this.children = [];
+    this.childMap = {};
     this.setup_listeners(listeners);
   }
 
@@ -15747,6 +15811,50 @@ class Pragma {
 exports.default = Pragma;
 
 },{"jquery":3}],9:[function(require,module,exports){
+"use strict";
+
+!function (n) {
+  "use strict";
+
+  n.fn.idle = function (e) {
+    var t,
+        i,
+        o = {
+      idle: 6e4,
+      events: "mousemove keydown mousedown touchstart",
+      onIdle: function () {},
+      onActive: function () {},
+      onHide: function () {},
+      onShow: function () {},
+      keepTracking: !0,
+      startAtIdle: !1,
+      recurIdleCall: !1
+    },
+        c = e.startAtIdle || !1,
+        d = !e.startAtIdle || !0,
+        l = n.extend({}, o, e),
+        u = null;
+    return n(this).on("idle:stop", {}, function () {
+      n(this).off(l.events), l.keepTracking = !1, t(u, l);
+    }), t = function (n, e) {
+      return c && (c = !1, e.onActive.call()), clearTimeout(n), e.keepTracking ? i(e) : void 0;
+    }, i = function (n) {
+      var e,
+          t = n.recurIdleCall ? setInterval : setTimeout;
+      return e = t(function () {
+        c = !0, n.onIdle.call();
+      }, n.idle);
+    }, this.each(function () {
+      u = i(l), n(this).on(l.events, function () {
+        u = t(u, l);
+      }), (l.onShow || l.onHide) && n(document).on("visibilitychange webkitvisibilitychange mozvisibilitychange msvisibilitychange", function () {
+        document.hidden || document.webkitHidden || document.mozHidden || document.msHidden ? d && (d = !1, l.onHide.call()) : d || (d = !0, l.onShow.call());
+      });
+    });
+  };
+}(jQuery);
+
+},{}],10:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
