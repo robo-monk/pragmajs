@@ -1,5 +1,4 @@
 import Comp from "../pragmas/comp"
-import tippy from "tippy.js"
 
 const buttonAction = (key, value, icon, action) => {
   return {
@@ -97,28 +96,6 @@ const composer = (key, icon, elements) => {
   }
 }
 
-const container = (a, b) => {
-  a = new Comp(a)
-  b = new Comp(b)
-  let t = tippy(a.element[0], {
-    content: b.element[0],
-    allowHTML: false,
-    interactive: true
-  })
-  return a
-}
-
-const buildInside = (a, b) => {
-  a = new Comp(a)
-  b = new Comp(b)
-  let t = tippy(a.element[0], {
-    content: b.element[0],
-    allowHTML: false,
-    interactive: true
-  })
-  return a
-}
-
 const AttrSelect = (key, attrs, onset, icon, value=0) => {
   return new Comp(map_variants({
       key: key,
@@ -144,8 +121,8 @@ const FontSelect = (key, fonts, onset, value=0) => {
 
 
 // base
-const map = (key, type, icon, elements=null) => {
-  return {key:key,type:type,icon:icon,elements:elements}
+const map = (key, type, icon, elements=null, value=null) => {
+  return {key:key,type:type,value:value,icon:icon,elements:elements}
 }
 const maps = (string, elements=null) => {
   // "key type icon"
@@ -154,6 +131,10 @@ const maps = (string, elements=null) => {
 }
 
 const Compose = (key, icon, elements, type="composer") => {
+  return new Comp(map(key, type, icon, elements))
+}
+
+const Value = (key, value, icon, elements, type="value") => {
   return new Comp(map(key, type, icon, elements))
 }
 
@@ -171,10 +152,53 @@ const host = (a, b) => {
  return a.host(b)
 }
 
-const hideable = (a, delay) => {
 
+const Bridge = (stream, keys=[], beam=((object) => console.table(object))) => {
+  function syncableObj(master){
+    let sync = {}
+    for (let key of keys){
+      let c = master.find(key)
+      if (c){
+        sync[key] = c.value
+      }else{
+        console.warn(`pragmajs > could not find ${key} in ${master.key}
+        when bridgin through ${bridgeComp.key}`)
+      }
+      
+    }
+    return sync
+  }
+
+  function transmit(object){
+    beam(object)
+  }
+
+  let bridgeComp = Compose(stream.key+"Bridge")
+  bridgeComp.addToChain(((v, master, trigger) => {
+    if (keys.includes(trigger.key)) transmit(syncableObj(master)) 
+  }))
+
+  return bridgeComp
 }
 
+// function userPrefs(master){
+//   return {
+//     color: master.find("markercolors").value,
+//     font: master.find("readerfont").value,
+//     mode: master.find("markermode").value
+//   }
+// }
+// function transmitToFready(master){
+//   console.table(userPrefs(master))
+// }
+// let fbridge = Compose("freadyBridge")
+// fbridge.addToChain(((v, master, comp) => {
+//   if (comp.descOf(popUpSettings)) transmitToFready(master) 
+// }))
 
-export { buttonValue, valueControls, Variants, Compose, pragmatize, contain, ColorSelect, FontSelect, host, AttrSelect }
+// settings.chain(fbridge)
+
+
+
+export { buttonValue, valueControls, Variants, Compose, Value, pragmatize, contain, ColorSelect, FontSelect, host, AttrSelect, Bridge }
 

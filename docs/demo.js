@@ -6,7 +6,7 @@
 // doBlock()
 // console.log(doBlock.toString())
 
-import { Variants, Comp, AttrSelect, ColorSelect, FontSelect, Compose, contain, host } from "../src"
+import { Bridge, Variants, Comp, AttrSelect, ColorSelect, FontSelect, Compose, contain, host } from "../src"
 require("../src/third_party/idle")
 
 let colors = [ "tomato", "navy", "lime"]
@@ -16,9 +16,11 @@ let modes = ["HotBox", "Underneath", "Faded"]
 let colorsComp = ColorSelect("markercolors", colors, (v, comp, key) => {
   $(document.body).css({"background": colors[comp.find(key).value]}) 
 })
+
 let fontComp = FontSelect("readerfont", fonts, (v, comp, key) => {
    $(document.body).css({"font-family": fonts[comp.find(key).value]}) 
 })
+
 let modeComp = AttrSelect("markermode", modes, (v, comp, key) => {
   // on set
   console.log(v)
@@ -33,12 +35,14 @@ let popUpSettings = Compose("popupsettings", "⚙️").host(colorsComp).host(fon
 let settings = Compose("settingsWrapper").contain(popUpSettings)
 settings.pragmatize()
 
-let fbridge = Compose("freadyBridge")
-fbridge.addToChain(((v, master, comp) => {
-  if (comp.descOf(popUpSettings)) console.log(comp.key)
-}))
+let syncedKeys = ["markercolors", "readerfont", "markermode"]
+let freadyBridge = Bridge(settings, syncedKeys, (object) => {
+  console.log('now i aint logging shit jack')
+  console.log('imma beam this however')
+  console.table(object)
+}) 
 
-settings.chain(fader)
+settings.chain(freadyBridge) // every time a value is changed, do the freadyBridge's actions as well
 
 // console.time()
 // console.timeEnd()

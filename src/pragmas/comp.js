@@ -12,30 +12,38 @@ export default class Comp extends Pragma {
     this.build(map)
     this.log_txt = ""
 
-    this.addToChain((
-    (v, master, comp=this) => { 
-      if (this.master) {
-        master.doChain(v, master, comp) // let master know something changed
-        master.log(`${comp.key} -> ${v}`)
-      }
-    }))
+    this.unchain()
   }
 
   log(n){
     this.log_txt = this.log_txt.concat(" | " + n)
-    console.log(this.log_txt)
+    // console.log(this.log_txt)
   }
 
-  doChain(v, master, comp){
+  doChain(v, master, trigger=this){
     if (!this.actionChain) return null
     for (let cb of this.actionChain){
-      cb(v, master, comp)
+      cb(v, master, trigger)
     }
+  }
+
+  unchain(){
+    this.actionChain = []
+    this.addToChain((
+    (v, master, trigger=this) => { 
+      if (this.master) {
+        master.doChain(v, master, trigger) // let master know something changed
+        master.log(`${trigger.key} -> ${v}`)
+      }
+    }))
+
+    return this
   }
 
   addToChain(cb){
     if (!this.actionChain) this.actionChain = []
     this.actionChain.push(cb)
+    return this
   }
 
     
@@ -87,6 +95,10 @@ export default class Comp extends Pragma {
   }
 
   add(child){
+    if (this.containsKey(child.key)) {
+      // console.warn(`> pragmajs \n, Could not add child \n - ${this.key} already has ${child.key} as
+      // a child. `)
+    }
     super.add(child)
     this.keys.push(child.key)
     this.element.append(child.element)
@@ -96,6 +108,10 @@ export default class Comp extends Pragma {
     let comp = Compose(map.key+"-composer", null, [map])
     this.buildAndAdd(comp)
     this.host(comp)
+  }
+
+  containsKey(key){
+    return this.find(key) ? true : false
   }
 
   contain(comp){
@@ -110,18 +126,25 @@ export default class Comp extends Pragma {
 
     if (this.tippy){
       // if already hosts something
+      // console.log("im alreayd hosting something")
       icomp = this.find(hostCompKey)
       icomp.contain(comp)
+      this.tippy.destroy() // destory old tippy instance to create new one
     }else{
+      // console.log("first time")
       icomp = Compose(hostCompKey).contain(comp)
       this.contain(icomp)
     }
 
+    icomp.element.addClass("tippy-pragma")
+
     this.tippy = tippy(this.element[0], {
       content: icomp.element[0],
       allowHTML: true,
-      interactive: true
+      interactive: true,
+      theme: null
     })
+
     return this
   }
 
@@ -181,6 +204,14 @@ export default class Comp extends Pragma {
         this.buildAndAdd(templ)
       })
     }
+  }
+
+  dismantle(){
+    this.children = []
+    return this
+  }
+  leaveUsKidsAlone(){
+    return this.dismantle()
   }
 
   get allChildren(){

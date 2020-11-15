@@ -38,9 +38,14 @@ let popUpSettings = (0, _src.Compose)("popupsettings", "⚙️").host(colorsComp
 
 let settings = (0, _src.Compose)("settingsWrapper").contain(popUpSettings);
 settings.pragmatize();
-let fader = (0, _src.Compose)("fader");
-fader.addToChain((v, master, comp) => {});
-settings.chain(fader); // console.time()
+let syncedKeys = ["markercolors", "readerfont", "markermode"];
+let freadyBridge = (0, _src.Bridge)(settings, syncedKeys, object => {
+  console.log('now i aint logging shit jack');
+  console.log('imma beam this however');
+  console.table(object);
+});
+settings.chain(freadyBridge); // every time a value is changed, do the freadyBridge's actions as well
+// console.time()
 // console.timeEnd()
 // class FreadyBridge {
 //   constructor(){
@@ -15228,11 +15233,9 @@ exports.sticky = sticky;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.AttrSelect = exports.host = exports.FontSelect = exports.ColorSelect = exports.contain = exports.pragmatize = exports.Compose = exports.Variants = exports.valueControls = exports.buttonValue = void 0;
+exports.Bridge = exports.AttrSelect = exports.host = exports.FontSelect = exports.ColorSelect = exports.contain = exports.pragmatize = exports.Value = exports.Compose = exports.Variants = exports.valueControls = exports.buttonValue = void 0;
 
 var _comp = _interopRequireDefault(require("../pragmas/comp"));
-
-var _tippy = _interopRequireDefault(require("tippy.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -15344,28 +15347,6 @@ const composer = (key, icon, elements) => {
   };
 };
 
-const container = (a, b) => {
-  a = new _comp.default(a);
-  b = new _comp.default(b);
-  let t = (0, _tippy.default)(a.element[0], {
-    content: b.element[0],
-    allowHTML: false,
-    interactive: true
-  });
-  return a;
-};
-
-const buildInside = (a, b) => {
-  a = new _comp.default(a);
-  b = new _comp.default(b);
-  let t = (0, _tippy.default)(a.element[0], {
-    content: b.element[0],
-    allowHTML: false,
-    interactive: true
-  });
-  return a;
-};
-
 const AttrSelect = (key, attrs, onset, icon, value = 0) => {
   return new _comp.default(map_variants({
     key: key,
@@ -15406,10 +15387,11 @@ const FontSelect = (key, fonts, onset, value = 0) => {
 
 exports.FontSelect = FontSelect;
 
-const map = (key, type, icon, elements = null) => {
+const map = (key, type, icon, elements = null, value = null) => {
   return {
     key: key,
     type: type,
+    value: value,
     icon: icon,
     elements: elements
   };
@@ -15426,6 +15408,12 @@ const Compose = (key, icon, elements, type = "composer") => {
 };
 
 exports.Compose = Compose;
+
+const Value = (key, value, icon, elements, type = "value") => {
+  return new _comp.default(map(key, type, icon, elements));
+};
+
+exports.Value = Value;
 
 const pragmatize = comp => {
   comp.pragmatize();
@@ -15447,9 +15435,46 @@ const host = (a, b) => {
 
 exports.host = host;
 
-const hideable = (a, delay) => {};
+const Bridge = (stream, keys = [], beam = object => console.table(object)) => {
+  function syncableObj(master) {
+    let sync = {};
 
-},{"../pragmas/comp":7,"tippy.js":4}],6:[function(require,module,exports){
+    for (let key of keys) {
+      sync[key] = master.find(key).value;
+    }
+
+    return sync;
+  }
+
+  function transmit(object) {
+    beam(object);
+  }
+
+  let bridgeComp = Compose(stream.key + "Bridge");
+  bridgeComp.addToChain((v, master, comp) => {
+    transmit(syncableObj(master));
+  });
+  return bridgeComp;
+}; // function userPrefs(master){
+//   return {
+//     color: master.find("markercolors").value,
+//     font: master.find("readerfont").value,
+//     mode: master.find("markermode").value
+//   }
+// }
+// function transmitToFready(master){
+//   console.table(userPrefs(master))
+// }
+// let fbridge = Compose("freadyBridge")
+// fbridge.addToChain(((v, master, comp) => {
+//   if (comp.descOf(popUpSettings)) transmitToFready(master) 
+// }))
+// settings.chain(fbridge)
+
+
+exports.Bridge = Bridge;
+
+},{"../pragmas/comp":7}],6:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15485,6 +15510,12 @@ Object.defineProperty(exports, "FontSelect", {
     return _templates.FontSelect;
   }
 });
+Object.defineProperty(exports, "Variants", {
+  enumerable: true,
+  get: function () {
+    return _templates.Variants;
+  }
+});
 Object.defineProperty(exports, "Compose", {
   enumerable: true,
   get: function () {
@@ -15497,12 +15528,6 @@ Object.defineProperty(exports, "pragmatize", {
     return _templates.pragmatize;
   }
 });
-Object.defineProperty(exports, "Variants", {
-  enumerable: true,
-  get: function () {
-    return _templates.Variants;
-  }
-});
 Object.defineProperty(exports, "contain", {
   enumerable: true,
   get: function () {
@@ -15513,6 +15538,12 @@ Object.defineProperty(exports, "host", {
   enumerable: true,
   get: function () {
     return _templates.host;
+  }
+});
+Object.defineProperty(exports, "Bridge", {
+  enumerable: true,
+  get: function () {
+    return _templates.Bridge;
   }
 });
 
@@ -15560,8 +15591,7 @@ class Comp extends _pragma.default {
   }
 
   log(n) {
-    this.log_txt = this.log_txt.concat(" | " + n);
-    console.log(this.log_txt);
+    this.log_txt = this.log_txt.concat(" | " + n); // console.log(this.log_txt)
   }
 
   doChain(v, master, comp) {
@@ -15649,17 +15679,22 @@ class Comp extends _pragma.default {
 
     if (this.tippy) {
       // if already hosts something
+      // console.log("im alreayd hosting something")
       icomp = this.find(hostCompKey);
       icomp.contain(comp);
+      this.tippy.destroy(); // destory old tippy instance to create new one
     } else {
+      // console.log("first time")
       icomp = (0, _templates.Compose)(hostCompKey).contain(comp);
       this.contain(icomp);
     }
 
+    icomp.element.addClass("tippy-pragma");
     this.tippy = (0, _tippy.default)(this.element[0], {
       content: icomp.element[0],
       allowHTML: true,
-      interactive: true
+      interactive: true,
+      theme: null
     });
     return this;
   }
@@ -15756,6 +15791,10 @@ class Comp extends _pragma.default {
 
   get shape() {
     return this.shapePrefix();
+  }
+
+  descOf(comp) {
+    return comp.find(this.key) ? true : false;
   }
 
 }
