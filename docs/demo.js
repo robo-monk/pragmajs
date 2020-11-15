@@ -16,11 +16,9 @@ let modes = ["HotBox", "Underneath", "Faded"]
 let colorsComp = ColorSelect("markercolors", colors, (v, comp, key) => {
   $(document.body).css({"background": colors[comp.find(key).value]}) 
 })
-
 let fontComp = FontSelect("readerfont", fonts, (v, comp, key) => {
    $(document.body).css({"font-family": fonts[comp.find(key).value]}) 
 })
-
 let modeComp = AttrSelect("markermode", modes, (v, comp, key) => {
   // on set
   console.log(v)
@@ -35,7 +33,24 @@ let popUpSettings = Compose("popupsettings", "⚙️").host(colorsComp).host(fon
 let settings = Compose("settingsWrapper").contain(popUpSettings)
 settings.pragmatize()
 
-let fader = Compose("fader")
+let fbridge = Compose("freadyBridge")
+fbridge.addToChain(((v, master, comp) => {
+  if (comp.descOf(popUpSettings)) console.log(comp.key)
+}))
+
+settings.chain(fader)
+
+// console.time()
+// console.timeEnd()
+
+// class FreadyBridge {
+//   constructor(){
+//   }
+//   connect(){
+//   }
+//   transmit(){
+//   }
+// }
 
 // addproperty
 // fader.addToChain(((v, master, comp) => {

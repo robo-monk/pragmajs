@@ -1,6 +1,6 @@
 import { Pragma, Comp } from "../../src"
 
-describe("Pragma composer builds correcly", () =>{
+describe("pragma comp builds correcly", () =>{
   let comp
   let obj
 

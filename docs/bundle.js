@@ -38,7 +38,19 @@ let popUpSettings = (0, _src.Compose)("popupsettings", "⚙️").host(colorsComp
 
 let settings = (0, _src.Compose)("settingsWrapper").contain(popUpSettings);
 settings.pragmatize();
-let fader = (0, _src.Compose)("fader"); // addproperty
+let fader = (0, _src.Compose)("fader");
+fader.addToChain((v, master, comp) => {});
+settings.chain(fader); // console.time()
+// console.timeEnd()
+// class FreadyBridge {
+//   constructor(){
+//   }
+//   connect(){
+//   }
+//   transmit(){
+//   }
+// }
+// addproperty
 // fader.addToChain(((v, master, comp) => {
 //   console.log('fading out')
 //   console.table([v, master, comp])
@@ -15533,6 +15545,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 class Comp extends _pragma.default {
   constructor(map, parent = null) {
     super();
+    this.keys = [];
     this.actualValue = null;
     this.parent = parent;
     this.build(map);
@@ -15551,11 +15564,11 @@ class Comp extends _pragma.default {
     console.log(this.log_txt);
   }
 
-  doChain(v, master) {
+  doChain(v, master, comp) {
     if (!this.actionChain) return null;
 
     for (let cb of this.actionChain) {
-      cb(v, master, this);
+      cb(v, master, comp);
     }
   }
 
@@ -15614,6 +15627,7 @@ class Comp extends _pragma.default {
 
   add(child) {
     super.add(child);
+    this.keys.push(child.key);
     this.element.append(child.element);
   }
 

@@ -6,6 +6,7 @@ import tippy from "tippy.js"
 export default class Comp extends Pragma {
   constructor(map, parent = null){
     super()
+    this.keys = []
     this.actualValue = null
     this.parent = parent
     this.build(map)
@@ -25,10 +26,10 @@ export default class Comp extends Pragma {
     console.log(this.log_txt)
   }
 
-  doChain(v, master){
+  doChain(v, master, comp){
     if (!this.actionChain) return null
     for (let cb of this.actionChain){
-      cb(v, master, this)
+      cb(v, master, comp)
     }
   }
 
@@ -63,6 +64,7 @@ export default class Comp extends Pragma {
         let potential_child = child.find(key)
         if (potential_child) return potential_child
       }
+
     }
   }
 
@@ -86,6 +88,7 @@ export default class Comp extends Pragma {
 
   add(child){
     super.add(child)
+    this.keys.push(child.key)
     this.element.append(child.element)
   }
 
@@ -210,5 +213,9 @@ export default class Comp extends Pragma {
 
   get shape(){
     return this.shapePrefix()
+  }
+
+  descOf(comp){
+    return comp.find(this.key) ? true : false 
   }
 }
