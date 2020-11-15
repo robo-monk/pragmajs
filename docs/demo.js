@@ -7,8 +7,6 @@
 // console.log(doBlock.toString())
 
 import { Variants, Comp, AttrSelect, ColorSelect, FontSelect, Compose, contain, host } from "../src"
-
-
 require("../src/third_party/idle")
 
 let colors = [ "tomato", "navy", "lime"]
@@ -51,19 +49,27 @@ let fader = Compose("fader")
 
 // settings.chain(fader)
 
+let idle = false
+function fadeAway(){
+  if (idle) {
+    settings.element.fadeTo(100, .5)
+    setTimeout(() => {
+      if (idle) settings.element.fadeOut()
+    }, 1500)
+  }
+}
 $(document).idle({
   onIdle: (() => {
-    console.log("idlem mofo")
+    idle = true
+    fadeAway()
   }),
   onActive: (() => {
-    console.log("active")
+    idle = false
+    settings.element.fadeTo(1, 50)
   }),
   idle: 5000
 })
 
-setTimeout(() => {
-  fader.value = 0
-}, 600)
 // fader.chain(settings)
 // settings.chain(fader)
 // compose({} <- pragma maiiiipu)
