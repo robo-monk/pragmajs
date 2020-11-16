@@ -13,7 +13,7 @@ export default class Comp extends Pragma {
     this.log_txt = ""
 
     // this.unchain()
-    // TODO add init chain or smth like that
+    // TODO add init chain or smth like thatjj
     this.addToChain((
     (v, master, trigger=this) => { 
       if (this.master) {
@@ -129,9 +129,9 @@ export default class Comp extends Pragma {
   }
 
   host(comp){
+    this.element.addClass("pragma-host")
     const hostCompKey = this.key + "-host"
     let icomp
-
     if (this.tippy){
       // if already hosts something
       // console.log("im alreayd hosting something")
@@ -143,16 +143,13 @@ export default class Comp extends Pragma {
       icomp = Compose(hostCompKey).contain(comp)
       this.contain(icomp)
     }
-
     icomp.element.addClass("tippy-pragma")
-
     this.tippy = tippy(this.element[0], {
       content: icomp.element[0],
       allowHTML: true,
       interactive: true,
       theme: null
     })
-
     return this
   }
 
@@ -198,6 +195,7 @@ export default class Comp extends Pragma {
     }
 
     if (map.click){
+      this.element.addClass(`pragma-clickable`)
       this.setup_listeners({
         "click": () => { 
           map.click(this.master) 

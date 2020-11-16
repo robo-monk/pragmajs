@@ -15280,7 +15280,10 @@ const Button = {
 
     });
   },
-  controls: (key, value, step, action = () => {}) => {
+  controls: (key, value, step, action = () => {}, icons = {
+    "+": "+",
+    "-": "-"
+  }) => {
     return new _comp.default({
       key: key,
       type: "long-button",
@@ -15291,11 +15294,11 @@ const Button = {
         console.log(value);
         action(value, comp);
       },
-      elements: [buttonValue(key, value, -step, "-"), {
+      elements: [buttonValue(key, value, -step, icons["-"]), {
         key: `${key}-monitor`,
         type: "monitor",
         icon: value
-      }, buttonValue(key, value, step, "+")]
+      }, buttonValue(key, value, step, icons["+"])]
     });
   }
 };
@@ -15589,7 +15592,7 @@ class Comp extends _pragma.default {
     this.parent = parent;
     this.build(map);
     this.log_txt = ""; // this.unchain()
-    // TODO add init chain or smth like that
+    // TODO add init chain or smth like thatjj
 
     this.addToChain((v, master, trigger = this) => {
       if (this.master) {
@@ -15705,6 +15708,7 @@ class Comp extends _pragma.default {
   }
 
   host(comp) {
+    this.element.addClass("pragma-host");
     const hostCompKey = this.key + "-host";
     let icomp;
 
@@ -15770,6 +15774,7 @@ class Comp extends _pragma.default {
     }
 
     if (map.click) {
+      this.element.addClass(`pragma-clickable`);
       this.setup_listeners({
         "click": () => {
           map.click(this.master);

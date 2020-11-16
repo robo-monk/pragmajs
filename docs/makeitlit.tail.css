@@ -21652,6 +21652,15 @@ h1, h2, h3, h4, h5, h6 {
   font-family: "Merriweather";
 }
 
+#settingsWrapper{
+  position: fixed;
+  bottom: 4vh;
+  left: 2vw;
+  z-index: 99;
+}
+
+/* pragma stuff  */
+
 .pragma-composer{
   display: flex;
   flex-direction: column;
@@ -21696,6 +21705,14 @@ h1, h2, h3, h4, h5, h6 {
 
 .pragma-active{
   opacity: 1;
+}
+
+.pragma-clickable{
+  cursor: pointer
+}
+
+.pragma-host{
+  cursor: pointer;
 }
 
 .pragma-button{

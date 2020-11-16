@@ -29,7 +29,7 @@ const Button = {
       click: action // value comp trigger
     })
   }),
-  controls: ((key, value, step, action=(()=>{})) => {
+  controls: ((key, value, step, action=(()=>{}), icons={ "+":"+", "-":"-"}) => {
     return new Comp({
       key: key,
       type: "long-button",
@@ -41,13 +41,13 @@ const Button = {
         action(value, comp)
       },
       elements: [
-        buttonValue(key, value, -step, "-"),
+        buttonValue(key, value, -step, icons["-"]),
         {
           key: `${key}-monitor`,
           type: "monitor",
           icon: value
         },
-        buttonValue(key, value, step, "+"),
+        buttonValue(key, value, step, icons["+"]),
       ]
     })
   })
