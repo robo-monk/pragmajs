@@ -21,10 +21,18 @@ const buttonValue = (key, value, step, icon) => {
 // TODO add icons
 
 const Button = {
+  action: ((key, icon, action) => {
+    return new Comp({
+      key: key,
+      icon: icon,
+      type: "button",
+      click: action // value comp trigger
+    })
+  }),
   controls: ((key, value, step, action=(()=>{})) => {
     return new Comp({
       key: key,
-      type: "value",
+      type: "long-button",
       value: value,
       set: (value, comp)=>{
         let key_monitor = comp.find(`${key}-monitor`)  

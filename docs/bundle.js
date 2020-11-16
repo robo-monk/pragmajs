@@ -38,7 +38,11 @@ let modeComp = _src.Select.attr("markermode", modes, (v, comp, key) => {
   };
 });
 
-let wpmComp = _src.Button.controls("wpm", 250, 10, (value, comp) => {}); // TODO host array
+let wpmComp = _src.Button.controls("wpm", 250, 10, (value, comp) => {});
+
+let linkComp = _src.Button.action("commiter", "C", () => {
+  alert("lazy");
+}).pragmatize(); // TODO host array
 
 
 let popUpSettings = (0, _src.Compose)("popupsettings", "⚙️").host(colorsComp).host(fontComp).host(modeComp).host(wpmComp); // popUpSettings.pragmatize()
@@ -15267,10 +15271,19 @@ const buttonValue = (key, value, step, icon) => {
 
 exports.buttonValue = buttonValue;
 const Button = {
+  action: (key, icon, action) => {
+    return new _comp.default({
+      key: key,
+      icon: icon,
+      type: "button",
+      click: action // value comp trigger
+
+    });
+  },
   controls: (key, value, step, action = () => {}) => {
     return new _comp.default({
       key: key,
-      type: "value",
+      type: "long-button",
       value: value,
       set: (value, comp) => {
         let key_monitor = comp.find(`${key}-monitor`);

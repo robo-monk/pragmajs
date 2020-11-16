@@ -31,6 +31,9 @@ let modeComp = Select.attr("markermode", modes, (v, comp, key) => {
 
 let wpmComp = Button.controls("wpm", 250, 10, (value, comp) => {
 })
+let linkComp = Button.action("commiter", "C", () => {
+  alert("lazy")
+}).pragmatize()
 
 // TODO host array
 let popUpSettings = Compose("popupsettings", "⚙️").host(colorsComp).host(fontComp).host(modeComp).host(wpmComp)
