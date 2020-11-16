@@ -45,9 +45,10 @@ let linkComp = _src.Button.action("commiter", "C", () => {
 }).pragmatize(); // TODO host array
 
 
-let popUpSettings = (0, _src.Compose)("popupsettings", "⚙️").host(colorsComp).host(fontComp).host(modeComp).host(wpmComp); // popUpSettings.pragmatize()
+let popUpSettings = (0, _src.Compose)("popupsettings", "⚙️").host(colorsComp).host(fontComp).host(modeComp); // let popUpSettings = Compose("popupsettings", "⚙️").contain(colorsComp).contain(fontComp).contain(modeComp)
+// popUpSettings.pragmatize()
 
-let settings = (0, _src.Compose)("settingsWrapper").contain(popUpSettings);
+let settings = (0, _src.Compose)("settingsWrapper").contain(popUpSettings).contain(wpmComp);
 settings.pragmatize();
 let paper = new _src.Comp({
   key: "paper",
@@ -60,46 +61,27 @@ let freadyBridge = (0, _src.Bridge)(settings, syncedKeys, (object, trigger) => {
 settings.chain(freadyBridge); // every time a value is changed, do the freadyBridge's actions as well
 // console.time()
 // console.timeEnd()
-// class FreadyBridge {
-//   constructor(){
-//   }
-//   connect(){
-//   }
-//   transmit(){
+// let idle = false
+// function fadeAway(){
+//   if (idle) {
+//     settings.element.fadeTo(100, .5)
+//     setTimeout(() => {
+//       if (idle) settings.element.fadeOut()
+//     }, 1500)
 //   }
 // }
-// addproperty
-// fader.addToChain(((v, master, comp) => {
-//   console.log('fading out')
-//   console.table([v, master, comp])
-//   if (comp) comp.element.fadeOut() 
-// }))
-// to sync the toolbar
-// build a Syncer(post=get, get)
-// settings.chain(fader)
-
-let idle = false;
-
-function fadeAway() {
-  if (idle) {
-    settings.element.fadeTo(100, .5);
-    setTimeout(() => {
-      if (idle) settings.element.fadeOut();
-    }, 1500);
-  }
-}
-
-$(document).idle({
-  onIdle: () => {
-    idle = true;
-    fadeAway();
-  },
-  onActive: () => {
-    idle = false;
-    settings.element.fadeTo(1, 50);
-  },
-  idle: 5000
-}); // fader.chain(settings)
+// $(document).idle({
+//   onIdle: (() => {
+//     idle = true
+//     fadeAway()
+//   }),
+//   onActive: (() => {
+//     idle = false
+//     settings.element.fadeTo(1, 50)
+//   }),
+//   idle: 5000
+// })
+// fader.chain(settings)
 // settings.chain(fader)
 // compose({} <- pragma maiiiipu)
 // compose(key, icon, elements, type <- pragma map)
@@ -15726,12 +15708,13 @@ class Comp extends _pragma.default {
       this.contain(icomp);
     }
 
-    icomp.element.addClass("tippy-pragma");
+    icomp.element.addClass("pragma-tippy");
     this.tippy = (0, _tippy.default)(this.element[0], {
       content: icomp.element[0],
       allowHTML: true,
       interactive: true,
-      theme: null
+      theme: "pragma",
+      arrow: false
     });
     return this;
   }

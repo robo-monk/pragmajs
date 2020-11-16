@@ -36,10 +36,11 @@ let linkComp = Button.action("commiter", "C", () => {
 }).pragmatize()
 
 // TODO host array
-let popUpSettings = Compose("popupsettings", "⚙️").host(colorsComp).host(fontComp).host(modeComp).host(wpmComp)
+let popUpSettings = Compose("popupsettings", "⚙️").host(colorsComp).host(fontComp).host(modeComp)
+// let popUpSettings = Compose("popupsettings", "⚙️").contain(colorsComp).contain(fontComp).contain(modeComp)
 // popUpSettings.pragmatize()
 
-let settings = Compose("settingsWrapper").contain(popUpSettings)
+let settings = Compose("settingsWrapper").contain(popUpSettings).contain(wpmComp)
 settings.pragmatize()
 
 let paper = new Comp({
@@ -58,47 +59,26 @@ settings.chain(freadyBridge) // every time a value is changed, do the freadyBrid
 // console.time()
 // console.timeEnd()
 
-// class FreadyBridge {
-//   constructor(){
-//   }
-//   connect(){
-//   }
-//   transmit(){
+// let idle = false
+// function fadeAway(){
+//   if (idle) {
+//     settings.element.fadeTo(100, .5)
+//     setTimeout(() => {
+//       if (idle) settings.element.fadeOut()
+//     }, 1500)
 //   }
 // }
-
-// addproperty
-// fader.addToChain(((v, master, comp) => {
-//   console.log('fading out')
-//   console.table([v, master, comp])
-//   if (comp) comp.element.fadeOut() 
-// }))
-
-// to sync the toolbar
-// build a Syncer(post=get, get)
-
-// settings.chain(fader)
-
-let idle = false
-function fadeAway(){
-  if (idle) {
-    settings.element.fadeTo(100, .5)
-    setTimeout(() => {
-      if (idle) settings.element.fadeOut()
-    }, 1500)
-  }
-}
-$(document).idle({
-  onIdle: (() => {
-    idle = true
-    fadeAway()
-  }),
-  onActive: (() => {
-    idle = false
-    settings.element.fadeTo(1, 50)
-  }),
-  idle: 5000
-})
+// $(document).idle({
+//   onIdle: (() => {
+//     idle = true
+//     fadeAway()
+//   }),
+//   onActive: (() => {
+//     idle = false
+//     settings.element.fadeTo(1, 50)
+//   }),
+//   idle: 5000
+// })
 
 // fader.chain(settings)
 // settings.chain(fader)

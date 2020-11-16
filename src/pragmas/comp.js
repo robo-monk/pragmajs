@@ -142,12 +142,13 @@ export default class Comp extends Pragma {
       icomp = Compose(hostCompKey).contain(comp)
       this.contain(icomp)
     }
-    icomp.element.addClass("tippy-pragma")
+    icomp.element.addClass("pragma-tippy")
     this.tippy = tippy(this.element[0], {
       content: icomp.element[0],
       allowHTML: true,
       interactive: true,
-      theme: null
+      theme: "pragma",
+      arrow: false
     })
     return this
   }
