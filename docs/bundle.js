@@ -49,10 +49,13 @@ let popUpSettings = (0, _src.Compose)("popupsettings", "⚙️").host(colorsComp
 
 let settings = (0, _src.Compose)("settingsWrapper").contain(popUpSettings);
 settings.pragmatize();
-let syncedKeys = ["markercolors", "readerfont", "markermode"];
-let freadyBridge = (0, _src.Bridge)(settings, syncedKeys, object => {
-  console.log('imma beam this however');
-  console.table(object);
+let paper = new _src.Comp({
+  key: "paper",
+  element: $("#paper")
+});
+let syncedKeys = ["markercolors", "readerfont", "markermode", "wpm"];
+let freadyBridge = (0, _src.Bridge)(settings, syncedKeys, (object, trigger) => {
+  paper.element.append(`<li>${trigger.key} -> ${trigger.value}</li>`);
 });
 settings.chain(freadyBridge); // every time a value is changed, do the freadyBridge's actions as well
 // console.time()
@@ -15454,7 +15457,7 @@ const host = (a, b) => {
 
 exports.host = host;
 
-const Bridge = (stream, keys = [], beam = object => console.table(object)) => {
+const Bridge = (stream, keys = [], beam = (object, trigger) => console.table(object)) => {
   function syncableObj(master) {
     let sync = {};
 
@@ -15472,13 +15475,13 @@ const Bridge = (stream, keys = [], beam = object => console.table(object)) => {
     return sync;
   }
 
-  function transmit(object) {
-    beam(object);
+  function transmit(object, trigger) {
+    beam(object, trigger);
   }
 
   let bridgeComp = Compose(stream.key + "Bridge");
   bridgeComp.addToChain((v, master, trigger) => {
-    if (keys.includes(trigger.key)) transmit(syncableObj(master));
+    if (keys.includes(trigger.key)) transmit(syncableObj(master), trigger);
   });
   return bridgeComp;
 };
@@ -15708,7 +15711,6 @@ class Comp extends _pragma.default {
   }
 
   host(comp) {
-    this.element.addClass("pragma-host");
     const hostCompKey = this.key + "-host";
     let icomp;
 
@@ -15781,6 +15783,25 @@ class Comp extends _pragma.default {
         }
       });
     }
+
+    if (map.mouseover) {
+      this.element.addClass("pragma-hoverable");
+      this.setup_listeners({
+        "onmouseover": () => {
+          map.mouseover(this.master);
+        }
+      });
+    }
+
+    if (map.mouseout) {
+      this.setup_listeners({
+        "mouseout": () => {
+          map.mouseover(this.master);
+        }
+      });
+    }
+
+    if (map.element) this.element = (0, _jquery.default)(map.element);
 
     if (map.element_template && map.variants) {
       map.variants.forEach((variant, index) => {

@@ -165,7 +165,7 @@ const host = (a, b) => {
 }
 
 
-const Bridge = (stream, keys=[], beam=((object) => console.table(object))) => {
+const Bridge = (stream, keys=[], beam=((object, trigger) => console.table(object))) => {
   function syncableObj(master){
     let sync = {}
     for (let key of keys){
@@ -181,13 +181,13 @@ const Bridge = (stream, keys=[], beam=((object) => console.table(object))) => {
     return sync
   }
 
-  function transmit(object){
-    beam(object)
+  function transmit(object, trigger){
+    beam(object, trigger)
   }
 
   let bridgeComp = Compose(stream.key+"Bridge")
   bridgeComp.addToChain(((v, master, trigger) => {
-    if (keys.includes(trigger.key)) transmit(syncableObj(master)) 
+    if (keys.includes(trigger.key)) transmit(syncableObj(master), trigger) 
   }))
 
   return bridgeComp

@@ -6,7 +6,7 @@
 // doBlock()
 // console.log(doBlock.toString())
 
-import { Bridge, Select, Compose, Button } from "../src"
+import { Bridge, Select, Compose, Button, Comp } from "../src"
 require("../src/third_party/idle")
 
 let colors = [ "tomato", "navy", "lime"]
@@ -42,13 +42,18 @@ let popUpSettings = Compose("popupsettings", "⚙️").host(colorsComp).host(fon
 let settings = Compose("settingsWrapper").contain(popUpSettings)
 settings.pragmatize()
 
-let syncedKeys = ["markercolors", "readerfont", "markermode"]
-let freadyBridge = Bridge(settings, syncedKeys, (object) => {
-  console.log('imma beam this however')
-  console.table(object)
+let paper = new Comp({
+  key: "paper",
+  element: $("#paper")
+})
+
+let syncedKeys = ["markercolors", "readerfont", "markermode", "wpm"]
+let freadyBridge = Bridge(settings, syncedKeys, (object, trigger) => {
+  paper.element.append(`<li>${trigger.key} -> ${trigger.value}</li>`)
 }) 
 
 settings.chain(freadyBridge) // every time a value is changed, do the freadyBridge's actions as well
+
 
 // console.time()
 // console.timeEnd()

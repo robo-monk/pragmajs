@@ -129,7 +129,6 @@ export default class Comp extends Pragma {
   }
 
   host(comp){
-    this.element.addClass("pragma-host")
     const hostCompKey = this.key + "-host"
     let icomp
     if (this.tippy){
@@ -202,7 +201,23 @@ export default class Comp extends Pragma {
         }
       })
     }
+    if (map.mouseover){
+      this.element.addClass("pragma-hoverable")
+      this.setup_listeners({
+        "onmouseover": () => {
+          map.mouseover(this.master)
+        }
+      })
+    }
+    if (map.mouseout){
+      this.setup_listeners({
+        "mouseout": () => {
+           map.mouseover(this.master)
+        }
+      })
+    }
 
+    if (map.element) this.element = $(map.element)
     if (map.element_template && map.variants){
       map.variants.forEach((variant, index) => {
         let templ = map.element_template(variant, index)
