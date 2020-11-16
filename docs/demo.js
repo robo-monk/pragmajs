@@ -6,22 +6,22 @@
 // doBlock()
 // console.log(doBlock.toString())
 
-import { Bridge, Variants, Comp, AttrSelect, ColorSelect, FontSelect, Compose, contain, host } from "../src"
+import { Bridge, Select, Compose } from "../dist"
 require("../src/third_party/idle")
 
 let colors = [ "tomato", "navy", "lime"]
 let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"]
 let modes = ["HotBox", "Underneath", "Faded"]
 
-let colorsComp = ColorSelect("markercolors", colors, (v, comp, key) => {
+let colorsComp = Select.color("markercolors", colors, (v, comp, key) => {
   $(document.body).css({"background": colors[comp.find(key).value]}) 
 })
 
-let fontComp = FontSelect("readerfont", fonts, (v, comp, key) => {
+let fontComp = Select.font("readerfont", fonts, (v, comp, key) => {
    $(document.body).css({"font-family": fonts[comp.find(key).value]}) 
 })
 
-let modeComp = AttrSelect("markermode", modes, (v, comp, key) => {
+let modeComp = Select.attr("markermode", modes, (v, comp, key) => {
   // on set
   console.log(v)
 }, (key, index) => {
@@ -37,7 +37,6 @@ settings.pragmatize()
 
 let syncedKeys = ["markercolors", "readerfont", "markermode"]
 let freadyBridge = Bridge(settings, syncedKeys, (object) => {
-  console.log('now i aint logging shit jack')
   console.log('imma beam this however')
   console.table(object)
 }) 

@@ -1,4 +1,4 @@
-import { Variants, Comp, ColorSelect, Compose, contain } from "../../src"
+import { Variants, Comp, Select, Compose, contain } from "../../src"
 describe("Pragma Composer stress test", () =>{
   test("stress test", () => {
     let time = new Date().getTime()
@@ -10,7 +10,7 @@ describe("Pragma Composer stress test", () =>{
 
     let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"]
 
-    let colorsComp = Compose("colors").contain(ColorSelect("markercolors", colors, (v, comp, key) => {
+    let colorsComp = Compose("colors").contain(Select.color("markercolors", colors, (v, comp, key) => {
       $(document.body).css({"background": colors[comp.find(key).value]}) 
     }))
 

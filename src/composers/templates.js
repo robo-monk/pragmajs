@@ -96,8 +96,9 @@ const composer = (key, icon, elements) => {
   }
 }
 
-const AttrSelect = (key, attrs, onset, icon, value=0) => {
-  return new Comp(map_variants({
+const Select = {
+  attr: ((key, attrs, onset, icon, value=0) => {
+    return new Comp(map_variants({
       key: key,
       value: value,
       icon: (key, index) => {
@@ -108,17 +109,15 @@ const AttrSelect = (key, attrs, onset, icon, value=0) => {
         onset(attrs[v], comp, key)
       },
       variants: attrs
-  }))
+    }))
+  }),
+  color: ((key, colors, onset, value=0) => {
+    return Select.attr(key, colors, onset, (key, index) => { return { css: `background:${key}`, html: "" } }, value) 
+  }),
+  font: ((key, fonts, onset, value=0) => {
+    return Select.attr(key, fonts, onset, (key, index) => { return { css: `font-family:${key}`, html: "Aa" } }, value) 
+  })
 }
-
-const ColorSelect = (key, colors, onset, value=0) => {
-  return AttrSelect(key, colors, onset, (key, index) => { return { css: `background:${key}`, html: "" } }, value) 
-}
-
-const FontSelect = (key, fonts, onset, value=0) => {
-  return AttrSelect(key, fonts, onset, (key, index) => { return { css: `font-family:${key}`, html: "Aa" } }, value) 
-}
-
 
 // base
 const map = (key, type, icon, elements=null, value=null) => {
@@ -200,5 +199,5 @@ const Bridge = (stream, keys=[], beam=((object) => console.table(object))) => {
 
 
 
-export { buttonValue, valueControls, Variants, Compose, Value, pragmatize, contain, ColorSelect, FontSelect, host, AttrSelect, Bridge }
+export { buttonValue, valueControls, Select, Variants, Compose, Value, pragmatize, contain, host, Bridge }
 

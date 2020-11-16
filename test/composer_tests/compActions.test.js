@@ -1,4 +1,4 @@
-import { Variants, Comp, ColorSelect, Compose, contain, host } from "../../src"
+import { Variants, Comp, Select, Compose, contain, host } from "../../src"
 
 function clean(str){
   str = str.replace(/\s/g, "");
@@ -14,7 +14,7 @@ describe("comp can correctly contain another comp", ()=>{
   
   test("simple use case", () => {
     let colors = [ "tomato", "navy", "lime"]
-    let colorsComp = ColorSelect("markercolors", colors, (v, comp, key) => {
+    let colorsComp = Select.color("markercolors", colors, (v, comp, key) => {
       $(document.body).css({"background": colors[comp.find(key).value]}) 
     })
 
@@ -56,7 +56,7 @@ describe("comp can correctly host another comp", ()=>{
   
   test("simple use case", () => {
     let colors = [ "tomato", "navy", "lime"]
-    let colorsComp = ColorSelect("markercolors", colors, (v, comp, key) => {
+    let colorsComp = Select.color("markercolors", colors, (v, comp, key) => {
       $(document.body).css({"background": colors[comp.find(key).value]}) 
     })
 

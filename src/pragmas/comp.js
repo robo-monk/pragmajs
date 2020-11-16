@@ -12,7 +12,15 @@ export default class Comp extends Pragma {
     this.build(map)
     this.log_txt = ""
 
-    this.unchain()
+    // this.unchain()
+    // TODO add init chain or smth like that
+    this.addToChain((
+    (v, master, trigger=this) => { 
+      if (this.master) {
+        master.doChain(v, master, trigger) // let master know something changed
+        master.log(`${trigger.key} -> ${v}`)
+      }
+    }))
   }
 
   log(n){
