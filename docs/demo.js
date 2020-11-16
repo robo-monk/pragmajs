@@ -6,7 +6,7 @@
 // doBlock()
 // console.log(doBlock.toString())
 
-import { Bridge, Select, Compose } from "../dist"
+import { Bridge, Select, Compose, Button } from "../src"
 require("../src/third_party/idle")
 
 let colors = [ "tomato", "navy", "lime"]
@@ -29,7 +29,11 @@ let modeComp = Select.attr("markermode", modes, (v, comp, key) => {
   return { type: "pointerModeOption", html: "M" }
 })
 
-let popUpSettings = Compose("popupsettings", "⚙️").host(colorsComp).host(fontComp).host(modeComp)
+let wpmComp = Button.controls("wpm", 250, 10, (value, comp) => {
+})
+
+// TODO host array
+let popUpSettings = Compose("popupsettings", "⚙️").host(colorsComp).host(fontComp).host(modeComp).host(wpmComp)
 // popUpSettings.pragmatize()
 
 let settings = Compose("settingsWrapper").contain(popUpSettings)

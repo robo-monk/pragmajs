@@ -19,26 +19,30 @@ const buttonValue = (key, value, step, icon) => {
 }
 
 // TODO add icons
-const valueControls = (key, value, step, action=(()=>{})) => {
-  return {
-    key: key,
-    type: "value",
-    value: value,
-    set: (value, comp)=>{
-      let key_monitor = comp.find(`${key}-monitor`)  
-      key_monitor.element.html(value)
-      console.log(value)
-      action(value, comp)
-    },
-    elements: [
-      buttonValue(key, value, -step, "-"),
-      {
-        key: `${key}-monitor`,
-        type: "monitor",
+
+const Button = {
+  controls: ((key, value, step, action=(()=>{})) => {
+    return new Comp({
+      key: key,
+      type: "value",
+      value: value,
+      set: (value, comp)=>{
+        let key_monitor = comp.find(`${key}-monitor`)  
+        key_monitor.element.html(value)
+        console.log(value)
+        action(value, comp)
       },
-      buttonValue(key, value, step, "+"),
-    ]
-  }
+      elements: [
+        buttonValue(key, value, -step, "-"),
+        {
+          key: `${key}-monitor`,
+          type: "monitor",
+          icon: value
+        },
+        buttonValue(key, value, step, "+"),
+      ]
+    })
+  })
 }
 
 const variantUIActivate = (element) => {
@@ -124,6 +128,7 @@ const map = (key, type, icon, elements=null, value=null) => {
   return {key:key,type:type,value:value,icon:icon,elements:elements}
 }
 const maps = (string, elements=null) => {
+  // map string
   // "key type icon"
   let v = string.split(" ")
   return map(v[0], v[1], v[2], elements)
@@ -180,24 +185,5 @@ const Bridge = (stream, keys=[], beam=((object) => console.table(object))) => {
   return bridgeComp
 }
 
-// function userPrefs(master){
-//   return {
-//     color: master.find("markercolors").value,
-//     font: master.find("readerfont").value,
-//     mode: master.find("markermode").value
-//   }
-// }
-// function transmitToFready(master){
-//   console.table(userPrefs(master))
-// }
-// let fbridge = Compose("freadyBridge")
-// fbridge.addToChain(((v, master, comp) => {
-//   if (comp.descOf(popUpSettings)) transmitToFready(master) 
-// }))
-
-// settings.chain(fbridge)
-
-
-
-export { buttonValue, valueControls, Select, Variants, Compose, Value, pragmatize, contain, host, Bridge }
+export { buttonValue, Button, Select, Variants, Compose, Value, pragmatize, contain, host, Bridge }
 
