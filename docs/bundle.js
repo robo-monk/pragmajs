@@ -3,6 +3,12 @@
 
 var _src = require("../src");
 
+var _helloworld = _interopRequireDefault(require("./demos/helloworld"));
+
+var _bigdemo = _interopRequireDefault(require("./demos/bigdemo"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 //import Pragma, { valueControls, variants, composer, container } from '../src'
 //import Pragma, { valueControls, variants, composer, container } from '../src'
 // TODO do code blocks like this, and print them to an element
@@ -10,78 +16,74 @@ var _src = require("../src");
 // TODO have an api that can support building literally any page through one var,
 // let comp = Compose().build(Compose()........ / dont use it like that but concept wise it should
 // be doable and actually really efficient
+//hwblock.pragmatize()
 // doBlock()
 // console.log(doBlock.toString())
-require("../src/third_party/idle");
-
-let colors = ["tomato", "navy", "lime"];
-let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"];
-let modes = ["HotBox", "Underneath", "Faded"];
 let icons = new _src.IconBuilder();
 icons.default.fill = "white";
-
-let colorsComp = _src.Select.color("markercolors", colors, (v, comp, key) => {
-  $(document.body).css({
-    "background": colors[comp.find(key).value]
-  });
-}).bind("c");
-
-let fontComp = _src.Select.font("readerfont", fonts, (v, comp, key) => {
-  $(document.body).css({
-    "font-family": fonts[comp.find(key).value]
-  });
-}).bind("f"); // could be equivelant to ?
-// font Comp = Select.font.from(fonts).onChange(...).onMouseOver
-// bind rules
-// if type is choices default would be to plus the value
-//
-// if object has a click action and is called to bind, do that click action 
-
-
-let modeComp = _src.Select.attr("markermode", modes, (v, comp, key) => {
-  // on set
-  console.log(v);
-}, (key, index) => {
-  // icon
-  return {
-    type: "pointerModeOption",
-    html: "M"
-  };
-}).bind("m", null, "keyup"); // could be equivelant to ?
-// let modeComp = Select.attr.
-
-
-let wpmComp = _src.Button.controls("wpm", 250, 10, (value, comp) => {}, {
-  "+": icons.grab("plus"),
-  "-": icons.grab("minus")
-}).setRange(10, 300);
-
-wpmComp.find("wpm+").bind(["=", "+"]);
-wpmComp.find("wpm-").bind("-");
-
-let linkComp = _src.Button.action("commiter", "C", () => {
-  alert("lazy");
-}).pragmatize().bind("A"); // TODO host array
-
-
-let popUpSettings = (0, _src.Compose)("popupsettings", "⚙️").host(colorsComp).host(fontComp).host(modeComp); // let popUpSettings = Compose("popupsettings", "⚙️").contain(colorsComp).contain(fontComp).contain(modeComp)
-// popUpSettings.pragmatize()
-// icons
-
-popUpSettings.illustrate(icons.grab("settings"));
-let settings = (0, _src.Compose)("settingsWrapper").contain(popUpSettings).contain(wpmComp);
-settings.pragmatize();
 let paper = new _src.Comp({
   key: "paper",
   element: $("#paper")
 });
-let syncedKeys = ["markercolors", "readerfont", "markermode", "wpm"];
-let freadyBridge = (0, _src.Bridge)(settings, syncedKeys, (object, trigger) => {
-  paper.element.append(`<li>${trigger.key} -> ${trigger.value}</li>`);
-});
-settings.chain(freadyBridge); // every time a value is changed, do the freadyBridge's actions as well
 
-console.log(icons.settings); // console.time()
+function strBlock(block) {
+  let lines = block.toString().split("\n");
+  let untab_lines = [];
+  lines = lines.splice(1, lines.length - 2); // remove function text and }
+
+  lines.forEach((line, i) => {
+    untab_lines[i] = line.replace("  ", "");
+  });
+  return untab_lines.join("\n").replaceAll("_src.", "");
+}
+
+function doBlock(block) {
+  block(paper);
+}
+
+const Block = (key, block) => {
+  let preElement = $(document.createElement("pre"));
+  let codeElement = $(document.createElement("code"));
+  codeElement.html(strBlock(block));
+  codeElement.attr({
+    "data-language": "javascript"
+  });
+  preElement.html(codeElement);
+
+  let doblock = _src.Button.action("doblock", icons.grab("play"), (m, comp) => {
+    doBlock(block);
+    comp.icon.fadeTo(80, .5);
+  }, "Do Block");
+
+  doblock.element.css({
+    "display": "inline"
+  });
+
+  let copyblock = _src.Button.action("copyblock", icons.grab("copy"), (m, comp) => {
+    navigator.clipboard.writeText(strBlock(block));
+    comp.icon.fadeTo(80, .2);
+    comp.setTippy("Copied!");
+    comp.tippy.show();
+  }, "Copy");
+
+  copyblock.element.css({
+    "display": "inline"
+  });
+  return new _src.Comp({
+    key: key,
+    type: "demo-block",
+    elements: [{
+      key: "code",
+      type: "code",
+      element: preElement
+    }]
+  }).contain(doblock).contain(copyblock);
+}; //rainbow.color()
+
+
+let hwblock = Block("helloworld", _helloworld.default);
+let bgblock = Block("bigdemo", _bigdemo.default);
+paper.contain(hwblock).contain(bgblock); // console.time()
 // console.timeEnd()
 // let idle = false
 // function fadeAway(){
@@ -120,11 +122,11 @@ console.log(icons.settings); // console.time()
 // setInterval(() => {
 //   console.log(settings.logs) 
 // }, 1000)
-
-console.time(".find()");
-console.log(settings.find("markermode"));
-console.timeEnd(".find()");
-console.log(colorsComp.depthKey); //
+// console.time(".find()")
+// console.log(settings.find("markermode"))
+// console.timeEnd(".find()")
+// console.log(colorsComp.depthKey)
+//
 //let settings = composer("settingsWrapper", "⚙️", [])
 //let master = container(settings, composer(
 //"toolbar",
@@ -171,7 +173,128 @@ console.log(colorsComp.depthKey); //
 // let lec = new Lector($("#article"), settings)
 // lec.read()
 
-},{"../src":9,"../src/third_party/idle":12}],2:[function(require,module,exports){
+},{"../src":11,"./demos/bigdemo":2,"./demos/helloworld":3}],2:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = bigdemo;
+
+var _src = require("../../src");
+
+require("../../src/third_party/idle");
+
+function bigdemo(paper) {
+  let colors = ["tomato", "navy", "lime"];
+  let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"];
+  let modes = ["HotBox", "Underneath", "Faded"];
+  let icons = new _src.IconBuilder();
+  icons.default.fill = "white";
+
+  let colorsComp = _src.Select.color("markercolors", colors, (v, comp, key) => {
+    $(document.body).css({
+      "background": colors[comp.find(key).value]
+    });
+  }).bind("c");
+
+  let fontComp = _src.Select.font("readerfont", fonts, (v, comp, key) => {
+    $(document.body).css({
+      "font-family": fonts[comp.find(key).value]
+    });
+  }).bind("f"); // could be equivelant to ?
+  // font Comp = Select.font.from(fonts).onChange(...).onMouseOver
+  // bind rules
+  // if type is choices default would be to plus the value
+  //
+  // if object has a click action and is called to bind, do that click action 
+
+
+  let modeComp = _src.Select.attr("markermode", modes, (v, comp, key) => {
+    // on set
+    console.log(v);
+  }, (key, index) => {
+    // icon
+    return {
+      type: "pointerModeOption",
+      html: "M"
+    };
+  }).bind("m", null, "keyup"); // could be equivelant to ?
+  // let modeComp = Select.attr.
+
+
+  let wpmComp = _src.Button.controls("wpm", 250, 10, (value, comp) => {}, {
+    "+": icons.grab("plus"),
+    "-": icons.grab("minus")
+  }).setRange(10, 300);
+
+  wpmComp.find("wpm+").bind(["=", "+"]);
+  wpmComp.find("wpm-").bind("-");
+
+  let linkComp = _src.Button.action("commiter", "C", () => {
+    alert("lazy");
+  }).pragmatize().bind("A"); // TODO host array
+
+
+  let popUpSettings = (0, _src.Compose)("popupsettings", "⚙️").host(colorsComp).host(fontComp).host(modeComp); // let popUpSettings = Compose("popupsettings", "⚙️").contain(colorsComp).contain(fontComp).contain(modeComp)
+  // popUpSettings.pragmatize()
+  // icons
+
+  popUpSettings.illustrate(icons.grab("settings"));
+  let settings = (0, _src.Compose)("settingsWrapper").contain(popUpSettings).contain(wpmComp);
+  settings.pragmatize();
+  let syncedKeys = ["markercolors", "readerfont", "markermode", "wpm"];
+  let freadyBridge = (0, _src.Bridge)(settings, syncedKeys, (object, trigger) => {
+    paper.element.append(`<li>${trigger.key} -> ${trigger.value}</li>`);
+  });
+  settings.chain(freadyBridge); // every time a value is changed, do the freadyBridge's actions as well
+}
+
+},{"../../src":11,"../../src/third_party/idle":14}],3:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = helloworld;
+
+function helloworld() {
+  // comment
+  console.log("hello world");
+} // import { Variants, Comp, ColorSelect, FontSelect, Compose, contain, host } from "../../src"
+// export default function doBlock() {
+// let colors = [ "tomato", "navy", "lime"]
+// let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"]
+// let modes = ["background: transparent; border: 1px solid black;"]
+// let colorsComp = ColorSelect("markercolors", colors, (v, comp, key) => {
+//   $(document.body).css({"background": colors[comp.find(key).value]}) 
+// })
+// let fontComp = FontSelect("readerfont", fonts, (v, comp, key) => {
+//    $(document.body).css({"font-family": fonts[comp.find(key).value]}) 
+// })
+// let popUpSettings = Compose("popupsettings", "⚙️").host(colorsComp).host(fontComp)
+// popUpSettings.pragmatize()
+// let settings = Compose("settingsWrapper").contain(popUpSettings)
+// settings.pragmatize()
+// // compose({} <- pragma maiiiipu)
+// // compose(key, icon, elements, type <- pragma map)
+// //
+// //let colorsComp = new Comp(variants({
+//             //key: "color",
+//             //value: 1,
+//             //icon: (key, index) => { return `<div style='width:25px;height:25px;border-radius:25px;background:${key}'></div>` },
+//             //set: (v, comp) => {
+//               //$('.p-6').css({"color": colors[comp.find("color").value]})
+//             //},
+//             //variants: colors
+//         //}))
+// setInterval(() => {
+//   console.log(settings.logs) 
+// }, 1000)
+// console.log("yyet")
+// }
+
+},{}],4:[function(require,module,exports){
 (function (process){(function (){
 /**
  * @popperjs/core v2.5.4 - MIT License
@@ -2041,7 +2164,7 @@ exports.preventOverflow = preventOverflow$1;
 
 
 }).call(this)}).call(this,require('_process'))
-},{"_process":13}],3:[function(require,module,exports){
+},{"_process":15}],5:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v3.5.1
  * https://jquery.com/
@@ -12915,7 +13038,7 @@ if ( typeof noGlobal === "undefined" ) {
 return jQuery;
 } );
 
-},{}],4:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 /*global define:false */
 /**
  * Copyright 2012-2017 Craig Campbell
@@ -13975,7 +14098,7 @@ return jQuery;
     }
 }) (typeof window !== 'undefined' ? window : null, typeof  window !== 'undefined' ? document : null);
 
-},{}],5:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 (function (process){(function (){
 /**!
 * tippy.js v6.2.7
@@ -16304,7 +16427,7 @@ exports.sticky = sticky;
 
 
 }).call(this)}).call(this,require('_process'))
-},{"@popperjs/core":2,"_process":13}],6:[function(require,module,exports){
+},{"@popperjs/core":4,"_process":15}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16338,14 +16461,16 @@ const buttonValue = (key, ext, value, step, icon) => {
 
 exports.buttonValue = buttonValue;
 const Button = {
-  action: (key, icon, action) => {
-    return new _comp.default({
+  action: (key, icon, action, tippy) => {
+    let btn = new _comp.default({
       key: key,
       icon: icon,
       type: "button",
       click: action // value comp trigger
 
     });
+    if (tippy) btn.setTippy(tippy);
+    return btn;
   },
   controls: (key, value, step, action = () => {}, icons = {
     "+": "+",
@@ -16552,7 +16677,7 @@ const Bridge = (stream, keys = [], beam = (object, trigger) => console.table(obj
 
 exports.Bridge = Bridge;
 
-},{"../pragmas/comp":10}],7:[function(require,module,exports){
+},{"../pragmas/comp":12}],9:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16569,11 +16694,13 @@ const db = {
   loveFull: `<path d="M0 0h24v24H0V0z" fill="none"/><path d="M13.35 20.13c-.76.69-1.93.69-2.69-.01l-.11-.1C5.3 15.27 1.87 12.16 2 8.28c.06-1.7.93-3.33 2.34-4.29 2.64-1.8 5.9-.96 7.66 1.1 1.76-2.06 5.02-2.91 7.66-1.1 1.41.96 2.28 2.59 2.34 4.29.14 3.88-3.3 6.99-8.55 11.76l-.1.09z"/>`,
   loveOutline: `<path d="M0 0h24v24H0V0z" fill="none"/><path d="M19.66 3.99c-2.64-1.8-5.9-.96-7.66 1.1-1.76-2.06-5.02-2.91-7.66-1.1-1.4.96-2.28 2.58-2.34 4.29-.14 3.88 3.3 6.99 8.55 11.76l.1.09c.76.69 1.93.69 2.69-.01l.11-.1c5.25-4.76 8.68-7.87 8.55-11.75-.06-1.7-.94-3.32-2.34-4.28zM12.1 18.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"/>`,
   share: `<path d="M0 0h24v24H0V0z" fill="none"/><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/>`,
-  help: `<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/><rect fill="none" height="24" width="24"/></g><g><path d="M12,2C6.48,2,2,6.48,2,12c0,5.52,4.48,10,10,10s10-4.48,10-10C22,6.48,17.52,2,12,2z M19.46,9.12l-2.78,1.15 c-0.51-1.36-1.58-2.44-2.95-2.94l1.15-2.78C16.98,5.35,18.65,7.02,19.46,9.12z M12,15c-1.66,0-3-1.34-3-3s1.34-3,3-3s3,1.34,3,3 S13.66,15,12,15z M9.13,4.54l1.17,2.78c-1.38,0.5-2.47,1.59-2.98,2.97L4.54,9.13C5.35,7.02,7.02,5.35,9.13,4.54z M4.54,14.87 l2.78-1.15c0.51,1.38,1.59,2.46,2.97,2.96l-1.17,2.78C7.02,18.65,5.35,16.98,4.54,14.87z M14.88,19.46l-1.15-2.78 c1.37-0.51,2.45-1.59,2.95-2.97l2.78,1.17C18.65,16.98,16.98,18.65,14.88,19.46z"/></g></svg>`
+  help: `<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/><rect fill="none" height="24" width="24"/></g><g><path d="M12,2C6.48,2,2,6.48,2,12c0,5.52,4.48,10,10,10s10-4.48,10-10C22,6.48,17.52,2,12,2z M19.46,9.12l-2.78,1.15 c-0.51-1.36-1.58-2.44-2.95-2.94l1.15-2.78C16.98,5.35,18.65,7.02,19.46,9.12z M12,15c-1.66,0-3-1.34-3-3s1.34-3,3-3s3,1.34,3,3 S13.66,15,12,15z M9.13,4.54l1.17,2.78c-1.38,0.5-2.47,1.59-2.98,2.97L4.54,9.13C5.35,7.02,7.02,5.35,9.13,4.54z M4.54,14.87 l2.78-1.15c0.51,1.38,1.59,2.46,2.97,2.96l-1.17,2.78C7.02,18.65,5.35,16.98,4.54,14.87z M14.88,19.46l-1.15-2.78 c1.37-0.51,2.45-1.59,2.95-2.97l2.78,1.17C18.65,16.98,16.98,18.65,14.88,19.46z"/></g></svg>`,
+  play: `<path d="M8 6.82v10.36c0 .79.87 1.27 1.54.84l8.14-5.18c.62-.39.62-1.29 0-1.69L9.54 5.98C8.87 5.55 8 6.03 8 6.82z"/>`,
+  copy: `<path d="M0 0h24v24H0V0z" fill="none"/><path d="M15 1H4c-1.1 0-2 .9-2 2v13c0 .55.45 1 1 1s1-.45 1-1V4c0-.55.45-1 1-1h10c.55 0 1-.45 1-1s-.45-1-1-1zm4 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-1 16H9c-.55 0-1-.45-1-1V8c0-.55.45-1 1-1h9c.55 0 1 .45 1 1v12c0 .55-.45 1-1 1z"/>`
 };
 exports.db = db;
 
-},{}],8:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16609,7 +16736,7 @@ class IconBuilder {
 
 exports.default = IconBuilder;
 
-},{"./icondb":7}],9:[function(require,module,exports){
+},{"./icondb":9}],11:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16698,7 +16825,7 @@ var _icons = _interopRequireDefault(require("./icons/icons"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./composers/templates.js":6,"./icons/icons":8,"./pragmas/comp.js":10,"./pragmas/pragma.js":11}],10:[function(require,module,exports){
+},{"./composers/templates.js":8,"./icons/icons":10,"./pragmas/comp.js":12,"./pragmas/pragma.js":13}],12:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16851,31 +16978,38 @@ class Comp extends _pragma.default {
     return this;
   }
 
+  setTippy(comp, options) {
+    if (!options) options = {
+      allowHTML: options,
+      interactive: true,
+      theme: "pragma",
+      arrow: false
+    };
+    let contentOption = {
+      content: comp
+    };
+    this.tippy = (0, _tippy.default)(this.element[0], { ...contentOption,
+      ...options
+    });
+    return this;
+  }
+
   host(comp) {
     const hostCompKey = this.key + "-host";
     let icomp;
 
     if (this.tippy) {
       // if already hosts something
-      // console.log("im alreayd hosting something")
       icomp = this.find(hostCompKey);
       icomp.contain(comp);
       this.tippy.destroy(); // destory old tippy instance to create new one
     } else {
-      // console.log("first time")
       icomp = (0, _templates.Compose)(hostCompKey).contain(comp);
       this.contain(icomp);
     }
 
     icomp.element.addClass("pragma-tippy");
-    this.tippy = (0, _tippy.default)(this.element[0], {
-      content: icomp.element[0],
-      allowHTML: true,
-      interactive: true,
-      theme: "pragma",
-      arrow: false
-    });
-    return this;
+    return this.setTippy(icomp.element[0]);
   }
 
   buildAndAdd(element) {
@@ -16892,6 +17026,7 @@ class Comp extends _pragma.default {
   illustrate(icon) {
     if (!this.icon) {
       this.icon = (0, _jquery.default)(document.createElement("div"));
+      this.icon.addClass("pragma-icon");
       this.icon.appendTo(this.element);
     }
 
@@ -17068,7 +17203,7 @@ class Comp extends _pragma.default {
 
 exports.default = Comp;
 
-},{"../composers/templates":6,"./pragma":11,"jquery":3,"mousetrap":4,"tippy.js":5}],11:[function(require,module,exports){
+},{"../composers/templates":8,"./pragma":13,"jquery":5,"mousetrap":6,"tippy.js":7}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17140,7 +17275,7 @@ class Pragma {
 
 exports.default = Pragma;
 
-},{"jquery":3}],12:[function(require,module,exports){
+},{"jquery":5}],14:[function(require,module,exports){
 "use strict";
 
 !function (n) {
@@ -17184,7 +17319,7 @@ exports.default = Pragma;
   };
 }(jQuery);
 
-},{}],13:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 

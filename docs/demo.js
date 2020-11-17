@@ -7,80 +7,78 @@
 // let comp = Compose().build(Compose()........ / dont use it like that but concept wise it should
 // be doable and actually really efficient
 
+
+//hwblock.pragmatize()
 // doBlock()
 // console.log(doBlock.toString())
 
-import { Bridge, Select, Compose, Button, Comp, IconBuilder } from "../src"
-require("../src/third_party/idle")
 
-let colors = [ "tomato", "navy", "lime"]
-let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"]
-let modes = ["HotBox", "Underneath", "Faded"]
+
+import { Bridge, Select, Compose, Button, Comp, IconBuilder } from "../src"
 
 let icons = new IconBuilder()
 icons.default.fill = "white"
-
-let colorsComp = Select.color("markercolors", colors, (v, comp, key) => {
-  $(document.body).css({"background": colors[comp.find(key).value]}) 
-}).bind("c")
-
-let fontComp = Select.font("readerfont", fonts, (v, comp, key) => {
-   $(document.body).css({"font-family": fonts[comp.find(key).value]}) 
-}).bind("f")
-// could be equivelant to ?
-// font Comp = Select.font.from(fonts).onChange(...).onMouseOver
-
-// bind rules
-// if type is choices default would be to plus the value
-//
-// if object has a click action and is called to bind, do that click action 
-let modeComp = Select.attr("markermode", modes, (v, comp, key) => {
-  // on set
-  console.log(v)
-}, (key, index) => {
-  // icon
-  return { type: "pointerModeOption", html: "M" }
-}).bind("m", null, "keyup")
-
-// could be equivelant to ?
-// let modeComp = Select.attr.
-
-let wpmComp = Button.controls("wpm", 250, 10, (value, comp) => {
-}, { "+": icons.grab("plus"), "-": icons.grab("minus")}).setRange(10, 300)
-wpmComp.find("wpm+").bind(["=", "+"])
-wpmComp.find("wpm-").bind("-")
-
-let linkComp = Button.action("commiter", "C", () => {
-  alert("lazy")
-}).pragmatize().bind("A")
-
-// TODO host array
-let popUpSettings = Compose("popupsettings", "⚙️").host(colorsComp).host(fontComp).host(modeComp)
-// let popUpSettings = Compose("popupsettings", "⚙️").contain(colorsComp).contain(fontComp).contain(modeComp)
-// popUpSettings.pragmatize()
-
-// icons
-
-popUpSettings.illustrate(icons.grab("settings"))
-
-
-let settings = Compose("settingsWrapper").contain(popUpSettings).contain(wpmComp)
-settings.pragmatize()
-
 let paper = new Comp({
-  key: "paper",
-  element: $("#paper")
-})
+    key: "paper",
+    element: $("#paper")
+  })
 
-let syncedKeys = ["markercolors", "readerfont", "markermode", "wpm"]
-let freadyBridge = Bridge(settings, syncedKeys, (object, trigger) => {
-  paper.element.append(`<li>${trigger.key} -> ${trigger.value}</li>`)
-}) 
+function strBlock(block) {
+  let lines = block.toString().split("\n")
+  let untab_lines = []
+  lines = lines.splice(1, lines.length-2) // remove function text and }
+  lines.forEach((line, i) => {
+    untab_lines[i] = line.replace("  ", "") 
+  })
+  return untab_lines.join("\n").replaceAll("_src.", "")
+}
+function doBlock(block) {
+  block(paper)
+}
 
-settings.chain(freadyBridge) // every time a value is changed, do the freadyBridge's actions as well
+const Block = ((key, block) => { 
+  let preElement = $(document.createElement("pre"))
+  let codeElement = $(document.createElement("code"))
+  codeElement.html(strBlock(block))
+  codeElement.attr({"data-language": "javascript"})
+  preElement.html(codeElement)
+  
 
-console.log(icons.settings)
+  let doblock = Button.action("doblock", icons.grab("play"), (m, comp) => { 
+    doBlock(block) 
+    comp.icon.fadeTo(80, .5)
+  }, "Do Block")
+  doblock.element.css({"display":"inline"})
 
+  let copyblock = Button.action("copyblock", icons.grab("copy"), (m, comp) => {
+    navigator.clipboard.writeText(strBlock(block))
+    comp.icon.fadeTo(80, .2)
+    comp.setTippy("Copied!")
+    comp.tippy.show()
+  }, "Copy")
+  copyblock.element.css({"display":"inline"})
+
+  return new Comp({
+      key: key,
+      type: "demo-block",
+      elements: [
+        {
+          key: "code",
+          type: "code",
+          element: preElement
+        }
+      ]
+    }).contain(doblock).contain(copyblock)
+  })
+
+//rainbow.color()
+
+import helloworld from "./demos/helloworld"
+import bigdemo from "./demos/bigdemo"
+
+let hwblock = Block("helloworld", helloworld)
+let bgblock = Block("bigdemo", bigdemo)
+paper.contain(hwblock).contain(bgblock)
 // console.time()
 // console.timeEnd()
 
@@ -126,11 +124,12 @@ console.log(icons.settings)
 //   console.log(settings.logs) 
 // }, 1000)
 
-console.time(".find()")
-console.log(settings.find("markermode"))
-console.timeEnd(".find()")
+// console.time(".find()")
+// console.log(settings.find("markermode"))
+// console.timeEnd(".find()")
 
-console.log(colorsComp.depthKey)
+// console.log(colorsComp.depthKey)
+
 //
 //let settings = composer("settingsWrapper", "⚙️", [])
 //let master = container(settings, composer(

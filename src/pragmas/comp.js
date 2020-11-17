@@ -139,29 +139,35 @@ export default class Comp extends Pragma {
     return this
   }
 
+  setTippy(comp, options){
+    if (!options) options = { 
+      allowHTML: options,
+      interactive: true,
+      theme: "pragma",
+      arrow: false
+    }
+    let contentOption = {
+      content: comp
+    }
+    this.tippy = tippy(this.element[0], {...contentOption, ...options} )
+    return this
+  }
+
   host(comp){
     const hostCompKey = this.key + "-host"
     let icomp
     if (this.tippy){
       // if already hosts something
-      // console.log("im alreayd hosting something")
       icomp = this.find(hostCompKey)
       icomp.contain(comp)
       this.tippy.destroy() // destory old tippy instance to create new one
     }else{
-      // console.log("first time")
       icomp = Compose(hostCompKey).contain(comp)
       this.contain(icomp)
     }
+
     icomp.element.addClass("pragma-tippy")
-    this.tippy = tippy(this.element[0], {
-      content: icomp.element[0],
-      allowHTML: true,
-      interactive: true,
-      theme: "pragma",
-      arrow: false
-    })
-    return this
+    return this.setTippy(icomp.element[0])
   }
 
   buildAndAdd(element){
@@ -178,6 +184,7 @@ export default class Comp extends Pragma {
   illustrate(icon){
     if (!this.icon) {       
       this.icon = $(document.createElement("div"))
+      this.icon.addClass("pragma-icon")
       this.icon.appendTo(this.element)
     }
     this.icon.html(icon)

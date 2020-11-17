@@ -7,11 +7,11 @@
     "type": "git",
     "url": "git://github.com/robo-monk/pragmajs.git"
   },
-
-   "main": "dist/index.js",
+  "main": "dist/index.js",
   "types": "/dist/pragmajs.d.ts",
-  "files": [ "dist/" ],
-
+  "files": [
+    "dist/"
+  ],
   "keywords": [
     "pragma",
     "pragmajs",

@@ -21,13 +21,15 @@ const buttonValue = (key, ext, value, step, icon) => {
 // TODO add icons
 
 const Button = {
-  action: ((key, icon, action) => {
-    return new Comp({
+  action: ((key, icon, action, tippy) => {
+    let btn = new Comp({
       key: key,
       icon: icon,
       type: "button",
       click: action // value comp trigger
     })
+    if (tippy) btn.setTippy(tippy)
+    return btn
   }),
   controls: ((key, value, step, action=(()=>{}), icons={ "+":"+", "-":"-"}) => {
     return new Comp({

@@ -1,3 +1,7 @@
+export default function helloworld(){
+// comment
+  console.log("hello world")
+}
 // import { Variants, Comp, ColorSelect, FontSelect, Compose, contain, host } from "../../src"
 
 // export default function doBlock() {

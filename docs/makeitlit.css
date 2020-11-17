@@ -9,11 +9,17 @@
 body {
   font-family: "Open Sans", "Helvetica", "Arial";
   background-color: #0e0e0e;
+  overflow-x: hidden;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: "Merriweather";
 }
+
+pre, code {
+  background-color: transparent !important;
+}
+
 .badge {
  max-height: 25px;
  margin: auto;
@@ -26,6 +32,13 @@ h1, h2, h3, h4, h5, h6 {
 }
 .margin-auto{
   margin: auto;
+}
+
+.pragma-demo-block{
+  margin: 8px 0;
+  background-color: #0e0e0e;
+  border-radius: 5px;
+  padding: 8px 20px;
 }
 
 #paper{
@@ -46,6 +59,7 @@ h1, h2, h3, h4, h5, h6 {
 	justify-content: space-between;
 	align-items: center;
 	align-content: stretch;
+
 }
 /* pragma stuff  */
 .pragma-composer{
@@ -74,6 +88,7 @@ h1, h2, h3, h4, h5, h6 {
 	align-items: center;
   align-content: stretch;
   user-select: none;
+  border-radius: 5px;
 }
 
 .pragma-choice{
@@ -114,6 +129,18 @@ h1, h2, h3, h4, h5, h6 {
   height: fit-content;
   background-color: #0e0e0e; 
   color: whitesmoke;
+  border-radius: 5px;
+
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.pragma-icon{
+  display: inline-block;
+  height: fit-content;
+  width: fit-content;
 }
 
 /* .tippy-tooltip.pragma-theme {
