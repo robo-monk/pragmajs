@@ -6,12 +6,15 @@
 // doBlock()
 // console.log(doBlock.toString())
 
-import { Bridge, Select, Compose, Button, Comp } from "../src"
+import { Bridge, Select, Compose, Button, Comp, IconBuilder } from "../src"
 require("../src/third_party/idle")
 
 let colors = [ "tomato", "navy", "lime"]
 let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"]
 let modes = ["HotBox", "Underneath", "Faded"]
+
+let icons = new IconBuilder()
+icons.default.fill = "white"
 
 let colorsComp = Select.color("markercolors", colors, (v, comp, key) => {
   $(document.body).css({"background": colors[comp.find(key).value]}) 
@@ -30,7 +33,8 @@ let modeComp = Select.attr("markermode", modes, (v, comp, key) => {
 })
 
 let wpmComp = Button.controls("wpm", 250, 10, (value, comp) => {
-})
+}, { "+": icons.grab("plus"), "-": icons.grab("minus")})
+
 let linkComp = Button.action("commiter", "C", () => {
   alert("lazy")
 }).pragmatize()
@@ -39,6 +43,11 @@ let linkComp = Button.action("commiter", "C", () => {
 let popUpSettings = Compose("popupsettings", "⚙️").host(colorsComp).host(fontComp).host(modeComp)
 // let popUpSettings = Compose("popupsettings", "⚙️").contain(colorsComp).contain(fontComp).contain(modeComp)
 // popUpSettings.pragmatize()
+
+// icons
+
+popUpSettings.illustrate(icons.grab("settings"))
+
 
 let settings = Compose("settingsWrapper").contain(popUpSettings).contain(wpmComp)
 settings.pragmatize()
@@ -55,6 +64,7 @@ let freadyBridge = Bridge(settings, syncedKeys, (object, trigger) => {
 
 settings.chain(freadyBridge) // every time a value is changed, do the freadyBridge's actions as well
 
+console.log(icons.settings)
 
 // console.time()
 // console.timeEnd()

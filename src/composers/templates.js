@@ -1,5 +1,6 @@
 import Comp from "../pragmas/comp"
 
+// TODO button action refactor
 const buttonAction = (key, value, icon, action) => {
   return {
     key: key + "_button_" + value,

@@ -14,6 +14,8 @@ require("../src/third_party/idle");
 let colors = ["tomato", "navy", "lime"];
 let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"];
 let modes = ["HotBox", "Underneath", "Faded"];
+let icons = new _src.IconBuilder();
+icons.default.fill = "white";
 
 let colorsComp = _src.Select.color("markercolors", colors, (v, comp, key) => {
   $(document.body).css({
@@ -38,7 +40,10 @@ let modeComp = _src.Select.attr("markermode", modes, (v, comp, key) => {
   };
 });
 
-let wpmComp = _src.Button.controls("wpm", 250, 10, (value, comp) => {});
+let wpmComp = _src.Button.controls("wpm", 250, 10, (value, comp) => {}, {
+  "+": icons.grab("plus"),
+  "-": icons.grab("minus")
+});
 
 let linkComp = _src.Button.action("commiter", "C", () => {
   alert("lazy");
@@ -47,7 +52,9 @@ let linkComp = _src.Button.action("commiter", "C", () => {
 
 let popUpSettings = (0, _src.Compose)("popupsettings", "⚙️").host(colorsComp).host(fontComp).host(modeComp); // let popUpSettings = Compose("popupsettings", "⚙️").contain(colorsComp).contain(fontComp).contain(modeComp)
 // popUpSettings.pragmatize()
+// icons
 
+popUpSettings.illustrate(icons.grab("settings"));
 let settings = (0, _src.Compose)("settingsWrapper").contain(popUpSettings).contain(wpmComp);
 settings.pragmatize();
 let paper = new _src.Comp({
@@ -59,7 +66,8 @@ let freadyBridge = (0, _src.Bridge)(settings, syncedKeys, (object, trigger) => {
   paper.element.append(`<li>${trigger.key} -> ${trigger.value}</li>`);
 });
 settings.chain(freadyBridge); // every time a value is changed, do the freadyBridge's actions as well
-// console.time()
+
+console.log(icons.settings); // console.time()
 // console.timeEnd()
 // let idle = false
 // function fadeAway(){
@@ -149,7 +157,7 @@ console.log(colorsComp.depthKey); //
 // let lec = new Lector($("#article"), settings)
 // lec.read()
 
-},{"../src":6,"../src/third_party/idle":9}],2:[function(require,module,exports){
+},{"../src":8,"../src/third_party/idle":11}],2:[function(require,module,exports){
 (function (process){(function (){
 /**
  * @popperjs/core v2.5.4 - MIT License
@@ -2019,7 +2027,7 @@ exports.preventOverflow = preventOverflow$1;
 
 
 }).call(this)}).call(this,require('_process'))
-},{"_process":10}],3:[function(require,module,exports){
+},{"_process":12}],3:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v3.5.1
  * https://jquery.com/
@@ -15222,7 +15230,7 @@ exports.sticky = sticky;
 
 
 }).call(this)}).call(this,require('_process'))
-},{"@popperjs/core":2,"_process":10}],5:[function(require,module,exports){
+},{"@popperjs/core":2,"_process":12}],5:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15234,6 +15242,7 @@ var _comp = _interopRequireDefault(require("../pragmas/comp"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// TODO button action refactor
 const buttonAction = (key, value, icon, action) => {
   return {
     key: key + "_button_" + value,
@@ -15470,7 +15479,64 @@ const Bridge = (stream, keys = [], beam = (object, trigger) => console.table(obj
 
 exports.Bridge = Bridge;
 
-},{"../pragmas/comp":7}],6:[function(require,module,exports){
+},{"../pragmas/comp":9}],6:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.db = void 0;
+const db = {
+  settings: `<path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/>`,
+  zoomIn: `<path d="M0 0h24v24H0V0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27c1.2-1.4 1.82-3.31 1.48-5.34-.47-2.78-2.79-5-5.59-5.34-4.23-.52-7.78 3.04-7.27 7.27.34 2.8 2.56 5.12 5.34 5.59 2.03.34 3.94-.28 5.34-1.48l.27.28v.79l4.26 4.25c.41.41 1.07.41 1.48 0l.01-.01c.41-.41.41-1.07 0-1.48L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14zm0-7c-.28 0-.5.22-.5.5V9H7.5c-.28 0-.5.22-.5.5s.22.5.5.5H9v1.5c0 .28.22.5.5.5s.5-.22.5-.5V10h1.5c.28 0 .5-.22.5-.5s-.22-.5-.5-.5H10V7.5c0-.28-.22-.5-.5-.5z"/>`,
+  plus: `<path d="M0 0h24v24H0V0z" fill="none"/><path d="M18 13h-5v5c0 .55-.45 1-1 1s-1-.45-1-1v-5H6c-.55 0-1-.45-1-1s.45-1 1-1h5V6c0-.55.45-1 1-1s1 .45 1 1v5h5c.55 0 1 .45 1 1s-.45 1-1 1z"/>`,
+  zoomOut: `<path d="M0 0h24v24H0V0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27c1.2-1.4 1.82-3.31 1.48-5.34-.47-2.78-2.79-5-5.59-5.34-4.23-.52-7.79 3.04-7.27 7.27.34 2.8 2.56 5.12 5.34 5.59 2.03.34 3.94-.28 5.34-1.48l.27.28v.79l4.26 4.25c.41.41 1.07.41 1.48 0l.01-.01c.41-.41.41-1.07 0-1.48L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14zm-2-5h4c.28 0 .5.22.5.5s-.22.5-.5.5h-4c-.28 0-.5-.22-.5-.5s.22-.5.5-.5z"/>`,
+  minus: `<path d="M18 13H6c-.55 0-1-.45-1-1s.45-1 1-1h12c.55 0 1 .45 1 1s-.45 1-1 1z"/>`,
+  home: `<path d="M0 0h24v24H0V0z" fill="none"/><path d="M10 19v-5h4v5c0 .55.45 1 1 1h3c.55 0 1-.45 1-1v-7h1.7c.46 0 .68-.57.33-.87L12.67 3.6c-.38-.34-.96-.34-1.34 0l-8.36 7.53c-.34.3-.13.87.33.87H5v7c0 .55.45 1 1 1h3c.55 0 1-.45 1-1z"/>`,
+  loveFull: `<path d="M0 0h24v24H0V0z" fill="none"/><path d="M13.35 20.13c-.76.69-1.93.69-2.69-.01l-.11-.1C5.3 15.27 1.87 12.16 2 8.28c.06-1.7.93-3.33 2.34-4.29 2.64-1.8 5.9-.96 7.66 1.1 1.76-2.06 5.02-2.91 7.66-1.1 1.41.96 2.28 2.59 2.34 4.29.14 3.88-3.3 6.99-8.55 11.76l-.1.09z"/>`,
+  loveOutline: `<path d="M0 0h24v24H0V0z" fill="none"/><path d="M19.66 3.99c-2.64-1.8-5.9-.96-7.66 1.1-1.76-2.06-5.02-2.91-7.66-1.1-1.4.96-2.28 2.58-2.34 4.29-.14 3.88 3.3 6.99 8.55 11.76l.1.09c.76.69 1.93.69 2.69-.01l.11-.1c5.25-4.76 8.68-7.87 8.55-11.75-.06-1.7-.94-3.32-2.34-4.28zM12.1 18.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"/>`,
+  share: `<path d="M0 0h24v24H0V0z" fill="none"/><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/>`,
+  help: `<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/><rect fill="none" height="24" width="24"/></g><g><path d="M12,2C6.48,2,2,6.48,2,12c0,5.52,4.48,10,10,10s10-4.48,10-10C22,6.48,17.52,2,12,2z M19.46,9.12l-2.78,1.15 c-0.51-1.36-1.58-2.44-2.95-2.94l1.15-2.78C16.98,5.35,18.65,7.02,19.46,9.12z M12,15c-1.66,0-3-1.34-3-3s1.34-3,3-3s3,1.34,3,3 S13.66,15,12,15z M9.13,4.54l1.17,2.78c-1.38,0.5-2.47,1.59-2.98,2.97L4.54,9.13C5.35,7.02,7.02,5.35,9.13,4.54z M4.54,14.87 l2.78-1.15c0.51,1.38,1.59,2.46,2.97,2.96l-1.17,2.78C7.02,18.65,5.35,16.98,4.54,14.87z M14.88,19.46l-1.15-2.78 c1.37-0.51,2.45-1.59,2.95-2.97l2.78,1.17C18.65,16.98,16.98,18.65,14.88,19.46z"/></g></svg>`
+};
+exports.db = db;
+
+},{}],7:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _icondb = require("./icondb");
+
+const dontEnvelope = ["help"];
+
+class IconBuilder {
+  constructor(defaults = null) {
+    this.default = defaults || {
+      fill: "black"
+    };
+  }
+
+  grab(icon, options) {
+    if (dontEnvelope.includes(icon)) return _icondb.db[icon];
+    return this.buildIcon(_icondb.db[icon], options);
+  }
+
+  buildIcon(icon, options = {}) {
+    return `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${options.fill || this.default.fill || "black"}" width="18px" height="18px">
+        ${icon}
+      </svg>
+      `;
+  }
+
+}
+
+exports.default = IconBuilder;
+
+},{"./icondb":6}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15542,6 +15608,12 @@ Object.defineProperty(exports, "Bridge", {
     return _templates.Bridge;
   }
 });
+Object.defineProperty(exports, "IconBuilder", {
+  enumerable: true,
+  get: function () {
+    return _icons.default;
+  }
+});
 
 var _pragma = _interopRequireDefault(require("./pragmas/pragma.js"));
 
@@ -15549,9 +15621,11 @@ var _comp = _interopRequireDefault(require("./pragmas/comp.js"));
 
 var _templates = require("./composers/templates.js");
 
+var _icons = _interopRequireDefault(require("./icons/icons"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./composers/templates.js":5,"./pragmas/comp.js":7,"./pragmas/pragma.js":8}],7:[function(require,module,exports){
+},{"./composers/templates.js":5,"./icons/icons":7,"./pragmas/comp.js":9,"./pragmas/pragma.js":10}],9:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15634,7 +15708,9 @@ class Comp extends _pragma.default {
   get master() {
     if (this.parent == null || this.parent.parent == null) return this.parent;
     return this.parent.master;
-  }
+  } // TODO this algo sucks
+  // convert to binary search after shorting kids in a smart way
+
 
   find(key) {
     // recursively find a key
@@ -15730,16 +15806,20 @@ class Comp extends _pragma.default {
     }
   }
 
-  build(map) {
-    //this.pragmatize()
-    this.compose(true);
-
-    if (map.icon) {
+  illustrate(icon) {
+    if (!this.icon) {
       this.icon = (0, _jquery.default)(document.createElement("div"));
-      this.icon.html(map.icon);
       this.icon.appendTo(this.element);
     }
 
+    this.icon.html(icon);
+    return this;
+  }
+
+  build(map) {
+    //this.pragmatize()
+    this.compose(true);
+    if (map.icon) this.illustrate(map.icon);
     if (map.elements) this.buildArray(map.elements);
     if (map.hover_element) this.buildInside(map.hover_element);
     if (map.value) this.value = map.value;
@@ -15850,7 +15930,7 @@ class Comp extends _pragma.default {
 
 exports.default = Comp;
 
-},{"../composers/templates":5,"./pragma":8,"jquery":3,"tippy.js":4}],8:[function(require,module,exports){
+},{"../composers/templates":5,"./pragma":10,"jquery":3,"tippy.js":4}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15922,7 +16002,7 @@ class Pragma {
 
 exports.default = Pragma;
 
-},{"jquery":3}],9:[function(require,module,exports){
+},{"jquery":3}],11:[function(require,module,exports){
 "use strict";
 
 !function (n) {
@@ -15966,7 +16046,7 @@ exports.default = Pragma;
   };
 }(jQuery);
 
-},{}],10:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 

@@ -72,6 +72,9 @@ export default class Comp extends Pragma {
     return this.parent.master
   }
 
+  // TODO this algo sucks
+  // convert to binary search after shorting kids in a smart way
+
   find(key){
     // recursively find a key
     if (this.key == key) return this
@@ -164,15 +167,21 @@ export default class Comp extends Pragma {
     }
   }
 
+  illustrate(icon){
+    if (!this.icon) {       
+      this.icon = $(document.createElement("div"))
+      this.icon.appendTo(this.element)
+    }
+    this.icon.html(icon)
+    return this
+  }
+
   build(map){
     //this.pragmatize()
     this.compose(true)
 
-    if (map.icon){
-      this.icon = $(document.createElement("div"))
-      this.icon.html(map.icon)
-      this.icon.appendTo(this.element)
-    }
+    if (map.icon) this.illustrate(map.icon)
+      
 
     if (map.elements) this.buildArray(map.elements)
     if (map.hover_element) this.buildInside(map.hover_element)
