@@ -21642,9 +21642,7 @@ video {
 
 /* fonts */
 
-@import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,700&family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&display=swap');
-
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300&family=Syne&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Syne:wght@400;500;600;700;800&display=swap'); */
 
 body {
   font-family: "Poppins", "Open Sans", "Helvetica", "Arial";
@@ -21652,8 +21650,16 @@ body {
   overflow-x: hidden;
 }
 
+a {
+  color: #5e38c7 !important;
+}
+
 h1, h2, h3, h4, h5, h6 {
-  font-family: "Syne", "Merriweather";
+  font-family: 'Syne', sans-serif !important;
+}
+
+h1 {
+  font-size: 2em;
 }
 
 pre, code {
@@ -21692,7 +21698,7 @@ pre, code {
 }
 
 #paper{
-  background-color: #f1f1f1;
+  background-color: #fff;
   min-height: 100vh;
   padding: 50px 50px;
   border-radius: 10px;
@@ -21789,7 +21795,7 @@ pre, code {
   background-color: #0e0e0e;
   color: whitesmoke;
   border-radius: 5px;
-  display: inline-block;
+  display: inline-flex;
   flex: auto;
   flex-wrap: nowrap;
   justify-content: center;
