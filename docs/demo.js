@@ -19,7 +19,7 @@ import { Bridge, Select, Compose, Button, Comp, IconBuilder } from "../src"
 var beautify = require('js-beautify')
 
 let icons = new IconBuilder()
-icons.default.fill = "white"
+icons.default.fill = "black"
 let paper = new Comp({
     key: "paper",
     element: $("#paper")
@@ -48,11 +48,15 @@ function doBlock(block) {
   block(paper)
 }
 
+import hljs from 'highlight.js/lib/core'
+import javascript from 'highlight.js/lib/languages/javascript'
+hljs.registerLanguage('javascript', javascript)
+hljs.initHighlightingOnLoad()
 const Block = ((key, block) => { 
   let preElement = $(document.createElement("pre"))
   let codeElement = $(document.createElement("code"))
   codeElement.html(strBlock(block))
-  codeElement.attr({"data-language": "javascript"})
+  codeElement.addClass("lang-javascript")
   preElement.html(codeElement)
   
 
@@ -60,7 +64,6 @@ const Block = ((key, block) => {
     doBlock(block) 
     comp.icon.fadeTo(80, .5)
   }, "Do Block")
-  doblock.element.css({"display":"inline"})
 
   let copyblock = Button.action("copyblock", icons.grab("copy"), (m, comp) => {
     navigator.clipboard.writeText(strBlock(block))
@@ -68,7 +71,6 @@ const Block = ((key, block) => {
     comp.setTippy("Copied!")
     comp.tippy.show()
   }, "Copy")
-  copyblock.element.css({"display":"inline"})
 
   return new Comp({
       key: key,

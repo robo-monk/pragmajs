@@ -1,6 +1,6 @@
 {
   "name": "pragmajs",
-  "version": "0.0.10",
+  "version": "0.1.0",
   "description": "Simple way to make UI connect well with your code",
   "license": "MIT",
   "repository": {
@@ -31,6 +31,7 @@
     "babel-jest": "^26.6.3",
     "babel-loader": "^8.2.1",
     "babelify": "^10.0.0",
+    "highlight.js": "^10.3.2",
     "jest": "^26.6.3",
     "js-beautify": "^1.13.0",
     "tailwindcss": "^1.9.6",
