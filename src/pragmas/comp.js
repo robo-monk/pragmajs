@@ -2,6 +2,7 @@ import $ from "jquery"
 import Pragma from "./pragma"
 import { Compose } from "../composers/templates"
 import tippy from "tippy.js"
+import Mousetrap from "mousetrap"
 
 export default class Comp extends Pragma {
   constructor(map, parent = null){
@@ -204,11 +205,12 @@ export default class Comp extends Pragma {
     }
 
     if (map.click){
+      this.onclick = () => { 
+          map.click(this.master) 
+      }
       this.element.addClass(`pragma-clickable`)
       this.setup_listeners({
-        "click": () => { 
-          map.click(this.master) 
-        }
+        "click": this.onclick
       })
     }
     if (map.mouseover){
@@ -243,6 +245,20 @@ export default class Comp extends Pragma {
   }
   leaveUsKidsAlone(){
     return this.dismantle()
+  }
+
+  // mousetrap integration
+  proc_bind_cb(cb){
+    if (!cb){
+      if (this.onclick) return (()=> { this.onclick(this.master) })
+      return ((comp) => { comp.value += 1 })
+    }
+    return cb
+  }
+  bind(keys, cb, event){
+    cb = this.proc_bind_cb(cb)
+    Mousetrap.bind(keys, () => { cb(this) }, event)
+    return this
   }
 
   get allChildren(){

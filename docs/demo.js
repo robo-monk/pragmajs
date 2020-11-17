@@ -3,6 +3,10 @@
 // TODO do code blocks like this, and print them to an element
 // import doBlock from "./demos/helloworld"
 
+// TODO have an api that can support building literally any page through one var,
+// let comp = Compose().build(Compose()........ / dont use it like that but concept wise it should
+// be doable and actually really efficient
+
 // doBlock()
 // console.log(doBlock.toString())
 
@@ -18,26 +22,37 @@ icons.default.fill = "white"
 
 let colorsComp = Select.color("markercolors", colors, (v, comp, key) => {
   $(document.body).css({"background": colors[comp.find(key).value]}) 
-})
+}).bind("c")
 
 let fontComp = Select.font("readerfont", fonts, (v, comp, key) => {
    $(document.body).css({"font-family": fonts[comp.find(key).value]}) 
-})
+}).bind("f")
+// could be equivelant to ?
+// font Comp = Select.font.from(fonts).onChange(...).onMouseOver
 
+// bind rules
+// if type is choices default would be to plus the value
+//
+// if object has a click action and is called to bind, do that click action 
 let modeComp = Select.attr("markermode", modes, (v, comp, key) => {
   // on set
   console.log(v)
 }, (key, index) => {
   // icon
   return { type: "pointerModeOption", html: "M" }
-})
+}).bind("m", null, "keyup")
+
+// could be equivelant to ?
+// let modeComp = Select.attr.
 
 let wpmComp = Button.controls("wpm", 250, 10, (value, comp) => {
 }, { "+": icons.grab("plus"), "-": icons.grab("minus")})
+wpmComp.find("wpm+").bind(["=", "+"])
+wpmComp.find("wpm-").bind("-")
 
 let linkComp = Button.action("commiter", "C", () => {
   alert("lazy")
-}).pragmatize()
+}).pragmatize().bind("A")
 
 // TODO host array
 let popUpSettings = Compose("popupsettings", "⚙️").host(colorsComp).host(fontComp).host(modeComp)

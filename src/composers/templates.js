@@ -3,7 +3,7 @@ import Comp from "../pragmas/comp"
 // TODO button action refactor
 const buttonAction = (key, value, icon, action) => {
   return {
-    key: key + "_button_" + value,
+    key: key,
     type: "button",
     icon: icon,
     value: value,
@@ -12,8 +12,8 @@ const buttonAction = (key, value, icon, action) => {
     }
   }
 }
-const buttonValue = (key, value, step, icon) => {
-  return buttonAction(key, value, icon, (comp) => {
+const buttonValue = (key, ext, value, step, icon) => {
+  return buttonAction(key+ext, value, icon, (comp) => {
     let key_element = comp.find(key)
     key_element.value += step
   })
@@ -42,13 +42,13 @@ const Button = {
         action(value, comp)
       },
       elements: [
-        buttonValue(key, value, -step, icons["-"]),
+        buttonValue(key, "-", value, -step, icons["-"]),
         {
           key: `${key}-monitor`,
           type: "monitor",
           icon: value
         },
-        buttonValue(key, value, step, icons["+"]),
+        buttonValue(key, "+", value, step, icons["+"]),
       ]
     })
   })
