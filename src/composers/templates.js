@@ -7,16 +7,15 @@ const buttonAction = (key, value, icon, action) => {
     type: "button",
     icon: icon,
     value: value,
-    click: (comp) => {
-      action(comp)
+    click: (master, comp) => {
+      action(master, comp)
     }
   }
 }
 const buttonValue = (key, ext, value, step, icon) => {
-  return buttonAction(key+ext, value, icon, (comp) => {
-    let key_element = comp.find(key)
-    key_element.value += step
-  })
+  return buttonAction(key+ext, value, icon, ((master, comp) => {
+    comp.parent.value += step
+  }))
 }
 
 // TODO add icons
@@ -122,7 +121,7 @@ const Select = {
         onset(attrs[v], comp, key)
       },
       variants: attrs
-    }))
+    })).setRange(0, attrs.length-1).setLoop()
   }),
   color: ((key, colors, onset, value=0) => {
     return Select.attr(key, colors, onset, (key, index) => { return { css: `background:${key}`, html: "" } }, value) 

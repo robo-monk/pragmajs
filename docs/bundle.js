@@ -54,7 +54,7 @@ let modeComp = _src.Select.attr("markermode", modes, (v, comp, key) => {
 let wpmComp = _src.Button.controls("wpm", 250, 10, (value, comp) => {}, {
   "+": icons.grab("plus"),
   "-": icons.grab("minus")
-});
+}).setRange(10, 300);
 
 wpmComp.find("wpm+").bind(["=", "+"]);
 wpmComp.find("wpm-").bind("-");
@@ -16323,16 +16323,15 @@ const buttonAction = (key, value, icon, action) => {
     type: "button",
     icon: icon,
     value: value,
-    click: comp => {
-      action(comp);
+    click: (master, comp) => {
+      action(master, comp);
     }
   };
 };
 
 const buttonValue = (key, ext, value, step, icon) => {
-  return buttonAction(key + ext, value, icon, comp => {
-    let key_element = comp.find(key);
-    key_element.value += step;
+  return buttonAction(key + ext, value, icon, (master, comp) => {
+    comp.parent.value += step;
   });
 }; // TODO add icons
 
@@ -16451,7 +16450,7 @@ const Select = {
         onset(attrs[v], comp, key);
       },
       variants: attrs
-    }));
+    })).setRange(0, attrs.length - 1).setLoop();
   },
   color: (key, colors, onset, value = 0) => {
     return Select.attr(key, colors, onset, (key, index) => {
@@ -16772,9 +16771,17 @@ class Comp extends _pragma.default {
     return this.log_txt;
   }
 
+  proc_value(v) {
+    // returns the bounded value and a bool to do the chain or not
+    if (this.loopingValue) return [this.loopBoundVal(v), true];
+    let r = this.rangeBoundVal(v);
+    return [r, r == v];
+  }
+
   set value(v) {
-    this.actualValue = v;
-    this.doChain(v, this.master); // console.log('did the chain')
+    let pv = this.proc_value(v);
+    this.actualValue = pv[0];
+    if (pv[1]) this.doChain(this.actualValue, this.master); // do the chain if the value is in the range
   }
 
   get value() {
@@ -16899,7 +16906,7 @@ class Comp extends _pragma.default {
     if (map.elements) this.buildArray(map.elements);
     if (map.hover_element) this.buildInside(map.hover_element);
     if (map.value) this.value = map.value;
-    if (map.set) this.addToChain((v, comp) => map.set(v, comp)); // if (map.set) this.onset = (v, comp) => { 
+    if (map.set) this.addToChain((v, master, comp) => map.set(v, master, comp)); // if (map.set) this.onset = (v, comp) => { 
     //   this.master.log(`${map.key} -> ${v}`); 
     //   map.set(v, comp) 
     // }
@@ -16916,7 +16923,7 @@ class Comp extends _pragma.default {
 
     if (map.click) {
       this.onclick = () => {
-        map.click(this.master);
+        map.click(this.master, this);
       };
 
       this.element.addClass(`pragma-clickable`);
@@ -17018,6 +17025,35 @@ class Comp extends _pragma.default {
     }
 
     return shape;
+  }
+
+  setRange(min, max) {
+    this.rangeAry = [min, max];
+    return this;
+  }
+
+  loopBoundVal(v) {
+    if (!this.loopingValue) return v;
+    let l = this.loopingValue;
+    v = v > l[1] ? l[0] : v;
+    v = v < l[0] ? l[1] : v;
+    return v;
+  }
+
+  setLoop(min, max) {
+    let actualMin = min || (this.range ? this.range[0] : 0);
+    let actualMax = max || (this.range ? this.range[1] : 69);
+    this.loopingValue = [actualMin, actualMax];
+    return this;
+  }
+
+  rangeBoundVal(v) {
+    if (!this.range) return v;
+    return Math.max(this.range[0], Math.min(v, this.range[1]));
+  }
+
+  get range() {
+    return this.rangeAry;
   }
 
   get shape() {

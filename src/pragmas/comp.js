@@ -59,12 +59,19 @@ export default class Comp extends Pragma {
   get logs(){
     return this.log_txt
   }
-
-  set value(v){
-    this.actualValue = v 
-    this.doChain(v, this.master) 
-    // console.log('did the chain')
+  
+  proc_value(v){
+    // returns the bounded value and a bool to do the chain or not
+    if (this.loopingValue) return [this.loopBoundVal(v), true]
+    let r = this.rangeBoundVal(v)
+    return [r, r==v]
   }
+  set value(v){
+    let pv = this.proc_value(v)
+    this.actualValue = pv[0]
+    if (pv[1]) this.doChain(this.actualValue, this.master) // do the chain if the value is in the range
+  }
+
   get value(){
     return this.actualValue
   }
@@ -187,7 +194,7 @@ export default class Comp extends Pragma {
     if (map.elements) this.buildArray(map.elements)
     if (map.hover_element) this.buildInside(map.hover_element)
     if (map.value) this.value = map.value
-    if (map.set) this.addToChain((v, comp) => map.set(v, comp))
+    if (map.set) this.addToChain((v, master, comp) => map.set(v, master, comp))
     // if (map.set) this.onset = (v, comp) => { 
 
     //   this.master.log(`${map.key} -> ${v}`); 
@@ -206,7 +213,7 @@ export default class Comp extends Pragma {
 
     if (map.click){
       this.onclick = () => { 
-          map.click(this.master) 
+          map.click(this.master, this) 
       }
       this.element.addClass(`pragma-clickable`)
       this.setup_listeners({
@@ -287,6 +294,35 @@ export default class Comp extends Pragma {
       }
     }
     return shape
+  }
+
+  setRange(min, max){
+    this.rangeAry = [min, max]
+    return this 
+  }
+
+  loopBoundVal(v){
+    if (!this.loopingValue) return v
+
+    let l = this.loopingValue
+    v = v > l[1] ? l[0] :  v
+    v = v < l[0] ? l[1] :  v
+    return v
+  }
+  setLoop(min, max){
+    let actualMin = min || (this.range ? this.range[0] : 0)
+    let actualMax = max || (this.range ? this.range[1] : 69)
+    this.loopingValue = [actualMin, actualMax]
+    return this
+  }
+
+  rangeBoundVal(v){
+    if (!this.range) return v
+    return Math.max(this.range[0], Math.min(v, this.range[1]))
+  }
+
+  get range(){
+    return this.rangeAry
   }
 
   get shape(){

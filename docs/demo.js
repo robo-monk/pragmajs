@@ -46,7 +46,7 @@ let modeComp = Select.attr("markermode", modes, (v, comp, key) => {
 // let modeComp = Select.attr.
 
 let wpmComp = Button.controls("wpm", 250, 10, (value, comp) => {
-}, { "+": icons.grab("plus"), "-": icons.grab("minus")})
+}, { "+": icons.grab("plus"), "-": icons.grab("minus")}).setRange(10, 300)
 wpmComp.find("wpm+").bind(["=", "+"])
 wpmComp.find("wpm-").bind("-")
 
