@@ -1,7 +1,7 @@
 {
   "name": "pragmajs",
-  "version": "0.1.0",
-  "description": "Simple way to make UI connect well with your code",
+  "version": "0.1.1",
+  "description": "Simple javascript UI generation",
   "license": "MIT",
   "repository": {
     "type": "git",
