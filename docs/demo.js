@@ -31,6 +31,9 @@ function strBlock(block) {
     untab_lines[i] = line.replace("  ", "") 
   })
   return untab_lines.join("\n").replaceAll("_src.", "")
+             .replaceAll(";", "")
+             .replaceAll("(0, Compose)", "Compose")
+             .replaceAll("(0, Bridge)", "Bridge")
 }
 function doBlock(block) {
   block(paper)

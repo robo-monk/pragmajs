@@ -34,7 +34,7 @@ function strBlock(block) {
   lines.forEach((line, i) => {
     untab_lines[i] = line.replace("  ", "");
   });
-  return untab_lines.join("\n").replaceAll("_src.", "");
+  return untab_lines.join("\n").replaceAll("_src.", "").replaceAll(";", "").replaceAll("(0, Compose)", "Compose").replaceAll("(0, Bridge)", "Bridge");
 }
 
 function doBlock(block) {
@@ -192,14 +192,18 @@ function bigdemo(paper) {
   let icons = new _src.IconBuilder();
   icons.default.fill = "white";
 
+  function modifyBody(dict) {
+    $(document.body).css(dict);
+  }
+
   let colorsComp = _src.Select.color("markercolors", colors, (v, comp, key) => {
-    $(document.body).css({
+    modifyBody({
       "background": colors[comp.find(key).value]
     });
   }).bind("c");
 
   let fontComp = _src.Select.font("readerfont", fonts, (v, comp, key) => {
-    $(document.body).css({
+    modifyBody({
       "font-family": fonts[comp.find(key).value]
     });
   }).bind("f"); // could be equivelant to ?
@@ -211,19 +215,19 @@ function bigdemo(paper) {
 
 
   let modeComp = _src.Select.attr("markermode", modes, (v, comp, key) => {
-    // on set
+    // on value change
     console.log(v);
   }, (key, index) => {
-    // icon
+    // icon contruction
     return {
       type: "pointerModeOption",
       html: "M"
     };
-  }).bind("m", null, "keyup"); // could be equivelant to ?
-  // let modeComp = Select.attr.
+  }).bind("m", null, "keyup"); // key, initial val, step
 
 
-  let wpmComp = _src.Button.controls("wpm", 250, 10, (value, comp) => {}, {
+  let wpmComp = _src.Button.controls("wpm", 250, 10, (value, comp) => {// on set
+  }, {
     "+": icons.grab("plus"),
     "-": icons.grab("minus")
   }).setRange(10, 300);
@@ -233,12 +237,10 @@ function bigdemo(paper) {
 
   let linkComp = _src.Button.action("commiter", "C", () => {
     alert("lazy");
-  }).pragmatize().bind("A"); // TODO host array
+  }).pragmatize().bind("o"); // TODO host & contain array
 
 
-  let popUpSettings = (0, _src.Compose)("popupsettings", "⚙️").host(colorsComp).host(fontComp).host(modeComp); // let popUpSettings = Compose("popupsettings", "⚙️").contain(colorsComp).contain(fontComp).contain(modeComp)
-  // popUpSettings.pragmatize()
-  // icons
+  let popUpSettings = (0, _src.Compose)("popupsettings", "⚙️").host(colorsComp).host(fontComp).host(modeComp); // icons
 
   popUpSettings.illustrate(icons.grab("settings"));
   let settings = (0, _src.Compose)("settingsWrapper").contain(popUpSettings).contain(wpmComp);
@@ -247,7 +249,8 @@ function bigdemo(paper) {
   let freadyBridge = (0, _src.Bridge)(settings, syncedKeys, (object, trigger) => {
     paper.element.append(`<li>${trigger.key} -> ${trigger.value}</li>`);
   });
-  settings.chain(freadyBridge); // every time a value is changed, do the freadyBridge's actions as well
+  settings.chain(freadyBridge); // every time a value is changed, do the 
+  // freadyBridge's actions as well
 }
 
 },{"../../src":11,"../../src/third_party/idle":14}],3:[function(require,module,exports){
