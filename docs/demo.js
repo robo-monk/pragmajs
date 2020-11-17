@@ -15,6 +15,8 @@
 
 
 import { Bridge, Select, Compose, Button, Comp, IconBuilder } from "../src"
+// const beautify = require('js-beautify');
+var beautify = require('js-beautify')
 
 let icons = new IconBuilder()
 icons.default.fill = "white"
@@ -30,10 +32,17 @@ function strBlock(block) {
   lines.forEach((line, i) => {
     untab_lines[i] = line.replace("  ", "") 
   })
-  return untab_lines.join("\n").replaceAll("_src.", "")
+
+  console.log(beautify(untab_lines.join("\n"), { format: "js"}))
+  return beautify(untab_lines.join("\n").replaceAll("_src.", "")
              .replaceAll(";", "")
              .replaceAll("(0, Compose)", "Compose")
-             .replaceAll("(0, Bridge)", "Bridge")
+    .replaceAll("(0, Bridge)", "Bridge"), {
+      end_with_newline: true, 
+      indent_size: 2,
+      space_in_empty_paren: true,
+      break_chained_methods: true
+    })
 }
 function doBlock(block) {
   block(paper)

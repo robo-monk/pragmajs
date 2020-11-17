@@ -39,9 +39,11 @@ export default function bigdemo(paper) {
   // font Comp = Select.font.from(fonts).onChange(...).onMouseOver
 
   // bind rules
-  // if type is choices default would be to plus the value
+  // if type is choices default would be to 
+  // plus the value
   //
-  // if object has a click action and is called to bind, do that click action 
+  // if object has a click action and is called 
+  // to bind, do that click action 
   let modeComp = Select.attr("markermode", modes,
     (v, comp, key) => {
       // on value change
@@ -57,10 +59,8 @@ export default function bigdemo(paper) {
 
 
   // key, initial val, step
-  let wpmComp = Button.controls("wpm", 250, 10,
-    (value, comp) => {
-      // on set
-    }, {
+  let wpmSet = (value, comp ) => { /* on set */ }
+  let wpmComp = Button.controls("wpm", 250, 10, wpmSet, {
     "+": icons.grab("plus"),
     "-": icons.grab("minus")
   }).setRange(10, 300)
@@ -73,15 +73,13 @@ export default function bigdemo(paper) {
       alert("lazy")
     }).pragmatize().bind("o")
 
-  // TODO host & contain array
   let popUpSettings = Compose("popupsettings", "⚙️")
     .host(colorsComp)
     .host(fontComp)
     .host(modeComp)
+  // TODO host & contain array
 
-  // icons
-
-  popUpSettings.illustrate(icons.grab("settings"))
+  popUpSettings.illustrate(icons.grab("settings")) // icons
 
 
   let settings = Compose("settingsWrapper").contain(popUpSettings).contain(wpmComp)
@@ -94,6 +92,7 @@ export default function bigdemo(paper) {
     })
 
   settings.chain(freadyBridge)
+
   // every time a value is changed, do the 
   // freadyBridge's actions as well
 
