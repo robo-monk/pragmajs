@@ -152,8 +152,8 @@ const Value = (key, value, icon, elements, type="value") => {
   return new Comp(map(key, type, icon, elements))
 }
 
-const pragmatize = (comp) => {
-  comp.pragmatize()
+const pragmatize = (comp, where) => {
+  comp.pragmatize(where)
   return comp
 }
 

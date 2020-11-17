@@ -21656,6 +21656,12 @@ a {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Syne', sans-serif !important;
+  text-align: center;
+  padding: 10px;
+  text-decoration: underline;
+  -webkit-text-decoration-color: #5e38c768;
+          text-decoration-color: #5e38c768;
+  text-decoration-thickness: 2px;
 }
 
 h1 {
@@ -21695,6 +21701,18 @@ pre, code {
 .pragma-demo-block .pragma-button {
   margin-top: 15px;
   background-color: transparent;
+}
+
+.pragma-demo-block .pragma-icon {
+  padding: 5px;
+  margin-bottom: 10px;
+  color: #96989692;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  text-align: left;
+  width: 100%;
 }
 
 #paper{

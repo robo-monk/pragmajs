@@ -95,5 +95,5 @@ export default function bigdemo(paper) {
 
   // every time a value is changed, do the 
   // freadyBridge's actions as well
-
+  return ["settingsWrapper", "commiter"]
 }

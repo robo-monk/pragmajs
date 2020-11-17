@@ -97,9 +97,10 @@ export default class Comp extends Pragma {
 
   // actions kinda 
 
-  pragmatize(){
+  pragmatize(where){
     //this.compose()
-    $(document.body).append(this.element)
+    if (where instanceof Pragma) where = where.element
+    $(where ? where : document.body).append(this.element)
     return this
   }
 

@@ -12,9 +12,15 @@
 // doBlock()
 // console.log(doBlock.toString())
 
+import hljs from 'highlight.js/lib/core'
+import javascript from 'highlight.js/lib/languages/javascript'
+hljs.registerLanguage('javascript', javascript)
 
 
 import { Bridge, Select, Compose, Button, Comp, IconBuilder } from "../src"
+import helloworld from "./demos/helloworld"
+import bigdemo from "./demos/bigdemo"
+
 // const beautify = require('js-beautify');
 var beautify = require('js-beautify')
 
@@ -28,7 +34,7 @@ let paper = new Comp({
 function strBlock(block) {
   let lines = block.toString().split("\n")
   let untab_lines = []
-  lines = lines.splice(1, lines.length-2) // remove function text and }
+  lines = lines.splice(1, lines.length-3) // remove function text and the return }
   lines.forEach((line, i) => {
     untab_lines[i] = line.replace("  ", "") 
   })
@@ -44,15 +50,22 @@ function strBlock(block) {
       break_chained_methods: true
     })
 }
-function doBlock(block) {
-  block(paper)
+let cleanIds = []
+function doBlock(block, nextblock) {
+  cleanIds.forEach( (id) => {
+    $(`#${id}`).remove()
+  })
+  cleanIds = block(paper)
+  if (nextblock) {
+    paper.contain(nextblock)
+    hljs.highlightBlock(nextblock.element.find("pre")[0])
+    // setTimeout(() => { console.log(paper.element.find("pre")[1]); hljs.highlightBlock(paper.element[0]) }, 500)
+    console.log("next block")
+  }
 }
 
-import hljs from 'highlight.js/lib/core'
-import javascript from 'highlight.js/lib/languages/javascript'
-hljs.registerLanguage('javascript', javascript)
-hljs.initHighlightingOnLoad()
-const Block = ((key, block) => { 
+
+const Block = ((key, block, nextblock) => { 
   let preElement = $(document.createElement("pre"))
   let codeElement = $(document.createElement("code"))
   codeElement.html(strBlock(block))
@@ -61,7 +74,7 @@ const Block = ((key, block) => {
   
 
   let doblock = Button.action("doblock", icons.grab("play"), (m, comp) => { 
-    doBlock(block) 
+    doBlock(block, nextblock) 
     comp.icon.fadeTo(80, .5)
   }, "Do Block")
 
@@ -74,6 +87,7 @@ const Block = ((key, block) => {
 
   return new Comp({
       key: key,
+      icon: key+".js",
       type: "demo-block",
       elements: [
         {
@@ -87,12 +101,9 @@ const Block = ((key, block) => {
 
 //rainbow.color()
 
-import helloworld from "./demos/helloworld"
-import bigdemo from "./demos/bigdemo"
-
-let hwblock = Block("helloworld", helloworld)
 let bgblock = Block("bigdemo", bigdemo)
-paper.contain(hwblock).contain(bgblock)
+let hwblock = Block("helloworld", helloworld, bgblock)
+paper.contain(hwblock)
 // console.time()
 // console.timeEnd()
 
@@ -193,3 +204,5 @@ paper.contain(hwblock).contain(bgblock)
 // }, 1500)
 // let lec = new Lector($("#article"), settings)
 // lec.read()
+
+hljs.initHighlightingOnLoad()

@@ -1,7 +1,12 @@
+import { Compose } from "../../src"
 export default function helloworld(){
-// comment
-  console.log("hello world")
+  
+  // execute this by pressing the play button below!
+  let lame = Compose("lame", "This is a lame demo") 
+  lame.pragmatize("#helloworld")
+  return ["lame"]
 }
+
 // import { Variants, Comp, ColorSelect, FontSelect, Compose, contain, host } from "../../src"
 
 // export default function doBlock() {

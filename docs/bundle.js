@@ -1,11 +1,11 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 "use strict";
 
-var _src = require("../src");
-
 var _core = _interopRequireDefault(require("highlight.js/lib/core"));
 
 var _javascript = _interopRequireDefault(require("highlight.js/lib/languages/javascript"));
+
+var _src = require("../src");
 
 var _helloworld = _interopRequireDefault(require("./demos/helloworld"));
 
@@ -23,6 +23,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //hwblock.pragmatize()
 // doBlock()
 // console.log(doBlock.toString())
+_core.default.registerLanguage('javascript', _javascript.default);
+
 // const beautify = require('js-beautify');
 var beautify = require('js-beautify');
 
@@ -36,7 +38,7 @@ let paper = new _src.Comp({
 function strBlock(block) {
   let lines = block.toString().split("\n");
   let untab_lines = [];
-  lines = lines.splice(1, lines.length - 2); // remove function text and }
+  lines = lines.splice(1, lines.length - 3); // remove function text and the return }
 
   lines.forEach((line, i) => {
     untab_lines[i] = line.replace("  ", "");
@@ -52,15 +54,25 @@ function strBlock(block) {
   });
 }
 
-function doBlock(block) {
-  block(paper);
+let cleanIds = [];
+
+function doBlock(block, nextblock) {
+  cleanIds.forEach(id => {
+    $(`#${id}`).remove();
+  });
+  cleanIds = block(paper);
+
+  if (nextblock) {
+    paper.contain(nextblock);
+
+    _core.default.highlightBlock(nextblock.element.find("pre")[0]); // setTimeout(() => { console.log(paper.element.find("pre")[1]); hljs.highlightBlock(paper.element[0]) }, 500)
+
+
+    console.log("next block");
+  }
 }
 
-_core.default.registerLanguage('javascript', _javascript.default);
-
-_core.default.initHighlightingOnLoad();
-
-const Block = (key, block) => {
+const Block = (key, block, nextblock) => {
   let preElement = $(document.createElement("pre"));
   let codeElement = $(document.createElement("code"));
   codeElement.html(strBlock(block));
@@ -68,7 +80,7 @@ const Block = (key, block) => {
   preElement.html(codeElement);
 
   let doblock = _src.Button.action("doblock", icons.grab("play"), (m, comp) => {
-    doBlock(block);
+    doBlock(block, nextblock);
     comp.icon.fadeTo(80, .5);
   }, "Do Block");
 
@@ -81,6 +93,7 @@ const Block = (key, block) => {
 
   return new _src.Comp({
     key: key,
+    icon: key + ".js",
     type: "demo-block",
     elements: [{
       key: "code",
@@ -91,9 +104,9 @@ const Block = (key, block) => {
 }; //rainbow.color()
 
 
-let hwblock = Block("helloworld", _helloworld.default);
 let bgblock = Block("bigdemo", _bigdemo.default);
-paper.contain(hwblock).contain(bgblock); // console.time()
+let hwblock = Block("helloworld", _helloworld.default, bgblock);
+paper.contain(hwblock); // console.time()
 // console.timeEnd()
 // let idle = false
 // function fadeAway(){
@@ -183,6 +196,8 @@ paper.contain(hwblock).contain(bgblock); // console.time()
 // let lec = new Lector($("#article"), settings)
 // lec.read()
 
+_core.default.initHighlightingOnLoad();
+
 },{"../src":37,"./demos/bigdemo":2,"./demos/helloworld":3,"highlight.js/lib/core":5,"highlight.js/lib/languages/javascript":6,"js-beautify":8}],2:[function(require,module,exports){
 "use strict";
 
@@ -266,6 +281,8 @@ function bigdemo(paper) {
   });
   settings.chain(freadyBridge); // every time a value is changed, do the 
   // freadyBridge's actions as well
+
+  return ["settingsWrapper", "commiter"];
 }
 
 },{"../../src":37,"../../src/third_party/idle":40}],3:[function(require,module,exports){
@@ -276,9 +293,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = helloworld;
 
+var _src = require("../../src");
+
 function helloworld() {
-  // comment
-  console.log("hello world");
+  // execute this by pressing the play button below!
+  let lame = (0, _src.Compose)("lame", "This is a lame demo");
+  lame.pragmatize("#helloworld");
+  return ["lame"];
 } // import { Variants, Comp, ColorSelect, FontSelect, Compose, contain, host } from "../../src"
 // export default function doBlock() {
 // let colors = [ "tomato", "navy", "lime"]
@@ -312,7 +333,7 @@ function helloworld() {
 // console.log("yyet")
 // }
 
-},{}],4:[function(require,module,exports){
+},{"../../src":37}],4:[function(require,module,exports){
 (function (process){(function (){
 /**
  * @popperjs/core v2.5.4 - MIT License
@@ -25280,8 +25301,8 @@ const Value = (key, value, icon, elements, type = "value") => {
 
 exports.Value = Value;
 
-const pragmatize = comp => {
-  comp.pragmatize();
+const pragmatize = (comp, where) => {
+  comp.pragmatize(where);
   return comp;
 };
 
@@ -25589,9 +25610,10 @@ class Comp extends _pragma.default {
   } // actions kinda 
 
 
-  pragmatize() {
+  pragmatize(where) {
     //this.compose()
-    (0, _jquery.default)(document.body).append(this.element);
+    if (where instanceof _pragma.default) where = where.element;
+    (0, _jquery.default)(where ? where : document.body).append(this.element);
     return this;
   }
 
