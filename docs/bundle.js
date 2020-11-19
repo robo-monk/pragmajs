@@ -99,12 +99,12 @@ const Block = (key, block, nextblock) => {
       type: "code",
       element: preElement
     }]
-  }).contain(doblock).contain(copyblock);
+  }).contain(doblock, copyblock);
 }; //rainbow.color()
 
 
-let todoblock = Block("tododemo", _todo.default);
-let bgblock = Block("bigdemo", _bigdemo.default, todoblock);
+let bgblock = Block("bigdemo", _bigdemo.default);
+let todoblock = Block("tododemo", _todo.default, bgblock);
 let hwblock = Block("helloworld", _helloworld.default, todoblock);
 paper.contain(hwblock); // console.time()
 // console.timeEnd()
@@ -198,7 +198,7 @@ paper.contain(hwblock); // console.time()
 
 _core.default.initHighlightingOnLoad();
 
-},{"../src":38,"./demos/bigdemo":2,"./demos/helloworld":3,"./demos/todo":4,"highlight.js/lib/core":6,"highlight.js/lib/languages/javascript":7,"js-beautify":9}],2:[function(require,module,exports){
+},{"../src":39,"./demos/bigdemo":2,"./demos/helloworld":3,"./demos/todo":4,"highlight.js/lib/core":6,"highlight.js/lib/languages/javascript":7,"js-beautify":9}],2:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -269,11 +269,11 @@ function bigdemo(paper) {
     alert("lazy");
   }).pragmatize().bind("o");
 
-  let popUpSettings = (0, _src.Compose)("popupsettings", "⚙️").host(colorsComp).host(fontComp).host(modeComp); // TODO host & contain array
+  let popUpSettings = (0, _src.Compose)("popupsettings", "⚙️").host(colorsComp, fontComp, modeComp); // TODO host & contain array
 
   popUpSettings.illustrate(icons.grab("settings")); // icons
 
-  let settings = (0, _src.Compose)("settingsWrapper").contain(popUpSettings).contain(wpmComp);
+  let settings = (0, _src.Compose)("settingsWrapper").contain(popUpSettings, wpmComp);
   settings.pragmatize();
   let syncedKeys = ["markercolors", "readerfont", "markermode", "wpm"];
   let freadyBridge = (0, _src.Bridge)(settings, syncedKeys, (object, trigger) => {
@@ -285,7 +285,7 @@ function bigdemo(paper) {
   return ["settingsWrapper", "commiter"];
 }
 
-},{"../../src":38,"../../src/third_party/idle":41}],3:[function(require,module,exports){
+},{"../../src":39,"../../src/third_party/idle":42}],3:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -333,7 +333,7 @@ function helloworld() {
 // console.log("yyet")
 // }
 
-},{"../../src":38}],4:[function(require,module,exports){
+},{"../../src":39}],4:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -367,75 +367,15 @@ function todo(paper) {
       inp.value = "";
     }).bind("enter");
 
-    return (0, _src.Compose)("newtodo").contain(newtodo).contain(addButton);
+    return (0, _src.Compose)("newtodo").contain(newtodo, addButton);
   };
 
   const tdComp = (0, _src.Compose)("todo").with(td.title).contain(todoAdd());
   tdComp.pragmatize("#tododemo");
   return ["todo"];
-} // class TodoApp extends React.Component {
-//   constructor(props) {
-//     super(props);
-//     this.state = { items: [], text: '' };
-//     this.handleChange = this.handleChange.bind(this);
-//     this.handleSubmit = this.handleSubmit.bind(this);
-//   }
-//   render() {
-//     return (
-//       <div>
-//         <h3>TODO</h3>
-//         <TodoList items={this.state.items} />
-//         <form onSubmit={this.handleSubmit}>
-//           <label htmlFor="new-todo">
-//             What needs to be done?
-//           </label>
-//           <input
-//             id="new-todo"
-//             onChange={this.handleChange}
-//             value={this.state.text}
-//           />
-//           <button>
-//             Add #{this.state.items.length + 1}
-//           </button>
-//         </form>
-//       </div>
-//     );
-//   }
-//   handleChange(e) {
-//     this.setState({ text: e.target.value });
-//   }
-//   handleSubmit(e) {
-//     e.preventDefault();
-//     if (this.state.text.length === 0) {
-//       return;
-//     }
-//     const newItem = {
-//       text: this.state.text,
-//       id: Date.now()
-//     };
-//     this.setState(state => ({
-//       items: state.items.concat(newItem),
-//       text: ''
-//     }));
-//   }
-// }
-// class TodoList extends React.Component {
-//   render() {
-//     return (
-//       <ul>
-//         {this.props.items.map(item => (
-//           <li key={item.id}>{item.text}</li>
-//         ))}
-//       </ul>
-//     );
-//   }
-// }
-// ReactDOM.render(
-//   <TodoApp />,
-//   document.getElementById('todos-example')
-// );
+}
 
-},{"../../src":38,"mousetrap":33}],5:[function(require,module,exports){
+},{"../../src":39,"mousetrap":33}],5:[function(require,module,exports){
 (function (process){(function (){
 /**
  * @popperjs/core v2.5.4 - MIT License
@@ -2305,7 +2245,7 @@ exports.preventOverflow = preventOverflow$1;
 
 
 }).call(this)}).call(this,require('_process'))
-},{"_process":42}],6:[function(require,module,exports){
+},{"_process":43}],6:[function(require,module,exports){
 // https://github.com/substack/deep-freeze/blob/master/index.js
 /** @param {any} obj */
 function deepFreeze(obj) {
@@ -25204,7 +25144,21 @@ exports.sticky = sticky;
 
 
 }).call(this)}).call(this,require('_process'))
-},{"@popperjs/core":5,"_process":42}],35:[function(require,module,exports){
+},{"@popperjs/core":5,"_process":43}],35:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.forArg = forArg;
+
+function forArg(args, cb) {
+  for (let i = 0; i < args.length; i += 1) {
+    cb(args[i]);
+  }
+}
+
+},{}],36:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -25454,7 +25408,7 @@ const Bridge = (stream, keys = [], beam = (object, trigger) => console.table(obj
 
 exports.Bridge = Bridge;
 
-},{"../pragmas/comp":39}],36:[function(require,module,exports){
+},{"../pragmas/comp":40}],37:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -25477,7 +25431,7 @@ const db = {
 };
 exports.db = db;
 
-},{}],37:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -25513,7 +25467,7 @@ class IconBuilder {
 
 exports.default = IconBuilder;
 
-},{"./icondb":36}],38:[function(require,module,exports){
+},{"./icondb":37}],39:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -25602,7 +25556,7 @@ var _icons = _interopRequireDefault(require("./icons/icons"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./composers/templates.js":35,"./icons/icons":37,"./pragmas/comp.js":39,"./pragmas/pragma.js":40}],39:[function(require,module,exports){
+},{"./composers/templates.js":36,"./icons/icons":38,"./pragmas/comp.js":40,"./pragmas/pragma.js":41}],40:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -25619,6 +25573,8 @@ var _templates = require("../composers/templates");
 var _tippy = _interopRequireDefault(require("tippy.js"));
 
 var _mousetrap = _interopRequireDefault(require("mousetrap"));
+
+var _helpers = require("../composers/helpers");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -25751,13 +25707,15 @@ class Comp extends _pragma.default {
   }
 
   add(child) {
-    if (this.containsKey(child.key)) {// console.warn(`> pragmajs \n, Could not add child \n - ${this.key} already has ${child.key} as
-      // a child. `)
-    }
-
-    super.add(child);
-    this.keys.push(child.key);
-    this.element.append(child.element);
+    (0, _helpers.forArg)(arguments, child => {
+      // if (this.containsKey(child.key)) {
+      //   console.warn(`> pragmajs \n, Could not add child \n - ${this.key} already has ${child.key} as
+      //   // a child. `)
+      // }
+      super.add(child);
+      this.keys.push(child.key);
+      this.element.append(child.element);
+    });
   }
 
   buildInside(map) {
@@ -25770,9 +25728,11 @@ class Comp extends _pragma.default {
     return this.find(key) ? true : false;
   }
 
-  contain(comp) {
-    this.add(comp);
-    comp.parent = this;
+  contain() {
+    (0, _helpers.forArg)(arguments, comp => {
+      this.add(comp);
+      comp.parent = this;
+    });
     return this;
   }
 
@@ -25792,22 +25752,24 @@ class Comp extends _pragma.default {
     return this;
   }
 
-  host(comp) {
+  host() {
     const hostCompKey = this.key + "-host";
     let icomp;
+    (0, _helpers.forArg)(arguments, comp => {
+      if (this.tippy) {
+        // if already hosts something
+        icomp = this.find(hostCompKey);
+        icomp.contain(comp);
+        this.tippy.destroy(); // destory old tippy instance to create new one
+      } else {
+        icomp = (0, _templates.Compose)(hostCompKey).contain(comp);
+        this.contain(icomp);
+      }
 
-    if (this.tippy) {
-      // if already hosts something
-      icomp = this.find(hostCompKey);
-      icomp.contain(comp);
-      this.tippy.destroy(); // destory old tippy instance to create new one
-    } else {
-      icomp = (0, _templates.Compose)(hostCompKey).contain(comp);
-      this.contain(icomp);
-    }
-
-    icomp.element.addClass("pragma-tippy");
-    return this.setTippy(icomp.element[0]);
+      icomp.element.addClass("pragma-tippy");
+      this.setTippy(icomp.element[0]);
+    });
+    return this;
   }
 
   buildAndAdd(element) {
@@ -26001,7 +25963,7 @@ class Comp extends _pragma.default {
 
 exports.default = Comp;
 
-},{"../composers/templates":35,"./pragma":40,"jquery":8,"mousetrap":33,"tippy.js":34}],40:[function(require,module,exports){
+},{"../composers/helpers":35,"../composers/templates":36,"./pragma":41,"jquery":8,"mousetrap":33,"tippy.js":34}],41:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -26021,7 +25983,7 @@ class Pragma {
   constructor(element = null, listeners = {}) {
     this.element = (0, _jquery.default)(element);
     this.children = [];
-    this.childMap = {};
+    this.childMap = new Map();
     this.setup_listeners(listeners);
   }
 
@@ -26077,7 +26039,7 @@ class Pragma {
 
 exports.default = Pragma;
 
-},{"jquery":8}],41:[function(require,module,exports){
+},{"jquery":8}],42:[function(require,module,exports){
 "use strict";
 
 !function (n) {
@@ -26121,7 +26083,7 @@ exports.default = Pragma;
   };
 }(jQuery);
 
-},{}],42:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 

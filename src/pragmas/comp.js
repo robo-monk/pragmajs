@@ -3,6 +3,7 @@ import Pragma from "./pragma"
 import { Compose } from "../composers/templates"
 import tippy from "tippy.js"
 import Mousetrap from "mousetrap"
+import { forArg } from "../composers/helpers"
 
 export default class Comp extends Pragma {
   constructor(map, parent = null){
@@ -133,13 +134,16 @@ export default class Comp extends Pragma {
   }
 
   add(child){
-    if (this.containsKey(child.key)) {
-      // console.warn(`> pragmajs \n, Could not add child \n - ${this.key} already has ${child.key} as
-      // a child. `)
-    }
-    super.add(child)
-    this.keys.push(child.key)
-    this.element.append(child.element)
+    forArg(arguments, (child) => {
+
+      // if (this.containsKey(child.key)) {
+      //   console.warn(`> pragmajs \n, Could not add child \n - ${this.key} already has ${child.key} as
+      //   // a child. `)
+      // }
+      super.add(child)
+      this.keys.push(child.key)
+      this.element.append(child.element)
+    })
   }
 
   buildInside(map){
@@ -152,9 +156,11 @@ export default class Comp extends Pragma {
     return this.find(key) ? true : false
   }
 
-  contain(comp){
-    this.add(comp)
-    comp.parent = this
+  contain(){
+    forArg(arguments, (comp) => {
+      this.add(comp)
+      comp.parent = this
+    })
     return this
   }
 
@@ -172,21 +178,26 @@ export default class Comp extends Pragma {
     return this
   }
 
-  host(comp){
+  host(){
     const hostCompKey = this.key + "-host"
     let icomp
+    forArg(arguments, (comp) => {
     if (this.tippy){
       // if already hosts something
       icomp = this.find(hostCompKey)
       icomp.contain(comp)
       this.tippy.destroy() // destory old tippy instance to create new one
-    }else{
+    } else {
+
       icomp = Compose(hostCompKey).contain(comp)
       this.contain(icomp)
     }
 
     icomp.element.addClass("pragma-tippy")
-    return this.setTippy(icomp.element[0])
+    this.setTippy(icomp.element[0])
+    })
+
+    return this
   }
 
   buildAndAdd(element){

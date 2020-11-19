@@ -6,7 +6,7 @@ class Pragma {
   constructor(element=null, listeners={}){
     this.element = $(element)
     this.children = []
-    this.childMap = {}
+    this.childMap = new Map()
     this.setup_listeners(listeners)
   }
   add(spragma){

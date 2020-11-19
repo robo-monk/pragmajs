@@ -74,15 +74,13 @@ export default function bigdemo(paper) {
     }).pragmatize().bind("o")
 
   let popUpSettings = Compose("popupsettings", "⚙️")
-    .host(colorsComp)
-    .host(fontComp)
-    .host(modeComp)
+    .host(colorsComp, fontComp, modeComp)
   // TODO host & contain array
 
   popUpSettings.illustrate(icons.grab("settings")) // icons
 
 
-  let settings = Compose("settingsWrapper").contain(popUpSettings).contain(wpmComp)
+  let settings = Compose("settingsWrapper").contain(popUpSettings, wpmComp)
   settings.pragmatize()
 
   let syncedKeys = ["markercolors", "readerfont", "markermode", "wpm"]

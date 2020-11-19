@@ -97,13 +97,13 @@ const Block = ((key, block, nextblock) => {
           element: preElement
         }
       ]
-    }).contain(doblock).contain(copyblock)
+    }).contain(doblock, copyblock)
   })
 
 //rainbow.color()
 
-let todoblock= Block("tododemo", todo)
-let bgblock = Block("bigdemo", bigdemo, todoblock)
+let bgblock = Block("bigdemo", bigdemo)
+let todoblock= Block("tododemo", todo, bgblock)
 let hwblock = Block("helloworld", helloworld, todoblock)
 paper.contain(hwblock)
 
