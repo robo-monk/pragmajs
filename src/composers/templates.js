@@ -39,7 +39,6 @@ const Button = {
       set: (value, comp)=>{
         let key_monitor = comp.find(`${key}-monitor`)  
         key_monitor.element.html(value)
-        console.log(value)
         action(value, comp)
       },
       elements: [
@@ -56,17 +55,17 @@ const Button = {
 }
 
 const Monitor = {
-  simple: ((key, val=0, tag="p", action=(()=>{})) => {
+  simple: ((key, val=0, tag="p", action=null) => {
     return (new Comp({
       key: key,
       value: val,
-      set: ((value, master, comp) => { comp.find(key+"-monitor").element.text(value) })
+      set: ((value, master, comp) => { if(action) return action(value, comp, master);comp.find(key+"-monitor").element.text(value) })
     })).with(`<${tag}>${val}</${tag}>`, key+"-monitor")
   })
 }
 
 const variantUIActivate = (element) => {
-  console.log(`activating ${element.key} to ${element.value}`)
+  // console.log(`activating ${element.key} to ${element.value}`)
   for (let variant of element.children){
     variant.element.removeClass("pragma-active")
   }
@@ -94,7 +93,7 @@ const map_variants = (attr) =>{
       })
     },
     set: (value, comp) => {
-      variantUIActivate(comp.find(attr.key)) 
+      if (comp && comp.find(attr.key)) variantUIActivate(comp.find(attr.key)) 
       attr.set(value, comp, attr.key)
     },
     variants: attr.variants
@@ -189,7 +188,6 @@ const Bridge = (stream, keys=[], beam=((object, trigger) => console.table(object
         console.warn(`pragmajs > could not find ${key} in ${master.key}
         when bridgin through ${bridgeComp.key}`)
       }
-      
     }
     return sync
   }

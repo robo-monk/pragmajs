@@ -23,6 +23,7 @@ import helloworld from "./demos/helloworld"
 import bigdemo from "./demos/bigdemo"
 import todo from "./demos/todo"
 import { timer, timer2 } from "./demos/timerdemo"
+import trip from "./demos/trip"
 
 // const beautify = require('js-beautify');
 var beautify = require('js-beautify')
@@ -43,7 +44,9 @@ function strBlock(block) {
   })
 
   return beautify(untab_lines.join("\n").replaceAll("_src.", "")
+             .replaceAll("; ", "/q/")
              .replaceAll(";", "")
+             .replaceAll("/q/", ";")
              .replaceAll("(0, Compose)", "Compose")
     .replaceAll("(0, Bridge)", "Bridge"), {
       end_with_newline: true, 
@@ -108,7 +111,8 @@ let todoblock= Block("tododemo", todo, bgblock)
 let timer2block= Block("timerdemo2", timer2, todoblock)
 let timerblock= Block("timerdemo", timer, timer2block)
 let hwblock = Block("helloworld", helloworld, timerblock)
-paper.contain(hwblock)
+let tripblock = Block("tripdemo", trip)
+paper.contain(tripblock)
 
 console.log(new Pragma)
 // console.time()

@@ -125,10 +125,7 @@ export default class Comp extends Pragma {
 
   add(child){
     forArg(arguments, (child) => {
-
       // if (this.containsKey(child.key)) {
-      //   console.warn(`> pragmajs \n, Could not add child \n - ${this.key} already has ${child.key} as
-      //   // a child. `)
       // }
       super.add(child)
       this.keys.push(child.key)
@@ -143,7 +140,7 @@ export default class Comp extends Pragma {
   }
 
   containsKey(key){
-    return this.find(key) ? true : false
+    return this.childMap.has(key)
   }
 
   contain(){
@@ -358,5 +355,10 @@ export default class Comp extends Pragma {
 
   descOf(comp){
     return comp.find(this.key) ? true : false 
+  }
+  setup_listeners(listeners){
+    Object.entries(listeners).forEach(([on, cb]) => {
+      this.element.on(on, (event) => cb(event, this))
+    })
   }
 }

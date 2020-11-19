@@ -41,6 +41,10 @@ class Pragma {
   get kidsum() { return this.childMap.size }
   get hasKids() { return this.kidsum > 0 }
 
+  listen(listeners){
+    this.setup_listeners(listeners)
+    return this
+  }
   setup_listeners(listeners){
     Object.entries(listeners).forEach(([on, cb]) => {
       this.element.on(on, () => cb())
