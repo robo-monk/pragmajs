@@ -17,7 +17,7 @@ import javascript from 'highlight.js/lib/languages/javascript'
 hljs.registerLanguage('javascript', javascript)
 
 
-import { Bridge, Select, Compose, Button, Comp, IconBuilder } from "../src"
+import { Bridge, Select, Compose, Button, Comp, IconBuilder, Pragma } from "../src"
 
 import helloworld from "./demos/helloworld"
 import bigdemo from "./demos/bigdemo"
@@ -107,6 +107,7 @@ let todoblock= Block("tododemo", todo, bgblock)
 let hwblock = Block("helloworld", helloworld, todoblock)
 paper.contain(hwblock)
 
+console.log(new Pragma)
 // console.time()
 // console.timeEnd()
 

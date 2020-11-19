@@ -106,7 +106,8 @@ const Block = (key, block, nextblock) => {
 let bgblock = Block("bigdemo", _bigdemo.default);
 let todoblock = Block("tododemo", _todo.default, bgblock);
 let hwblock = Block("helloworld", _helloworld.default, todoblock);
-paper.contain(hwblock); // console.time()
+paper.contain(hwblock);
+console.log(new _src.Pragma()); // console.time()
 // console.timeEnd()
 // let idle = false
 // function fadeAway(){
@@ -206,11 +207,14 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = bigdemo;
 
+var _jquery = _interopRequireDefault(require("jquery"));
+
 var _src = require("../../src");
 
-require("../../src/third_party/idle");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function bigdemo(paper) {
+// require("../../src/third_party/idle")
+function bigdemo(paper, test = () => {}) {
   let colors = ["tomato", "navy", "lime"];
   let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"];
   let modes = ["HotBox", "Underneath", "Faded"];
@@ -218,7 +222,7 @@ function bigdemo(paper) {
   icons.default.fill = "white";
 
   function modifyBody(dict) {
-    $(document.body).css(dict);
+    (0, _jquery.default)(document.body).css(dict);
   }
 
   let colorsComp = _src.Select.color("markercolors", colors, (v, comp, key) => {
@@ -279,13 +283,14 @@ function bigdemo(paper) {
   let freadyBridge = (0, _src.Bridge)(settings, syncedKeys, (object, trigger) => {
     paper.element.append(`<li>${trigger.key} -> ${trigger.value}</li>`);
   });
-  settings.chain(freadyBridge); // every time a value is changed, do the 
+  settings.chain(freadyBridge);
+  test(settings); // every time a value is changed, do the 
   // freadyBridge's actions as well
 
   return ["settingsWrapper", "commiter"];
 }
 
-},{"../../src":39,"../../src/third_party/idle":42}],3:[function(require,module,exports){
+},{"../../src":39,"jquery":8}],3:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2245,7 +2250,7 @@ exports.preventOverflow = preventOverflow$1;
 
 
 }).call(this)}).call(this,require('_process'))
-},{"_process":43}],6:[function(require,module,exports){
+},{"_process":42}],6:[function(require,module,exports){
 // https://github.com/substack/deep-freeze/blob/master/index.js
 /** @param {any} obj */
 function deepFreeze(obj) {
@@ -25144,7 +25149,7 @@ exports.sticky = sticky;
 
 
 }).call(this)}).call(this,require('_process'))
-},{"@popperjs/core":5,"_process":43}],35:[function(require,module,exports){
+},{"@popperjs/core":5,"_process":42}],35:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -25657,19 +25662,7 @@ class Comp extends _pragma.default {
     return this.parent.master;
   } // TODO this algo sucks
   // convert to binary search after shorting kids in a smart way
-
-
-  find(key) {
-    // recursively find a key
-    if (this.key == key) return this;
-
-    if (this.hasKids) {
-      for (let child of this.children) {
-        let potential_child = child.find(key);
-        if (potential_child) return potential_child;
-      }
-    }
-  } // actions kinda 
+  // actions kinda 
 
 
   pragmatize(where) {
@@ -25980,23 +25973,52 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 // a pragma is defined as a concept, which has an actual physical object "connected"
 // with it
 class Pragma {
-  constructor(element = null, listeners = {}) {
+  constructor(element = null, listeners = {}, key) {
     this.element = (0, _jquery.default)(element);
-    this.children = [];
+    this.generate_key(key); // this.children = []
+
     this.childMap = new Map();
     this.setup_listeners(listeners);
   }
 
-  add(spragma) {
-    this.children.push(spragma);
+  get children() {
+    return Array.from(this.childMap.values());
   }
 
-  get hasKids() {
-    return this.children.length > 0;
+  generate_key(key) {
+    if (key) {
+      this.key = key;
+    } else {
+      this.key = btoa(Math.random()).substr(10, 5);
+    }
+  }
+
+  find(key) {
+    // recursively find a key
+    if (this.key == key) return this;
+    if (this.childMap.has(key)) return this.childMap.get(key);
+
+    for (let [k, value] of this.childMap) {
+      let vv = value.find(key);
+      if (vv) return vv;
+    }
+  }
+
+  add(spragma) {
+    if (this.childMap.has(spragma.key)) {
+      spragma.key = spragma.key + "~";
+      return this.add(spragma);
+    }
+
+    this.childMap.set(spragma.key, spragma); // this.children.push(spragma)
   }
 
   get kidsum() {
-    return this.children.length;
+    return this.childMap.size;
+  }
+
+  get hasKids() {
+    return this.kidsum > 0;
   }
 
   setup_listeners(listeners) {
@@ -26040,50 +26062,6 @@ class Pragma {
 exports.default = Pragma;
 
 },{"jquery":8}],42:[function(require,module,exports){
-"use strict";
-
-!function (n) {
-  "use strict";
-
-  n.fn.idle = function (e) {
-    var t,
-        i,
-        o = {
-      idle: 6e4,
-      events: "mousemove keydown mousedown touchstart",
-      onIdle: function () {},
-      onActive: function () {},
-      onHide: function () {},
-      onShow: function () {},
-      keepTracking: !0,
-      startAtIdle: !1,
-      recurIdleCall: !1
-    },
-        c = e.startAtIdle || !1,
-        d = !e.startAtIdle || !0,
-        l = n.extend({}, o, e),
-        u = null;
-    return n(this).on("idle:stop", {}, function () {
-      n(this).off(l.events), l.keepTracking = !1, t(u, l);
-    }), t = function (n, e) {
-      return c && (c = !1, e.onActive.call()), clearTimeout(n), e.keepTracking ? i(e) : void 0;
-    }, i = function (n) {
-      var e,
-          t = n.recurIdleCall ? setInterval : setTimeout;
-      return e = t(function () {
-        c = !0, n.onIdle.call();
-      }, n.idle);
-    }, this.each(function () {
-      u = i(l), n(this).on(l.events, function () {
-        u = t(u, l);
-      }), (l.onShow || l.onHide) && n(document).on("visibilitychange webkitvisibilitychange mozvisibilitychange msvisibilitychange", function () {
-        document.hidden || document.webkitHidden || document.mozHidden || document.msHidden ? d && (d = !1, l.onHide.call()) : d || (d = !0, l.onShow.call());
-      });
-    });
-  };
-}(jQuery);
-
-},{}],43:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 

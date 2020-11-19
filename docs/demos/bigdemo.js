@@ -1,3 +1,4 @@
+import $ from "jquery"
 import {
   Bridge,
   Select,
@@ -7,8 +8,8 @@ import {
   IconBuilder
 } from "../../src"
 
-require("../../src/third_party/idle")
-export default function bigdemo(paper) {
+// require("../../src/third_party/idle")
+export default function bigdemo(paper, test=(()=>{})) {
 
   let colors = ["tomato", "navy", "lime"]
   let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"]
@@ -91,6 +92,7 @@ export default function bigdemo(paper) {
 
   settings.chain(freadyBridge)
 
+  test(settings)
   // every time a value is changed, do the 
   // freadyBridge's actions as well
   return ["settingsWrapper", "commiter"]

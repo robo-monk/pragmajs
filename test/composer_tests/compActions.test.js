@@ -21,7 +21,7 @@ describe("comp can correctly contain another comp", ()=>{
     let settings = Compose("settingsWrapper", "⚙️").contain(colorsComp)
     settings.pragmatize()
     expectShape(settings, ` 
-|composer-settingsWrapper||choice-markercolors|||option-markercolors|||option-markercolors|||option-markercolors
+    |composer-settingsWrapper||choice-markercolors|||option-markercolors|||option-markercolors~|||option-markercolors~~
       `
     )
   })
@@ -32,7 +32,7 @@ describe("comp can correctly contain another comp", ()=>{
     let test = daddy.contain(element).contain(element)
     let testfinal = Compose("dad of the daddy").contain(test).contain(test).contain(element)
     expectShape(testfinal, `
-    |composer-dadofthedaddy||composer-daddy|||composer-kid|||composer-kid||composer-daddy|||composer-kid|||composer-kid||composer-kid
+    |composer-dadofthedaddy||composer-daddy~|||composer-kid~|||composer-kid~||composer-daddy~|||composer-kid~|||composer-kid~||composer-kid~
     `)
   })
 
@@ -55,7 +55,7 @@ describe("comp can correctly host another comp", ()=>{
     settings.pragmatize()
 
     expectShape(settings, `
-    |composer-settingsWrapper||composer-settingsWrapper-host|||choice-markercolors||||option-markercolors||||option-markercolors||||option-markercolors
+    |composer-settingsWrapper||composer-settingsWrapper-host|||choice-markercolors||||option-markercolors||||option-markercolors~||||option-markercolors~~
       `
     )
   })
@@ -68,7 +68,7 @@ describe("comp can correctly host another comp", ()=>{
     let testfinal = Compose("dad of the daddy").host(test.host(element)).host(element)
     
     expectShape(testfinal, `
-|composer-dadofthedaddy||composer-dadofthedaddy-host|||composer-daddy||||composer-daddy-host|||||composer-kid|||||composer-kid|||||composer-kid|||composer-kid
+    |composer-dadofthedaddy||composer-dadofthedaddy-host|||composer-daddy||||composer-daddy-host|||||composer-kid~~|||||composer-kid~~|||||composer-kid~~|||composer-kid~~
     `)
   })
 

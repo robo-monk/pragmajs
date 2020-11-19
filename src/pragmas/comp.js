@@ -85,17 +85,7 @@ export default class Comp extends Pragma {
   // TODO this algo sucks
   // convert to binary search after shorting kids in a smart way
 
-  find(key){
-    // recursively find a key
-    if (this.key == key) return this
-    if (this.hasKids){
-      for (let child of this.children){
-        let potential_child = child.find(key)
-        if (potential_child) return potential_child
-      }
-
-    }
-  }
+  
 
   // actions kinda 
 

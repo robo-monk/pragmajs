@@ -3,17 +3,43 @@
 import $, { expr } from "jquery"
 
 class Pragma {
-  constructor(element=null, listeners={}){
+  constructor(element=null, listeners={}, key){
     this.element = $(element)
-    this.children = []
+    this.generate_key(key)
+    // this.children = []
     this.childMap = new Map()
     this.setup_listeners(listeners)
   }
-  add(spragma){
-    this.children.push(spragma)
+  get children() {
+    return Array.from(this.childMap.values())
   }
-  get hasKids() { return this.children.length > 0 }
-  get kidsum() { return this.children.length }
+  generate_key(key){
+    if (key) {
+      this.key = key
+    }else{
+      this.key = btoa(Math.random()).substr(10, 5) 
+    }
+  }
+
+  find(key){
+    // recursively find a key
+    if (this.key == key) return this
+    if (this.childMap.has(key)) return this.childMap.get(key)
+    for (let [k, value] of this.childMap) {
+      let vv = value.find(key) 
+      if (vv) return vv
+    }
+  }
+  add(spragma){
+    if (this.childMap.has(spragma.key)) { 
+      spragma.key = spragma.key + "~"
+      return this.add(spragma)
+    }
+    this.childMap.set(spragma.key, spragma)
+    // this.children.push(spragma)
+  }
+  get kidsum() { return this.childMap.size }
+  get hasKids() { return this.kidsum > 0 }
 
   setup_listeners(listeners){
     Object.entries(listeners).forEach(([on, cb]) => {
