@@ -18,8 +18,10 @@ hljs.registerLanguage('javascript', javascript)
 
 
 import { Bridge, Select, Compose, Button, Comp, IconBuilder } from "../src"
+
 import helloworld from "./demos/helloworld"
 import bigdemo from "./demos/bigdemo"
+import todo from "./demos/todo"
 
 // const beautify = require('js-beautify');
 var beautify = require('js-beautify')
@@ -39,7 +41,6 @@ function strBlock(block) {
     untab_lines[i] = line.replace("  ", "") 
   })
 
-  console.log(beautify(untab_lines.join("\n"), { format: "js"}))
   return beautify(untab_lines.join("\n").replaceAll("_src.", "")
              .replaceAll(";", "")
              .replaceAll("(0, Compose)", "Compose")
@@ -47,7 +48,7 @@ function strBlock(block) {
       end_with_newline: true, 
       indent_size: 2,
       space_in_empty_paren: true,
-      break_chained_methods: true
+      break_chained_methods: false
     })
 }
 let cleanIds = []
@@ -68,8 +69,8 @@ function doBlock(block, nextblock) {
 const Block = ((key, block, nextblock) => { 
   let preElement = $(document.createElement("pre"))
   let codeElement = $(document.createElement("code"))
-  codeElement.html(strBlock(block))
-  codeElement.addClass("lang-javascript")
+  codeElement.text(strBlock(block))
+  codeElement.addClass("lang-js")
   preElement.html(codeElement)
   
 
@@ -101,9 +102,11 @@ const Block = ((key, block, nextblock) => {
 
 //rainbow.color()
 
-let bgblock = Block("bigdemo", bigdemo)
-let hwblock = Block("helloworld", helloworld, bgblock)
+let todoblock= Block("tododemo", todo)
+let bgblock = Block("bigdemo", bigdemo, todoblock)
+let hwblock = Block("helloworld", helloworld, todoblock)
 paper.contain(hwblock)
+
 // console.time()
 // console.timeEnd()
 

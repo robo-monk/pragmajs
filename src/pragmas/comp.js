@@ -49,6 +49,7 @@ export default class Comp extends Pragma {
     return this
   }
 
+  do(cb){ return this.addToChain(cb) }
   addToChain(cb){
     if (!this.actionChain) this.actionChain = []
     this.actionChain.push(cb)
@@ -108,10 +109,27 @@ export default class Comp extends Pragma {
     this.actionChain = this.actionChain.concat(comp.actionChain) 
     return this
   }
-  compose(force=false){
-    //if (this.force || !this.element) 
-    this.element = $(document.createElement("div"))
+
+  with(id, key){
+    let new_element = new Comp({
+      key: key || key+this.children.length.toString(),
+      element: $(id)
+    })
+    
+    this.add(new_element)
     return this
+  }
+
+  as(id){
+    let newElement = $(id)
+    newElement.attr( "id", this.key )
+    if (this.element) this.element.replaceWith(newElement)
+    this.element = newElement
+    return this
+  }
+  compose(force=false, tag="div"){
+    //if (this.force || !this.element) 
+    return this.as($(document.createElement(tag)))
   }
 
   add(child){

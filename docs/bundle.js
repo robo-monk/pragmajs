@@ -11,6 +11,8 @@ var _helloworld = _interopRequireDefault(require("./demos/helloworld"));
 
 var _bigdemo = _interopRequireDefault(require("./demos/bigdemo"));
 
+var _todo = _interopRequireDefault(require("./demos/todo"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 //import Pragma, { valueControls, variants, composer, container } from '../src'
@@ -43,14 +45,11 @@ function strBlock(block) {
   lines.forEach((line, i) => {
     untab_lines[i] = line.replace("  ", "");
   });
-  console.log(beautify(untab_lines.join("\n"), {
-    format: "js"
-  }));
   return beautify(untab_lines.join("\n").replaceAll("_src.", "").replaceAll(";", "").replaceAll("(0, Compose)", "Compose").replaceAll("(0, Bridge)", "Bridge"), {
     end_with_newline: true,
     indent_size: 2,
     space_in_empty_paren: true,
-    break_chained_methods: true
+    break_chained_methods: false
   });
 }
 
@@ -75,8 +74,8 @@ function doBlock(block, nextblock) {
 const Block = (key, block, nextblock) => {
   let preElement = $(document.createElement("pre"));
   let codeElement = $(document.createElement("code"));
-  codeElement.html(strBlock(block));
-  codeElement.addClass("lang-javascript");
+  codeElement.text(strBlock(block));
+  codeElement.addClass("lang-js");
   preElement.html(codeElement);
 
   let doblock = _src.Button.action("doblock", icons.grab("play"), (m, comp) => {
@@ -104,8 +103,9 @@ const Block = (key, block, nextblock) => {
 }; //rainbow.color()
 
 
-let bgblock = Block("bigdemo", _bigdemo.default);
-let hwblock = Block("helloworld", _helloworld.default, bgblock);
+let todoblock = Block("tododemo", _todo.default);
+let bgblock = Block("bigdemo", _bigdemo.default, todoblock);
+let hwblock = Block("helloworld", _helloworld.default, todoblock);
 paper.contain(hwblock); // console.time()
 // console.timeEnd()
 // let idle = false
@@ -198,7 +198,7 @@ paper.contain(hwblock); // console.time()
 
 _core.default.initHighlightingOnLoad();
 
-},{"../src":37,"./demos/bigdemo":2,"./demos/helloworld":3,"highlight.js/lib/core":5,"highlight.js/lib/languages/javascript":6,"js-beautify":8}],2:[function(require,module,exports){
+},{"../src":38,"./demos/bigdemo":2,"./demos/helloworld":3,"./demos/todo":4,"highlight.js/lib/core":6,"highlight.js/lib/languages/javascript":7,"js-beautify":9}],2:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -285,7 +285,7 @@ function bigdemo(paper) {
   return ["settingsWrapper", "commiter"];
 }
 
-},{"../../src":37,"../../src/third_party/idle":40}],3:[function(require,module,exports){
+},{"../../src":38,"../../src/third_party/idle":41}],3:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -333,7 +333,109 @@ function helloworld() {
 // console.log("yyet")
 // }
 
-},{"../../src":37}],4:[function(require,module,exports){
+},{"../../src":38}],4:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = todo;
+
+var _mousetrap = require("mousetrap");
+
+var _src = require("../../src");
+
+function todo(paper) {
+  const td = {
+    title: "<h1>TODO</h1>",
+    form: $("<input type=text class=mousetrap placeholder='New Task'></input")
+  };
+
+  const todoItem = content => {
+    return (0, _src.Compose)(`todo-${tdComp.kidsum}`).as(`<li>${content}</li>`);
+  };
+
+  const todoAdd = () => {
+    let newtodo = (0, _src.Compose)("tdInput").as(td.form).do((value, master) => {
+      master.contain(todoItem(value));
+    });
+
+    let addButton = _src.Button.action("addTodo", "Add", master => {
+      let inp = master.find("tdInput").element[0];
+      if (!inp.value) return false;
+      newtodo.value = inp.value;
+      inp.value = "";
+    }).bind("enter");
+
+    return (0, _src.Compose)("newtodo").contain(newtodo).contain(addButton);
+  };
+
+  const tdComp = (0, _src.Compose)("todo").with(td.title).contain(todoAdd());
+  tdComp.pragmatize("#tododemo");
+  return ["todo"];
+} // class TodoApp extends React.Component {
+//   constructor(props) {
+//     super(props);
+//     this.state = { items: [], text: '' };
+//     this.handleChange = this.handleChange.bind(this);
+//     this.handleSubmit = this.handleSubmit.bind(this);
+//   }
+//   render() {
+//     return (
+//       <div>
+//         <h3>TODO</h3>
+//         <TodoList items={this.state.items} />
+//         <form onSubmit={this.handleSubmit}>
+//           <label htmlFor="new-todo">
+//             What needs to be done?
+//           </label>
+//           <input
+//             id="new-todo"
+//             onChange={this.handleChange}
+//             value={this.state.text}
+//           />
+//           <button>
+//             Add #{this.state.items.length + 1}
+//           </button>
+//         </form>
+//       </div>
+//     );
+//   }
+//   handleChange(e) {
+//     this.setState({ text: e.target.value });
+//   }
+//   handleSubmit(e) {
+//     e.preventDefault();
+//     if (this.state.text.length === 0) {
+//       return;
+//     }
+//     const newItem = {
+//       text: this.state.text,
+//       id: Date.now()
+//     };
+//     this.setState(state => ({
+//       items: state.items.concat(newItem),
+//       text: ''
+//     }));
+//   }
+// }
+// class TodoList extends React.Component {
+//   render() {
+//     return (
+//       <ul>
+//         {this.props.items.map(item => (
+//           <li key={item.id}>{item.text}</li>
+//         ))}
+//       </ul>
+//     );
+//   }
+// }
+// ReactDOM.render(
+//   <TodoApp />,
+//   document.getElementById('todos-example')
+// );
+
+},{"../../src":38,"mousetrap":33}],5:[function(require,module,exports){
 (function (process){(function (){
 /**
  * @popperjs/core v2.5.4 - MIT License
@@ -2203,7 +2305,7 @@ exports.preventOverflow = preventOverflow$1;
 
 
 }).call(this)}).call(this,require('_process'))
-},{"_process":41}],5:[function(require,module,exports){
+},{"_process":42}],6:[function(require,module,exports){
 // https://github.com/substack/deep-freeze/blob/master/index.js
 /** @param {any} obj */
 function deepFreeze(obj) {
@@ -4412,7 +4514,7 @@ var highlight = HLJS({});
 
 module.exports = highlight;
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 const IDENT_RE = '[A-Za-z$_][0-9A-Za-z$_]*';
 const KEYWORDS = [
   "as", // for exports
@@ -5012,7 +5114,7 @@ function javascript(hljs) {
 
 module.exports = javascript;
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v3.5.1
  * https://jquery.com/
@@ -15886,7 +15988,7 @@ if ( typeof noGlobal === "undefined" ) {
 return jQuery;
 } );
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 /*jshint node:true */
 /* globals define */
 /*
@@ -15973,7 +16075,7 @@ if (typeof define === "function" && define.amd) {
 
   })(module);
 }
-},{"./src/index":26}],9:[function(require,module,exports){
+},{"./src/index":27}],10:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -16037,7 +16139,7 @@ Directives.prototype.readIgnored = function(input) {
 
 module.exports.Directives = Directives;
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -16231,7 +16333,7 @@ InputScanner.prototype.lookBack = function(testVal) {
 
 module.exports.InputScanner = InputScanner;
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -16426,7 +16528,7 @@ module.exports.Options = Options;
 module.exports.normalizeOpts = _normalizeOpts;
 module.exports.mergeOpts = _mergeOpts;
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 /*jshint node:true */
 /*
   The MIT License (MIT)
@@ -16847,7 +16949,7 @@ Output.prototype.ensure_empty_line_above = function(starts_with, ends_with) {
 
 module.exports.Output = Output;
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -16943,7 +17045,7 @@ Pattern.prototype._update = function() {};
 
 module.exports.Pattern = Pattern;
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -17136,7 +17238,7 @@ TemplatablePattern.prototype._read_template = function() {
 
 module.exports.TemplatablePattern = TemplatablePattern;
 
-},{"./pattern":13}],15:[function(require,module,exports){
+},{"./pattern":14}],16:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -17192,7 +17294,7 @@ function Token(type, text, newlines, whitespace_before) {
 
 module.exports.Token = Token;
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -17334,7 +17436,7 @@ Tokenizer.prototype._readWhitespace = function() {
 module.exports.Tokenizer = Tokenizer;
 module.exports.TOKEN = TOKEN;
 
-},{"../core/inputscanner":10,"../core/token":15,"../core/tokenstream":17,"./whitespacepattern":18}],17:[function(require,module,exports){
+},{"../core/inputscanner":11,"../core/token":16,"../core/tokenstream":18,"./whitespacepattern":19}],18:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -17414,7 +17516,7 @@ TokenStream.prototype.add = function(token) {
 
 module.exports.TokenStream = TokenStream;
 
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -17521,7 +17623,7 @@ WhitespacePattern.prototype.__split = function(regexp, input_string) {
 
 module.exports.WhitespacePattern = WhitespacePattern;
 
-},{"../core/pattern":13}],19:[function(require,module,exports){
+},{"../core/pattern":14}],20:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -18004,7 +18106,7 @@ Beautifier.prototype.beautify = function() {
 
 module.exports.Beautifier = Beautifier;
 
-},{"../core/directives":9,"../core/inputscanner":10,"../core/output":12,"./options":21}],20:[function(require,module,exports){
+},{"../core/directives":10,"../core/inputscanner":11,"../core/output":13,"./options":22}],21:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -18048,7 +18150,7 @@ module.exports.defaultOptions = function() {
   return new Options();
 };
 
-},{"./beautifier":19,"./options":21}],21:[function(require,module,exports){
+},{"./beautifier":20,"./options":22}],22:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -18106,7 +18208,7 @@ Options.prototype = new BaseOptions();
 
 module.exports.Options = Options;
 
-},{"../core/options":11}],22:[function(require,module,exports){
+},{"../core/options":12}],23:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -18973,7 +19075,7 @@ Beautifier.prototype._do_optional_end_element = function(parser_token) {
 
 module.exports.Beautifier = Beautifier;
 
-},{"../core/output":12,"../html/options":24,"../html/tokenizer":25}],23:[function(require,module,exports){
+},{"../core/output":13,"../html/options":25,"../html/tokenizer":26}],24:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -19017,7 +19119,7 @@ module.exports.defaultOptions = function() {
   return new Options();
 };
 
-},{"./beautifier":22,"./options":24}],24:[function(require,module,exports){
+},{"./beautifier":23,"./options":25}],25:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -19110,7 +19212,7 @@ Options.prototype = new BaseOptions();
 
 module.exports.Options = Options;
 
-},{"../core/options":11}],25:[function(require,module,exports){
+},{"../core/options":12}],26:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -19444,7 +19546,7 @@ Tokenizer.prototype._read_content_word = function(c) {
 module.exports.Tokenizer = Tokenizer;
 module.exports.TOKEN = TOKEN;
 
-},{"../core/directives":9,"../core/pattern":13,"../core/templatablepattern":14,"../core/tokenizer":16}],26:[function(require,module,exports){
+},{"../core/directives":10,"../core/pattern":14,"../core/templatablepattern":15,"../core/tokenizer":17}],27:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -19490,7 +19592,7 @@ module.exports.js = js_beautify;
 module.exports.css = css_beautify;
 module.exports.html = style_html;
 
-},{"./css/index":20,"./html/index":23,"./javascript/index":29}],27:[function(require,module,exports){
+},{"./css/index":21,"./html/index":24,"./javascript/index":30}],28:[function(require,module,exports){
 /* jshint node: true, curly: false */
 // Parts of this section of code is taken from acorn.
 //
@@ -19549,7 +19651,7 @@ exports.newline = /[\n\r\u2028\u2029]/;
 exports.lineBreak = new RegExp('\r\n|' + exports.newline.source);
 exports.allLineBreaks = new RegExp(exports.lineBreak.source, 'g');
 
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -21006,7 +21108,7 @@ Beautifier.prototype.handle_eof = function(current_token) {
 
 module.exports.Beautifier = Beautifier;
 
-},{"../core/output":12,"../core/token":15,"./acorn":27,"./options":30,"./tokenizer":31}],29:[function(require,module,exports){
+},{"../core/output":13,"../core/token":16,"./acorn":28,"./options":31,"./tokenizer":32}],30:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -21050,7 +21152,7 @@ module.exports.defaultOptions = function() {
   return new Options();
 };
 
-},{"./beautifier":28,"./options":30}],30:[function(require,module,exports){
+},{"./beautifier":29,"./options":31}],31:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -21145,7 +21247,7 @@ Options.prototype = new BaseOptions();
 
 module.exports.Options = Options;
 
-},{"../core/options":11}],31:[function(require,module,exports){
+},{"../core/options":12}],32:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -21713,7 +21815,7 @@ module.exports.TOKEN = TOKEN;
 module.exports.positionable_operators = positionable_operators.slice();
 module.exports.line_starters = line_starters.slice();
 
-},{"../core/directives":9,"../core/inputscanner":10,"../core/pattern":13,"../core/templatablepattern":14,"../core/tokenizer":16,"./acorn":27}],32:[function(require,module,exports){
+},{"../core/directives":10,"../core/inputscanner":11,"../core/pattern":14,"../core/templatablepattern":15,"../core/tokenizer":17,"./acorn":28}],33:[function(require,module,exports){
 /*global define:false */
 /**
  * Copyright 2012-2017 Craig Campbell
@@ -22773,7 +22875,7 @@ module.exports.line_starters = line_starters.slice();
     }
 }) (typeof window !== 'undefined' ? window : null, typeof  window !== 'undefined' ? document : null);
 
-},{}],33:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 (function (process){(function (){
 /**!
 * tippy.js v6.2.7
@@ -25102,7 +25204,7 @@ exports.sticky = sticky;
 
 
 }).call(this)}).call(this,require('_process'))
-},{"@popperjs/core":4,"_process":41}],34:[function(require,module,exports){
+},{"@popperjs/core":5,"_process":42}],35:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -25352,7 +25454,7 @@ const Bridge = (stream, keys = [], beam = (object, trigger) => console.table(obj
 
 exports.Bridge = Bridge;
 
-},{"../pragmas/comp":38}],35:[function(require,module,exports){
+},{"../pragmas/comp":39}],36:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -25375,7 +25477,7 @@ const db = {
 };
 exports.db = db;
 
-},{}],36:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -25411,7 +25513,7 @@ class IconBuilder {
 
 exports.default = IconBuilder;
 
-},{"./icondb":35}],37:[function(require,module,exports){
+},{"./icondb":36}],38:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -25500,7 +25602,7 @@ var _icons = _interopRequireDefault(require("./icons/icons"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./composers/templates.js":34,"./icons/icons":36,"./pragmas/comp.js":38,"./pragmas/pragma.js":39}],38:[function(require,module,exports){
+},{"./composers/templates.js":35,"./icons/icons":37,"./pragmas/comp.js":39,"./pragmas/pragma.js":40}],39:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -25563,6 +25665,10 @@ class Comp extends _pragma.default {
     return this;
   }
 
+  do(cb) {
+    return this.addToChain(cb);
+  }
+
   addToChain(cb) {
     if (!this.actionChain) this.actionChain = [];
     this.actionChain.push(cb);
@@ -25622,10 +25728,26 @@ class Comp extends _pragma.default {
     return this;
   }
 
-  compose(force = false) {
-    //if (this.force || !this.element) 
-    this.element = (0, _jquery.default)(document.createElement("div"));
+  with(id, key) {
+    let new_element = new Comp({
+      key: key || key + this.children.length.toString(),
+      element: (0, _jquery.default)(id)
+    });
+    this.add(new_element);
     return this;
+  }
+
+  as(id) {
+    let newElement = (0, _jquery.default)(id);
+    newElement.attr("id", this.key);
+    if (this.element) this.element.replaceWith(newElement);
+    this.element = newElement;
+    return this;
+  }
+
+  compose(force = false, tag = "div") {
+    //if (this.force || !this.element) 
+    return this.as((0, _jquery.default)(document.createElement(tag)));
   }
 
   add(child) {
@@ -25879,7 +26001,7 @@ class Comp extends _pragma.default {
 
 exports.default = Comp;
 
-},{"../composers/templates":34,"./pragma":39,"jquery":7,"mousetrap":32,"tippy.js":33}],39:[function(require,module,exports){
+},{"../composers/templates":35,"./pragma":40,"jquery":8,"mousetrap":33,"tippy.js":34}],40:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -25909,6 +26031,10 @@ class Pragma {
 
   get hasKids() {
     return this.children.length > 0;
+  }
+
+  get kidsum() {
+    return this.children.length;
   }
 
   setup_listeners(listeners) {
@@ -25951,7 +26077,7 @@ class Pragma {
 
 exports.default = Pragma;
 
-},{"jquery":7}],40:[function(require,module,exports){
+},{"jquery":8}],41:[function(require,module,exports){
 "use strict";
 
 !function (n) {
@@ -25995,7 +26121,7 @@ exports.default = Pragma;
   };
 }(jQuery);
 
-},{}],41:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 

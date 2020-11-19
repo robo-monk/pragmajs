@@ -13,6 +13,7 @@ class Pragma {
     this.children.push(spragma)
   }
   get hasKids() { return this.children.length > 0 }
+  get kidsum() { return this.children.length }
 
   setup_listeners(listeners){
     Object.entries(listeners).forEach(([on, cb]) => {
