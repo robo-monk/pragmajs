@@ -1,9 +1,11 @@
 import { Compose } from "../../src"
 export default function helloworld(){
   
-  // execute this by pressing the play button below!
-  let lame = Compose("lame", "This is a lame demo") 
+  let lame = Compose("lame").with("<p>This is a lame demo</p>")
   lame.pragmatize("#helloworld")
+
+  /* execute this by pressing the play button below! */
+
   return ["lame"]
 }
 

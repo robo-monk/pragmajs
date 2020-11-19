@@ -55,6 +55,16 @@ const Button = {
   })
 }
 
+const Monitor = {
+  simple: ((key, val=0, tag="p", action=(()=>{})) => {
+    return (new Comp({
+      key: key,
+      value: val,
+      set: ((value, master, comp) => { comp.find(key+"-monitor").element.text(value) })
+    })).with(`<${tag}>${val}</${tag}>`, key+"-monitor")
+  })
+}
+
 const variantUIActivate = (element) => {
   console.log(`activating ${element.key} to ${element.value}`)
   for (let variant of element.children){
@@ -145,6 +155,7 @@ const maps = (string, elements=null) => {
 }
 
 const Compose = (key, icon, elements, type="composer") => {
+  if (key instanceof Object) return new Comp(key) 
   return new Comp(map(key, type, icon, elements))
 }
 
@@ -195,5 +206,5 @@ const Bridge = (stream, keys=[], beam=((object, trigger) => console.table(object
   return bridgeComp
 }
 
-export { buttonValue, Button, Select, Variants, Compose, Value, pragmatize, contain, host, Bridge }
+export { buttonValue, Button, Select, Variants, Compose, Value, pragmatize, contain, host, Bridge, Monitor}
 

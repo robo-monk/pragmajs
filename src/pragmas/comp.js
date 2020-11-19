@@ -103,7 +103,7 @@ export default class Comp extends Pragma {
 
   with(id, key){
     let new_element = new Comp({
-      key: key || key+this.children.length.toString(),
+      key: key,
       element: $(id)
     })
     

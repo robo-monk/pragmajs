@@ -22,6 +22,7 @@ import { Bridge, Select, Compose, Button, Comp, IconBuilder, Pragma } from "../s
 import helloworld from "./demos/helloworld"
 import bigdemo from "./demos/bigdemo"
 import todo from "./demos/todo"
+import { timer, timer2 } from "./demos/timerdemo"
 
 // const beautify = require('js-beautify');
 var beautify = require('js-beautify')
@@ -104,7 +105,9 @@ const Block = ((key, block, nextblock) => {
 
 let bgblock = Block("bigdemo", bigdemo)
 let todoblock= Block("tododemo", todo, bgblock)
-let hwblock = Block("helloworld", helloworld, todoblock)
+let timer2block= Block("timerdemo2", timer2, todoblock)
+let timerblock= Block("timerdemo", timer, timer2block)
+let hwblock = Block("helloworld", helloworld, timerblock)
 paper.contain(hwblock)
 
 console.log(new Pragma)

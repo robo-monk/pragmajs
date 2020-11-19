@@ -13,6 +13,8 @@ var _bigdemo = _interopRequireDefault(require("./demos/bigdemo"));
 
 var _todo = _interopRequireDefault(require("./demos/todo"));
 
+var _timerdemo = require("./demos/timerdemo");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 //import Pragma, { valueControls, variants, composer, container } from '../src'
@@ -105,7 +107,9 @@ const Block = (key, block, nextblock) => {
 
 let bgblock = Block("bigdemo", _bigdemo.default);
 let todoblock = Block("tododemo", _todo.default, bgblock);
-let hwblock = Block("helloworld", _helloworld.default, todoblock);
+let timer2block = Block("timerdemo2", _timerdemo.timer2, todoblock);
+let timerblock = Block("timerdemo", _timerdemo.timer, timer2block);
+let hwblock = Block("helloworld", _helloworld.default, timerblock);
 paper.contain(hwblock);
 console.log(new _src.Pragma()); // console.time()
 // console.timeEnd()
@@ -199,7 +203,7 @@ console.log(new _src.Pragma()); // console.time()
 
 _core.default.initHighlightingOnLoad();
 
-},{"../src":39,"./demos/bigdemo":2,"./demos/helloworld":3,"./demos/todo":4,"highlight.js/lib/core":6,"highlight.js/lib/languages/javascript":7,"js-beautify":9}],2:[function(require,module,exports){
+},{"../src":40,"./demos/bigdemo":2,"./demos/helloworld":3,"./demos/timerdemo":4,"./demos/todo":5,"highlight.js/lib/core":7,"highlight.js/lib/languages/javascript":8,"js-beautify":10}],2:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -290,7 +294,7 @@ function bigdemo(paper, test = () => {}) {
   return ["settingsWrapper", "commiter"];
 }
 
-},{"../../src":39,"jquery":8}],3:[function(require,module,exports){
+},{"../../src":40,"jquery":9}],3:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -301,9 +305,10 @@ exports.default = helloworld;
 var _src = require("../../src");
 
 function helloworld() {
-  // execute this by pressing the play button below!
-  let lame = (0, _src.Compose)("lame", "This is a lame demo");
+  let lame = (0, _src.Compose)("lame").with("<p>This is a lame demo</p>");
   lame.pragmatize("#helloworld");
+  /* execute this by pressing the play button below! */
+
   return ["lame"];
 } // import { Variants, Comp, ColorSelect, FontSelect, Compose, contain, host } from "../../src"
 // export default function doBlock() {
@@ -338,7 +343,41 @@ function helloworld() {
 // console.log("yyet")
 // }
 
-},{"../../src":39}],4:[function(require,module,exports){
+},{"../../src":40}],4:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.timer2 = timer2;
+exports.timer = timer;
+
+var _src = require("../../src");
+
+function timer2() {
+  // execute this by pressing the play button below!
+  let timer = _src.Monitor.simple("timer2", 0, "h1");
+
+  timer.pragmatize("#timerdemo2");
+  setInterval(() => timer.value += 1, 1000);
+  return ["timer2"];
+}
+
+function timer() {
+  // execute this by pressing the play button below!
+  let timer = (0, _src.Compose)({
+    key: "timer",
+    value: 0,
+    set: (val, m, comp) => {
+      comp.find("timer-monitor").element.text(val);
+    }
+  }).with(`<h1>0</h1>`, "timer-monitor");
+  timer.pragmatize("#timerdemo");
+  setInterval(() => timer.value += 1, 1000);
+  return ["timer"];
+}
+
+},{"../../src":40}],5:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -380,7 +419,7 @@ function todo(paper) {
   return ["todo"];
 }
 
-},{"../../src":39,"mousetrap":33}],5:[function(require,module,exports){
+},{"../../src":40,"mousetrap":34}],6:[function(require,module,exports){
 (function (process){(function (){
 /**
  * @popperjs/core v2.5.4 - MIT License
@@ -2250,7 +2289,7 @@ exports.preventOverflow = preventOverflow$1;
 
 
 }).call(this)}).call(this,require('_process'))
-},{"_process":42}],6:[function(require,module,exports){
+},{"_process":43}],7:[function(require,module,exports){
 // https://github.com/substack/deep-freeze/blob/master/index.js
 /** @param {any} obj */
 function deepFreeze(obj) {
@@ -4459,7 +4498,7 @@ var highlight = HLJS({});
 
 module.exports = highlight;
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 const IDENT_RE = '[A-Za-z$_][0-9A-Za-z$_]*';
 const KEYWORDS = [
   "as", // for exports
@@ -5059,7 +5098,7 @@ function javascript(hljs) {
 
 module.exports = javascript;
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v3.5.1
  * https://jquery.com/
@@ -15933,7 +15972,7 @@ if ( typeof noGlobal === "undefined" ) {
 return jQuery;
 } );
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 /*jshint node:true */
 /* globals define */
 /*
@@ -16020,7 +16059,7 @@ if (typeof define === "function" && define.amd) {
 
   })(module);
 }
-},{"./src/index":27}],10:[function(require,module,exports){
+},{"./src/index":28}],11:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -16084,7 +16123,7 @@ Directives.prototype.readIgnored = function(input) {
 
 module.exports.Directives = Directives;
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -16278,7 +16317,7 @@ InputScanner.prototype.lookBack = function(testVal) {
 
 module.exports.InputScanner = InputScanner;
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -16473,7 +16512,7 @@ module.exports.Options = Options;
 module.exports.normalizeOpts = _normalizeOpts;
 module.exports.mergeOpts = _mergeOpts;
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /*jshint node:true */
 /*
   The MIT License (MIT)
@@ -16894,7 +16933,7 @@ Output.prototype.ensure_empty_line_above = function(starts_with, ends_with) {
 
 module.exports.Output = Output;
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -16990,7 +17029,7 @@ Pattern.prototype._update = function() {};
 
 module.exports.Pattern = Pattern;
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -17183,7 +17222,7 @@ TemplatablePattern.prototype._read_template = function() {
 
 module.exports.TemplatablePattern = TemplatablePattern;
 
-},{"./pattern":14}],16:[function(require,module,exports){
+},{"./pattern":15}],17:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -17239,7 +17278,7 @@ function Token(type, text, newlines, whitespace_before) {
 
 module.exports.Token = Token;
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -17381,7 +17420,7 @@ Tokenizer.prototype._readWhitespace = function() {
 module.exports.Tokenizer = Tokenizer;
 module.exports.TOKEN = TOKEN;
 
-},{"../core/inputscanner":11,"../core/token":16,"../core/tokenstream":18,"./whitespacepattern":19}],18:[function(require,module,exports){
+},{"../core/inputscanner":12,"../core/token":17,"../core/tokenstream":19,"./whitespacepattern":20}],19:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -17461,7 +17500,7 @@ TokenStream.prototype.add = function(token) {
 
 module.exports.TokenStream = TokenStream;
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -17568,7 +17607,7 @@ WhitespacePattern.prototype.__split = function(regexp, input_string) {
 
 module.exports.WhitespacePattern = WhitespacePattern;
 
-},{"../core/pattern":14}],20:[function(require,module,exports){
+},{"../core/pattern":15}],21:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -18051,7 +18090,7 @@ Beautifier.prototype.beautify = function() {
 
 module.exports.Beautifier = Beautifier;
 
-},{"../core/directives":10,"../core/inputscanner":11,"../core/output":13,"./options":22}],21:[function(require,module,exports){
+},{"../core/directives":11,"../core/inputscanner":12,"../core/output":14,"./options":23}],22:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -18095,7 +18134,7 @@ module.exports.defaultOptions = function() {
   return new Options();
 };
 
-},{"./beautifier":20,"./options":22}],22:[function(require,module,exports){
+},{"./beautifier":21,"./options":23}],23:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -18153,7 +18192,7 @@ Options.prototype = new BaseOptions();
 
 module.exports.Options = Options;
 
-},{"../core/options":12}],23:[function(require,module,exports){
+},{"../core/options":13}],24:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -19020,7 +19059,7 @@ Beautifier.prototype._do_optional_end_element = function(parser_token) {
 
 module.exports.Beautifier = Beautifier;
 
-},{"../core/output":13,"../html/options":25,"../html/tokenizer":26}],24:[function(require,module,exports){
+},{"../core/output":14,"../html/options":26,"../html/tokenizer":27}],25:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -19064,7 +19103,7 @@ module.exports.defaultOptions = function() {
   return new Options();
 };
 
-},{"./beautifier":23,"./options":25}],25:[function(require,module,exports){
+},{"./beautifier":24,"./options":26}],26:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -19157,7 +19196,7 @@ Options.prototype = new BaseOptions();
 
 module.exports.Options = Options;
 
-},{"../core/options":12}],26:[function(require,module,exports){
+},{"../core/options":13}],27:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -19491,7 +19530,7 @@ Tokenizer.prototype._read_content_word = function(c) {
 module.exports.Tokenizer = Tokenizer;
 module.exports.TOKEN = TOKEN;
 
-},{"../core/directives":10,"../core/pattern":14,"../core/templatablepattern":15,"../core/tokenizer":17}],27:[function(require,module,exports){
+},{"../core/directives":11,"../core/pattern":15,"../core/templatablepattern":16,"../core/tokenizer":18}],28:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -19537,7 +19576,7 @@ module.exports.js = js_beautify;
 module.exports.css = css_beautify;
 module.exports.html = style_html;
 
-},{"./css/index":21,"./html/index":24,"./javascript/index":30}],28:[function(require,module,exports){
+},{"./css/index":22,"./html/index":25,"./javascript/index":31}],29:[function(require,module,exports){
 /* jshint node: true, curly: false */
 // Parts of this section of code is taken from acorn.
 //
@@ -19596,7 +19635,7 @@ exports.newline = /[\n\r\u2028\u2029]/;
 exports.lineBreak = new RegExp('\r\n|' + exports.newline.source);
 exports.allLineBreaks = new RegExp(exports.lineBreak.source, 'g');
 
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -21053,7 +21092,7 @@ Beautifier.prototype.handle_eof = function(current_token) {
 
 module.exports.Beautifier = Beautifier;
 
-},{"../core/output":13,"../core/token":16,"./acorn":28,"./options":31,"./tokenizer":32}],30:[function(require,module,exports){
+},{"../core/output":14,"../core/token":17,"./acorn":29,"./options":32,"./tokenizer":33}],31:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -21097,7 +21136,7 @@ module.exports.defaultOptions = function() {
   return new Options();
 };
 
-},{"./beautifier":29,"./options":31}],31:[function(require,module,exports){
+},{"./beautifier":30,"./options":32}],32:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -21192,7 +21231,7 @@ Options.prototype = new BaseOptions();
 
 module.exports.Options = Options;
 
-},{"../core/options":12}],32:[function(require,module,exports){
+},{"../core/options":13}],33:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -21760,7 +21799,7 @@ module.exports.TOKEN = TOKEN;
 module.exports.positionable_operators = positionable_operators.slice();
 module.exports.line_starters = line_starters.slice();
 
-},{"../core/directives":10,"../core/inputscanner":11,"../core/pattern":14,"../core/templatablepattern":15,"../core/tokenizer":17,"./acorn":28}],33:[function(require,module,exports){
+},{"../core/directives":11,"../core/inputscanner":12,"../core/pattern":15,"../core/templatablepattern":16,"../core/tokenizer":18,"./acorn":29}],34:[function(require,module,exports){
 /*global define:false */
 /**
  * Copyright 2012-2017 Craig Campbell
@@ -22820,7 +22859,7 @@ module.exports.line_starters = line_starters.slice();
     }
 }) (typeof window !== 'undefined' ? window : null, typeof  window !== 'undefined' ? document : null);
 
-},{}],34:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 (function (process){(function (){
 /**!
 * tippy.js v6.2.7
@@ -25149,7 +25188,7 @@ exports.sticky = sticky;
 
 
 }).call(this)}).call(this,require('_process'))
-},{"@popperjs/core":5,"_process":42}],35:[function(require,module,exports){
+},{"@popperjs/core":6,"_process":43}],36:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -25163,13 +25202,13 @@ function forArg(args, cb) {
   }
 }
 
-},{}],36:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Bridge = exports.host = exports.contain = exports.pragmatize = exports.Value = exports.Compose = exports.Variants = exports.Select = exports.Button = exports.buttonValue = void 0;
+exports.Monitor = exports.Bridge = exports.host = exports.contain = exports.pragmatize = exports.Value = exports.Compose = exports.Variants = exports.Select = exports.Button = exports.buttonValue = void 0;
 
 var _comp = _interopRequireDefault(require("../pragmas/comp"));
 
@@ -25231,6 +25270,18 @@ const Button = {
   }
 };
 exports.Button = Button;
+const Monitor = {
+  simple: (key, val = 0, tag = "p", action = () => {}) => {
+    return new _comp.default({
+      key: key,
+      value: val,
+      set: (value, master, comp) => {
+        comp.find(key + "-monitor").element.text(value);
+      }
+    }).with(`<${tag}>${val}</${tag}>`, key + "-monitor");
+  }
+};
+exports.Monitor = Monitor;
 
 const variantUIActivate = element => {
   console.log(`activating ${element.key} to ${element.value}`);
@@ -25351,6 +25402,7 @@ const maps = (string, elements = null) => {
 };
 
 const Compose = (key, icon, elements, type = "composer") => {
+  if (key instanceof Object) return new _comp.default(key);
   return new _comp.default(map(key, type, icon, elements));
 };
 
@@ -25413,7 +25465,7 @@ const Bridge = (stream, keys = [], beam = (object, trigger) => console.table(obj
 
 exports.Bridge = Bridge;
 
-},{"../pragmas/comp":40}],37:[function(require,module,exports){
+},{"../pragmas/comp":41}],38:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -25436,7 +25488,7 @@ const db = {
 };
 exports.db = db;
 
-},{}],38:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -25472,7 +25524,7 @@ class IconBuilder {
 
 exports.default = IconBuilder;
 
-},{"./icondb":37}],39:[function(require,module,exports){
+},{"./icondb":38}],40:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -25544,6 +25596,12 @@ Object.defineProperty(exports, "Bridge", {
     return _templates.Bridge;
   }
 });
+Object.defineProperty(exports, "Monitor", {
+  enumerable: true,
+  get: function () {
+    return _templates.Monitor;
+  }
+});
 Object.defineProperty(exports, "IconBuilder", {
   enumerable: true,
   get: function () {
@@ -25561,7 +25619,7 @@ var _icons = _interopRequireDefault(require("./icons/icons"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./composers/templates.js":36,"./icons/icons":38,"./pragmas/comp.js":40,"./pragmas/pragma.js":41}],40:[function(require,module,exports){
+},{"./composers/templates.js":37,"./icons/icons":39,"./pragmas/comp.js":41,"./pragmas/pragma.js":42}],41:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -25679,7 +25737,7 @@ class Comp extends _pragma.default {
 
   with(id, key) {
     let new_element = new Comp({
-      key: key || key + this.children.length.toString(),
+      key: key,
       element: (0, _jquery.default)(id)
     });
     this.add(new_element);
@@ -25956,7 +26014,7 @@ class Comp extends _pragma.default {
 
 exports.default = Comp;
 
-},{"../composers/helpers":35,"../composers/templates":36,"./pragma":41,"jquery":8,"mousetrap":33,"tippy.js":34}],41:[function(require,module,exports){
+},{"../composers/helpers":36,"../composers/templates":37,"./pragma":42,"jquery":9,"mousetrap":34,"tippy.js":35}],42:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -26061,7 +26119,7 @@ class Pragma {
 
 exports.default = Pragma;
 
-},{"jquery":8}],42:[function(require,module,exports){
+},{"jquery":9}],43:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
