@@ -17,7 +17,7 @@ import javascript from 'highlight.js/lib/languages/javascript'
 hljs.registerLanguage('javascript', javascript)
 
 
-import { Bridge, Select, Compose, Button, Comp, IconBuilder, Pragma } from "../src"
+import { Bridge, Select, Compose, Button, Comp, IconBuilder, Pragma } from "../dist"
 
 import helloworld from "./demos/helloworld"
 import bigdemo from "./demos/bigdemo"
@@ -106,15 +106,14 @@ const Block = ((key, block, nextblock) => {
 
 //rainbow.color()
 
-let bgblock = Block("bigdemo", bigdemo)
+let tripblock = Block("tripdemo", trip)
+let bgblock = Block("bigdemo", bigdemo, tripblock)
 let todoblock= Block("tododemo", todo, bgblock)
 let timer2block= Block("timerdemo2", timer2, todoblock)
 let timerblock= Block("timerdemo", timer, timer2block)
 let hwblock = Block("helloworld", helloworld, timerblock)
-let tripblock = Block("tripdemo", trip)
-paper.contain(tripblock)
+paper.contain(hwblock)
 
-console.log(new Pragma)
 // console.time()
 // console.timeEnd()
 
