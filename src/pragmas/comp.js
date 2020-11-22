@@ -111,6 +111,11 @@ export default class Comp extends Pragma {
     return this
   }
 
+  from(id){
+    this.element.remove()
+    this.element = null
+    return this.as(id)
+  }
   as(id){
     let newElement = $(id)
     newElement.attr( "id", this.key )
@@ -118,6 +123,7 @@ export default class Comp extends Pragma {
     this.element = newElement
     return this
   }
+
   compose(force=false, tag="div"){
     //if (this.force || !this.element) 
     return this.as($(document.createElement(tag)))
