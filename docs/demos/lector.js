@@ -1,5 +1,5 @@
-import { Compose } from "../../src"
-import { wfy } from "./lector_helpers/index"
+import { Compose, Pragma, Comp } from "../../src"
+import { wfy, PragmaWord, PragmaLector } from "./lector_helpers/index"
 var __indexOf = [].indexOf || function (e) { for (var t = 0, n = this.length; t < n; t++) { if (t in this && this[t] === e) return t } return -1 }; /* indexOf polyfill ends here*/ jQuery.fn.descendants = function (e) { var t, n, r, i, s, o; t = e === "all" ? [1, 3] : e ? [3] : [1]; i = []; n = function (e) { var r, s, o, u, a, f; u = e.childNodes; f = []; for (s = 0, o = u.length; s < o; s++) { r = u[s]; if (a = r.nodeType, __indexOf.call(t, a) >= 0) { i.push(r) } if (r.childNodes.length) { f.push(n(r)) } else { f.push(void 0) } } return f }; for (s = 0, o = this.length; s < o; s++) { r = this[s]; n(r) } return jQuery(i) }
 
 // function wfy(element){
@@ -19,18 +19,76 @@ const default_options = {
   wfy: true
 }
 
+
 const Word = (element, i) => {
-  console.log('composing new word for ' + element.textContent)
-  return Compose(i).from(element)
+  let w = new PragmaWord({key: i, value:0}).from(element, true)
+  // let nw = new PragmaWord(element, i)
+  // w = nw
+  let thisw = w.element.find('w')
+
+  if (thisw.length==0) {
+    w.listen({
+      "click": (e, comp) => {
+        // console.log(comp)
+        comp.read().then(() => {
+          comp.parent.value = comp.key
+        })
+      },
+      "mouseover": (w, comp) => comp.css("background #5e38c74a"),
+      "mouseout": (w, comp) => comp.css("background transparent")
+    })
+  }
+
+  // w.element.css({"border": ".5px dashed lightgray"}) 
+  w.css("border .5px dashed lightgray")
+  thisw.each( (i, el) => {
+    let ww = Word(el, i)
+    w.add(ww)
+  })
+  // w.addToChain((v, master, trigger) => {
+  //   console.log(v, master, trigger)
+  // })
+  return w
 }
+
+
 const Lector = (l, options=default_options) => {
   l = $(l)
   if (options.wfy) wfy(l)
-  $("w").css({"border": ".5px dashed lightgray"})
-  $("w").each( (i, el) => {
-    Word(el, i)
+  let w = Word(l, 0)
+  let lec = new PragmaLector({key:"lector"}).add(w)
+  console.table(w)
+
+  lec.mark = "MARK v5"
+  lec.value = 0
+  // w.value = 0
+  lec.addToChain((v, comp, oter) => {
+    // comp.element.fadeOut()
+    // console.log(v, comp, oter)
+    console.log( w.currentWord.pre.text(), w.currentWord.text(), w.currentWord.next.text())
+    console.log( w.currentWord.text(), w.currentWord.first_in_line)
+    // w.currentWord.read()
+    // console.log(w.currentWord.mark)
+    // console.log(w.currentWord.mark)
   })
-  return Compose("lector").with("<h1> WASSSSSSUP </h1>")
+
+  function bindKeys(){
+    lec.bind("right", (() => { w.value += 1}))
+    lec.bind("left", (() => { w.value -= 1}))
+    lec.bind("space", (() => {
+      w.read()
+      return false
+    }))
+  }
+  bindKeys()
+  // let words = []
+  // $("w").each( (i, el) => {
+  //   let w = Word(el, i)
+  //   // lec.add(w)
+  //   // words.push(w)
+  //   w.element.css({"border": ".5px dashed lightgray"}) 
+  // })
+  return lec
 }
 
 export default function lector(paper){

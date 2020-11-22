@@ -4,11 +4,11 @@ import { Compose } from "../composers/templates"
 import tippy from "tippy.js"
 import Mousetrap from "mousetrap"
 import { forArg } from "../composers/helpers"
+import { autoDetection } from "highlight.js"
 
 export default class Comp extends Pragma {
   constructor(map, parent = null){
     super()
-    this.keys = []
     this.actualValue = null
     this.parent = parent
     this.build(map)
@@ -111,14 +111,16 @@ export default class Comp extends Pragma {
     return this
   }
 
-  from(id){
+  from(id, skip_id=false){
+    id = $(id)
     this.element.remove()
-    this.element = null
-    return this.as(id)
+    this.element = null      
+    if (!skip_id && id.attr("id")) this.key = id.attr("id")
+    return this.as(id, true)
   }
-  as(id){
+  as(id, skip_id=false){
     let newElement = $(id)
-    newElement.attr( "id", this.key )
+    if (!skip_id) newElement.attr( "id", this.key )
     if (this.element) this.element.replaceWith(newElement)
     this.element = newElement
     return this
@@ -134,9 +136,9 @@ export default class Comp extends Pragma {
       // if (this.containsKey(child.key)) {
       // }
       super.add(child)
-      this.keys.push(child.key)
-      this.element.append(child.element)
+      if (!this.element.has(child.element)) this.element.append(child.element)
     })
+    return this
   }
 
   buildInside(map){
@@ -231,7 +233,7 @@ export default class Comp extends Pragma {
     //   map.set(v, comp) 
     // }
 
-    if (map.key){
+    if (map.key != null){
       this.key = map.key
       this.element.attr("id", this.key)
     }
@@ -294,7 +296,7 @@ export default class Comp extends Pragma {
   }
   bind(keys, cb, event){
     cb = this.proc_bind_cb(cb)
-    Mousetrap.bind(keys, () => { cb(this) }, event)
+    Mousetrap.bind(keys, () => { return cb(this) }, event)
     return this
   }
 
@@ -366,5 +368,19 @@ export default class Comp extends Pragma {
     Object.entries(listeners).forEach(([on, cb]) => {
       this.element.on(on, (event) => cb(event, this))
     })
+  }
+
+  css(str){
+    // background red, text-align center,
+    // text-align center, 
+    let cssDict = {}
+    for(let style of str.split(", ")){
+      style = style.split(" ") 
+      let key = style[0]
+      style.shift()
+      cssDict[key] = style.join(" ")
+    }
+    this.element.css(cssDict)
+    return this
   }
 }

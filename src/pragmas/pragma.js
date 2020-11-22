@@ -14,7 +14,7 @@ class Pragma {
     return Array.from(this.childMap.values())
   }
   generate_key(key){
-    if (key) {
+    if (key != null) {
       this.key = key
     }else{
       this.key = btoa(Math.random()).substr(10, 5) 
@@ -23,7 +23,7 @@ class Pragma {
 
   find(key){
     // recursively find a key
-    if (this.key == key) return this
+    // return false
     if (this.childMap.has(key)) return this.childMap.get(key)
     for (let [k, value] of this.childMap) {
       let vv = value.find(key) 
@@ -35,6 +35,7 @@ class Pragma {
       spragma.key = spragma.key + "~"
       return this.add(spragma)
     }
+    spragma.parent = this
     this.childMap.set(spragma.key, spragma)
     // this.children.push(spragma)
   }
