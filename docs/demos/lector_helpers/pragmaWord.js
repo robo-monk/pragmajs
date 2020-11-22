@@ -1,4 +1,5 @@
 import { Comp } from "../../../src";
+import PinkyPromise from "./pinkyPromise"
 
 export default class PragmaWord extends Comp {
 
@@ -45,31 +46,64 @@ export default class PragmaWord extends Comp {
     return 7
     // return charsMsAt(wpm) * wordValue(this, generateDifficultyIndex(this))
   }
+  pause(){
+    this.currentPromise.catch((e)=>{
+      console.warn(e)
+      this.currentPromise = null
+    })
+
+    this.currentPromise.cancel("pause")
+    return this
+  }
+
+  set currentPromise(p){
+    if (this.parent) return this.parent.currentPromise = p
+    this.currentPromiseVal = new PinkyPromise((resolve, reject) => {
+      p.catch((e) => {
+        console.warn(e)
+        // this.currentPromiseVal = null
+        // reject(e)
+      }).then(() => {
+        // this.currentPromiseVal = null
+        resolve()
+        this.currentPromiseVal = null
+      })
+    })
+  }
+
+  get currentPromise() {
+    return this.parent ? this.parent.currentPromise : this.currentPromiseVal
+  }
 
   promiseRead(){
-    this.currentPromise = new Promise((resolve, reject) => {
-      setTimeout(() => {
-        // this.mark = "MARK V5 " + this.text() + this.key
-        // console.log(this.mark)
-        console.log(this.text())
-        resolve()
-      }, 1000)
-    })
+    this.currentPromise = new PinkyPromise((resolve, reject) => {
+        setTimeout(() => {
+          // this.mark = "MARK V5 " + this.text() + this.key
+          // console.log(this.mark)
+          // console.log(this.text())
+          console.log(this.text())
+          this.parent.value += 1
+          resolve(` read [ ${this.text()} ] `)
+        }, 1000)
+      })
     // console.log(this.mark)
     return this.currentPromise
   }
-  read(){
-    console.log('reading ' + this.text())
-    // if (this.hasKids) console.log(this.currentWord)
-    if (!this.currentPromise) this.promiseRead()
 
+  read(){
+    // console.log('reading ' + this.text())
+    // if (this.hasKids) console.log(this.currentWord)
+    if (this.hasKids) return this.find(this.value).read()
+
+    if (this.currentPromise) return new Promise((resolve, reject) => { resolve('already reading') })
+    this.promiseRead()
     // console.log(this)
-    return new Promise(resolve => {
+    return new PinkyPromise(resolve => {
       this.currentPromise.then(() => {
        resolve()
        this.currentPromise = null
        return this.read()
-      })
+      }).catch(e => resolve('pause'))
     })
   }
 }

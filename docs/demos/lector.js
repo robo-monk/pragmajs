@@ -21,7 +21,7 @@ const default_options = {
 
 
 const Word = (element, i) => {
-  let w = new PragmaWord({key: i, value:0}).from(element, true)
+  let w = new PragmaWord({key: i, value: 0}).from(element, true)
   // let nw = new PragmaWord(element, i)
   // w = nw
   let thisw = w.element.find('w')
@@ -45,6 +45,7 @@ const Word = (element, i) => {
     let ww = Word(el, i)
     w.add(ww)
   })
+  w.value = 0
   // w.addToChain((v, master, trigger) => {
   //   console.log(v, master, trigger)
   // })
@@ -55,7 +56,7 @@ const Word = (element, i) => {
 const Lector = (l, options=default_options) => {
   l = $(l)
   if (options.wfy) wfy(l)
-  let w = Word(l, 0)
+  let w = Word(l)
   let lec = new PragmaLector({key:"lector"}).add(w)
   console.table(w)
 
@@ -65,8 +66,8 @@ const Lector = (l, options=default_options) => {
   lec.addToChain((v, comp, oter) => {
     // comp.element.fadeOut()
     // console.log(v, comp, oter)
-    console.log( w.currentWord.pre.text(), w.currentWord.text(), w.currentWord.next.text())
-    console.log( w.currentWord.text(), w.currentWord.first_in_line)
+    // console.log( w.currentWord.pre.text(), w.currentWord.text(), w.currentWord.next.text())
+    // console.log( w.currentWord.text(), w.currentWord.first_in_line)
     // w.currentWord.read()
     // console.log(w.currentWord.mark)
     // console.log(w.currentWord.mark)
@@ -76,7 +77,14 @@ const Lector = (l, options=default_options) => {
     lec.bind("right", (() => { w.value += 1}))
     lec.bind("left", (() => { w.value -= 1}))
     lec.bind("space", (() => {
+      console.log(w.value)
       w.read()
+      return false
+    }))
+    lec.bind("p", (() => {
+      console.log(w.value)
+      console.log(w.pause())
+      // w.currentPromise.reject()
       return false
     }))
   }
