@@ -93,16 +93,15 @@ export default class PragmaWord extends Comp {
   read(){
     // console.log('reading ' + this.text())
     // if (this.hasKids) console.log(this.currentWord)
-    if (this.hasKids) return this.find(this.value).read()
-
     if (this.currentPromise) return new Promise((resolve, reject) => { resolve('already reading') })
+    if (this.hasKids) return this.currentWord.read()
     this.promiseRead()
     // console.log(this)
     return new PinkyPromise(resolve => {
       this.currentPromise.then(() => {
        resolve()
        this.currentPromise = null
-       return this.read()
+       return this.parent.read()
       }).catch(e => resolve('pause'))
     })
   }
