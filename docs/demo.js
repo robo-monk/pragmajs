@@ -107,20 +107,21 @@ const Block = ((key, block, nextblock) => {
 
 //rainbow.color()
 
-let tripblock = Block("tripdemo", trip)
-let bgblock = Block("bigdemo", bigdemo, tripblock)
-let todoblock= Block("tododemo", todo, bgblock)
-let timer2block= Block("timerdemo2", timer2, todoblock)
-let timerblock= Block("timerdemo", timer, timer2block)
-let hwblock = Block("helloworld", helloworld, timerblock)
-paper.contain(hwblock)
+// let tripblock = Block("tripdemo", trip)
+// let bgblock = Block("bigdemo", bigdemo, tripblock)
+// let todoblock= Block("tododemo", todo, bgblock)
+// let timer2block= Block("timerdemo2", timer2, todoblock)
+// let timerblock= Block("timerdemo", timer, timer2block)
+// let hwblock = Block("helloworld", helloworld, timerblock)
+// paper.contain(hwblock)
 
 
-// let lectorblock = Block("lector", lector)
-// paper.contain(lectorblock)
+let lectorblock = Block("lector", lector)
+paper.contain(lectorblock)
+lectorblock.find("doblock").element.click()
 
 hljs.initHighlightingOnLoad()
-// lectorblock.find("doblock").element.click()
+
 
 
 // console.time()

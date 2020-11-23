@@ -42,6 +42,7 @@ const Button = {
         action(value, comp)
       },
       elements: [
+        // TODO fix this
         buttonValue(key, "-", value, -step, icons["-"]),
         {
           key: `${key}-monitor`,
