@@ -113,12 +113,14 @@ const Block = ((key, block, nextblock) => {
 // let timer2block= Block("timerdemo2", timer2, todoblock)
 // let timerblock= Block("timerdemo", timer, timer2block)
 // let hwblock = Block("helloworld", helloworld, timerblock)
+// paper.contain(hwblock)
+
 
 let lectorblock = Block("lector", lector)
 paper.contain(lectorblock)
 
 hljs.initHighlightingOnLoad()
-lectorblock.find("doblock").element.click()
+// lectorblock.find("doblock").element.click()
 
 
 // console.time()

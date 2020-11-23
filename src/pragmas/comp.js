@@ -4,7 +4,6 @@ import { Compose } from "../composers/templates"
 import tippy from "tippy.js"
 import Mousetrap from "mousetrap"
 import { forArg } from "../composers/helpers"
-import { autoDetection } from "highlight.js"
 
 export default class Comp extends Pragma {
   constructor(map, parent = null){
@@ -91,6 +90,7 @@ export default class Comp extends Pragma {
 
   pragmatize(where){
     //this.compose()
+    this.isAppended = true
     if (where instanceof Pragma) where = where.element
     $(where ? where : document.body).append(this.element)
     return this
@@ -106,7 +106,6 @@ export default class Comp extends Pragma {
       key: key,
       element: $(id)
     })
-    
     this.add(new_element)
     return this
   }
@@ -116,6 +115,7 @@ export default class Comp extends Pragma {
     this.element.remove()
     this.element = null      
     if (!skip_id && id.attr("id")) this.key = id.attr("id")
+    this.isAppended = true
     return this.as(id, true)
   }
   as(id, skip_id=false){
@@ -131,12 +131,19 @@ export default class Comp extends Pragma {
     return this.as($(document.createElement(tag)))
   }
 
+  addSilently(child){
+    forArg(arguments, (child) => {
+      super.add(child)
+    })
+    return this
+  }
+
   add(child){
     forArg(arguments, (child) => {
       // if (this.containsKey(child.key)) {
       // }
       super.add(child)
-      if (!this.element.has(child.element)) this.element.append(child.element)
+      if (!this.isAppended) this.element.append(child.element)
     })
     return this
   }
