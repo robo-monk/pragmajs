@@ -127,7 +127,7 @@ export default class PragmaMark extends Pragma {
     const before_weight = .4
     const after_weight = (1 - before_weight)
     return new Promise((resolve, reject) => {
-      let first_transition = word.isLastInLine ? 500 : this.last_marked ? this.last_marked.time(this.wpm) * before_weight : 0
+      let first_transition = word.isFirstInLine ? 500 : this.last_marked ? this.last_marked.time(this.wpm) * before_weight : 0
       let first_ease = word.isFirstInLine ? "easeInOutExpo" : "linear"
       return this.moveTo({
         top: word.top(),

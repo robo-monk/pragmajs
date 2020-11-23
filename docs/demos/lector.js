@@ -33,7 +33,7 @@ const Word = (element, i) => {
     w.listen({
       "click": (e, comp) => {
         // console.log(comp)
-        comp.read().then(() => {
+        comp.summon().then(() => {
           comp.parent.value = comp.key
         })
       },
@@ -43,12 +43,14 @@ const Word = (element, i) => {
   }
 
   // w.element.css({"border": ".5px dashed lightgray"}) 
-  w.css("border .5px dashed lightgray")
+  // w.css("border .5px dashed lightgray")
   thisw.each( (i, el) => {
     let ww = Word(el, i)
     w.add(ww)
   })
   w.value = 0
+  w.setRange(0, w.kidsum)
+
   // w.addToChain((v, master, trigger) => {
   //   console.log(v, master, trigger)
   // })
@@ -60,7 +62,7 @@ const Lector = (l, options=default_options) => {
   l = $(l)
   if (options.wfy) wfy(l)
   let w = Word(l)
-  let lec = new PragmaLector({key:"lector"}).add(w)
+  let lec = new PragmaLector({key:"lector"}).connectTo(w)
   console.table(w)
 
   lec.mark = new PragmaMark(lec)
@@ -79,18 +81,17 @@ const Lector = (l, options=default_options) => {
   function bindKeys(){
     lec.bind("right", (() => { w.value += 1}))
     lec.bind("left", (() => { w.value -= 1}))
+
     lec.bind("space", (() => {
-      console.log(w.value)
-      w.read()
+      lec.toggle()
       return false
-    }))
-    lec.bind("p", (() => {
-      console.log(w.value)
-      console.log(w.pause())
-      // w.currentPromise.reject()
+    }), "keyup")
+    lec.bind("space", (() => {
+      // lec.toggle()
       return false
-    }))
+    }), "keydown")
   }
+
   bindKeys()
   // let words = []
   // $("w").each( (i, el) => {

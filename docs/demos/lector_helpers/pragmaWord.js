@@ -15,6 +15,9 @@ export default class PragmaWord extends Comp {
     if (this.parent) this.parent.mark = m
     return null
   }
+  get isReading(){
+    return this.currentPromise != null
+  }
   get currentWord(){
     if (!this.hasKids) return this
     return this.find(this.value).currentWord
@@ -47,14 +50,20 @@ export default class PragmaWord extends Comp {
     return charsMsAt(wpm) * wordValue(this, generateDifficultyIndex(this))
   }
   pause(){
-    if (this.currentPromise){
-      this.currentPromise.catch((e)=>{
-        console.warn(e)
-        this.currentPromise = null
-      })
-      this.currentPromise.cancel("pause")
-    }
-    return this
+    return new PinkyPromise( resolve => {
+      if (this.currentPromise){
+        this.currentPromise.catch((e)=>{
+          console.warn(e)
+          this.currentPromise = null
+        })
+        this.currentPromise.cancel("pause")
+
+        this.mark.pause().then(() => {
+          this.currentPromise = null
+          resolve("done pausing")
+        })
+      }else{ resolve("already paused")}
+    })
   }
 
   set currentPromise(p){
@@ -78,13 +87,15 @@ export default class PragmaWord extends Comp {
 
   promiseRead(){
     this.currentPromise = new PinkyPromise((resolve, reject) => {
-        this.parent.value += 1
           // this.mark = "MARK V5 " + this.text() + this.key
           // console.log(this.mark)
           // console.log(this.text())
           this.mark.guide(this).then(() => {
             console.log(this.text())
+            this.parent.value = this.index + 1
             resolve(` read [ ${this.text()} ] `)
+          }).catch((e) => {
+            reject(e)
           })
       })
     // console.log(this.mark)
@@ -107,6 +118,14 @@ export default class PragmaWord extends Comp {
        this.currentPromise = null
        return this.parent.read()
       }).catch(e => resolve('pause'))
+    })
+  }
+
+  summon() {
+    if (this.hasKids) return false
+    return this.parent.pause().catch(() => console.log('no need to pause')).then(() => {
+      this.mark.mark(this, 50, true)
+      this.parent.value = this.index
     })
   }
 }

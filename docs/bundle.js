@@ -6715,7 +6715,7 @@ const Word = (element, i) => {
     w.listen({
       "click": (e, comp) => {
         // console.log(comp)
-        comp.read().then(() => {
+        comp.summon().then(() => {
           comp.parent.value = comp.key;
         });
       },
@@ -6723,14 +6723,15 @@ const Word = (element, i) => {
       "mouseout": (w, comp) => comp.css("background transparent")
     });
   } // w.element.css({"border": ".5px dashed lightgray"}) 
+  // w.css("border .5px dashed lightgray")
 
 
-  w.css("border .5px dashed lightgray");
   thisw.each((i, el) => {
     let ww = Word(el, i);
     w.add(ww);
   });
-  w.value = 0; // w.addToChain((v, master, trigger) => {
+  w.value = 0;
+  w.setRange(0, w.kidsum); // w.addToChain((v, master, trigger) => {
   //   console.log(v, master, trigger)
   // })
 
@@ -6743,7 +6744,7 @@ const Lector = (l, options = default_options) => {
   let w = Word(l);
   let lec = new _index.PragmaLector({
     key: "lector"
-  }).add(w);
+  }).connectTo(w);
   console.table(w);
   lec.mark = new _index.PragmaMark(lec);
   lec.value = 0; // w.value = 0
@@ -6765,16 +6766,13 @@ const Lector = (l, options = default_options) => {
       w.value -= 1;
     });
     lec.bind("space", () => {
-      console.log(w.value);
-      w.read();
+      lec.toggle();
       return false;
-    });
-    lec.bind("p", () => {
-      console.log(w.value);
-      console.log(w.pause()); // w.currentPromise.reject()
-
+    }, "keyup");
+    lec.bind("space", () => {
+      // lec.toggle()
       return false;
-    });
+    }, "keydown");
   }
 
   bindKeys(); // let words = []
@@ -7008,8 +7006,31 @@ class PragmaLector extends _src.Comp {
     this.markPragma = m;
   }
 
+  get isReading() {
+    return this.w.isReading;
+  }
+
   get currentWord() {
     return this.find(this.value);
+  }
+
+  connectTo(w) {
+    this.w = w;
+    this.add(w);
+    return this;
+  }
+
+  toggle() {
+    if (this.isReading) return this.pause();
+    return this.read();
+  }
+
+  read() {
+    this.w.read();
+  }
+
+  pause() {
+    this.w.pause();
   } // read(){
   //   // super.read()
   //   // if (this.hasKids) console.log(this.currentWord)
@@ -7182,7 +7203,7 @@ class PragmaMark extends _src.Pragma {
     const before_weight = .4;
     const after_weight = 1 - before_weight;
     return new Promise((resolve, reject) => {
-      let first_transition = word.isLastInLine ? 500 : this.last_marked ? this.last_marked.time(this.wpm) * before_weight : 0;
+      let first_transition = word.isFirstInLine ? 500 : this.last_marked ? this.last_marked.time(this.wpm) * before_weight : 0;
       let first_ease = word.isFirstInLine ? "easeInOutExpo" : "linear";
       return this.moveTo({
         top: word.top(),
@@ -7233,6 +7254,10 @@ class PragmaWord extends _src.Comp {
     return null;
   }
 
+  get isReading() {
+    return this.currentPromise != null;
+  }
+
   get currentWord() {
     if (!this.hasKids) return this;
     return this.find(this.value).currentWord;
@@ -7272,15 +7297,21 @@ class PragmaWord extends _src.Comp {
   }
 
   pause() {
-    if (this.currentPromise) {
-      this.currentPromise.catch(e => {
-        console.warn(e);
-        this.currentPromise = null;
-      });
-      this.currentPromise.cancel("pause");
-    }
-
-    return this;
+    return new _pinkyPromise.default(resolve => {
+      if (this.currentPromise) {
+        this.currentPromise.catch(e => {
+          console.warn(e);
+          this.currentPromise = null;
+        });
+        this.currentPromise.cancel("pause");
+        this.mark.pause().then(() => {
+          this.currentPromise = null;
+          resolve("done pausing");
+        });
+      } else {
+        resolve("already paused");
+      }
+    });
   }
 
   set currentPromise(p) {
@@ -7303,13 +7334,15 @@ class PragmaWord extends _src.Comp {
 
   promiseRead() {
     this.currentPromise = new _pinkyPromise.default((resolve, reject) => {
-      this.parent.value += 1; // this.mark = "MARK V5 " + this.text() + this.key
+      // this.mark = "MARK V5 " + this.text() + this.key
       // console.log(this.mark)
       // console.log(this.text())
-
       this.mark.guide(this).then(() => {
         console.log(this.text());
+        this.parent.value = this.index + 1;
         resolve(` read [ ${this.text()} ] `);
+      }).catch(e => {
+        reject(e);
       });
     }); // console.log(this.mark)
 
@@ -7331,6 +7364,14 @@ class PragmaWord extends _src.Comp {
         this.currentPromise = null;
         return this.parent.read();
       }).catch(e => resolve('pause'));
+    });
+  }
+
+  summon() {
+    if (this.hasKids) return false;
+    return this.parent.pause().catch(() => console.log('no need to pause')).then(() => {
+      this.mark.mark(this, 50, true);
+      this.parent.value = this.index;
     });
   }
 

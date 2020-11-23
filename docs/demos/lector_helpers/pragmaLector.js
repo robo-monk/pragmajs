@@ -8,10 +8,30 @@ export default class PragmaLector extends Comp {
   set mark(m){
     this.markPragma = m
   }
+  get isReading(){
+    return this.w.isReading
+  }
   get currentWord(){
     return this.find(this.value)
   }
 
+  connectTo(w){
+    this.w = w
+    this.add(w)
+    return this
+  }
+
+  toggle(){
+    if (this.isReading) return this.pause()
+    return this.read()
+  }
+  read(){
+    this.w.read()
+  }
+
+  pause(){
+    this.w.pause()
+  }
   // read(){
   //   // super.read()
   //   // if (this.hasKids) console.log(this.currentWord)
