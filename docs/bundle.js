@@ -6382,17 +6382,16 @@ const Block = (key, block, nextblock) => {
     }]
   }).contain(doblock, copyblock);
 }; //rainbow.color()
-// let tripblock = Block("tripdemo", trip)
-// let bgblock = Block("bigdemo", bigdemo, tripblock)
-// let todoblock= Block("tododemo", todo, bgblock)
-// let timer2block= Block("timerdemo2", timer2, todoblock)
-// let timerblock= Block("timerdemo", timer, timer2block)
-// let hwblock = Block("helloworld", helloworld, timerblock)
-// paper.contain(hwblock)
 
 
-let lectorblock = Block("lector", _lector.default);
-paper.contain(lectorblock);
+let tripblock = Block("tripdemo", _trip.default);
+let bgblock = Block("bigdemo", _bigdemo.default, tripblock);
+let todoblock = Block("tododemo", _todo.default, bgblock);
+let timer2block = Block("timerdemo2", _timerdemo.timer2, todoblock);
+let timerblock = Block("timerdemo", _timerdemo.timer, timer2block);
+let hwblock = Block("helloworld", _helloworld.default, timerblock);
+paper.contain(hwblock); // let lectorblock = Block("lector", lector)
+// paper.contain(lectorblock)
 
 _core.default.initHighlightingOnLoad(); // lectorblock.find("doblock").element.click()
 // console.time()
@@ -48710,9 +48709,9 @@ class Comp extends _pragma.default {
 
   pragmatize(where) {
     //this.compose()
-    this.isAppended = true;
     if (where instanceof _pragma.default) where = where.element;
     (0, _jquery.default)(where ? where : document.body).append(this.element);
+    this.isAppended = true;
     return this;
   }
 
@@ -48764,7 +48763,7 @@ class Comp extends _pragma.default {
       // if (this.containsKey(child.key)) {
       // }
       super.add(child);
-      if (!this.isAppended) this.element.append(child.element);
+      if (!child.isAppended) this.element.append(child.element);
     });
     return this;
   }
@@ -48782,7 +48781,6 @@ class Comp extends _pragma.default {
   contain() {
     (0, _helpers.forArg)(arguments, comp => {
       this.add(comp);
-      comp.parent = this;
     });
     return this;
   }

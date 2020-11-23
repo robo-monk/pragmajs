@@ -90,9 +90,9 @@ export default class Comp extends Pragma {
 
   pragmatize(where){
     //this.compose()
-    this.isAppended = true
     if (where instanceof Pragma) where = where.element
     $(where ? where : document.body).append(this.element)
+    this.isAppended = true
     return this
   }
 
@@ -143,7 +143,7 @@ export default class Comp extends Pragma {
       // if (this.containsKey(child.key)) {
       // }
       super.add(child)
-      if (!this.isAppended) this.element.append(child.element)
+      if (!child.isAppended) this.element.append(child.element)
     })
     return this
   }
@@ -161,7 +161,6 @@ export default class Comp extends Pragma {
   contain(){
     forArg(arguments, (comp) => {
       this.add(comp)
-      comp.parent = this
     })
     return this
   }
