@@ -1,5 +1,6 @@
 import { Comp } from "../../../src";
 import PinkyPromise from "./pinkyPromise"
+import { charsMsAt, crush, generateDifficultyIndex, wordValue } from "./helpers/pragmaWordHelper.js"
 
 export default class PragmaWord extends Comp {
 
@@ -33,26 +34,26 @@ export default class PragmaWord extends Comp {
   get pre() {
     return this.sibling(-1)
   }
-  same_line(n) {
+  isInTheSameLine(n) {
     return this.sibling(n) != null && ((this.sibling(n).top() - this.top()) ** 2 < 10)
   }
-  get first_in_line() {
-    return !this.same_line(-1)
+  get isFirstInLine() {
+    return !this.isInTheSameLine(-1)
   }
-  get last_in_line() {
-    return !this.same_line(1)
+  get isLastInLine() {
+    return !this.isInTheSameLine(1)
   }
   time(wpm = 250) {
-    return 7
-    // return charsMsAt(wpm) * wordValue(this, generateDifficultyIndex(this))
+    return charsMsAt(wpm) * wordValue(this, generateDifficultyIndex(this))
   }
   pause(){
-    this.currentPromise.catch((e)=>{
-      console.warn(e)
-      this.currentPromise = null
-    })
-
-    this.currentPromise.cancel("pause")
+    if (this.currentPromise){
+      this.currentPromise.catch((e)=>{
+        console.warn(e)
+        this.currentPromise = null
+      })
+      this.currentPromise.cancel("pause")
+    }
     return this
   }
 
@@ -77,14 +78,14 @@ export default class PragmaWord extends Comp {
 
   promiseRead(){
     this.currentPromise = new PinkyPromise((resolve, reject) => {
-        setTimeout(() => {
+        this.parent.value += 1
           // this.mark = "MARK V5 " + this.text() + this.key
           // console.log(this.mark)
           // console.log(this.text())
-          console.log(this.text())
-          this.parent.value += 1
-          resolve(` read [ ${this.text()} ] `)
-        }, 1000)
+          this.mark.guide(this).then(() => {
+            console.log(this.text())
+            resolve(` read [ ${this.text()} ] `)
+          })
       })
     // console.log(this.mark)
     return this.currentPromise
@@ -93,7 +94,10 @@ export default class PragmaWord extends Comp {
   read(){
     // console.log('reading ' + this.text())
     // if (this.hasKids) console.log(this.currentWord)
-    if (this.currentPromise) return new Promise((resolve, reject) => { resolve('already reading') })
+    if (this.currentPromise) return new Promise((resolve, reject) => { 
+      resolve('already reading') 
+    })
+
     if (this.hasKids) return this.currentWord.read()
     this.promiseRead()
     // console.log(this)
