@@ -18,7 +18,15 @@ const buttonValue = (key, ext, value, step, icon) => {
   }))
 }
 
-// TODO add icons
+const Monitor = {
+  simple: ((key, val=0, tag="p", action=null) => {
+    return (new Comp({
+      key: key,
+      value: val,
+      set: ((value, master, comp) => { if(action) return action(value, comp, master);comp.find(key+"-monitor").element.text(value) })
+    })).with(`<${tag}>${val}</${tag}>`, key+"-monitor")
+  })
+}
 
 const Button = {
   action: ((key, icon, action, tippy) => {
@@ -31,12 +39,24 @@ const Button = {
     if (tippy) btn.setTippy(tippy)
     return btn
   }),
-  controls: ((key, value, step, action=(()=>{}), icons={ "+":"+", "-":"-"}) => {
+  controls: ((key, value, step, action, icons) => {
+
+    let plus = Button.action(key+"+", icons["+"] || "+", (master) => {
+      master.value += step
+    })
+
+    let minus = Button.action(key+"-", icons["-"] || "-", (master) => {
+      master.value += -step
+      console.log(master.value)
+    })
+    return Monitor.simple(key, value, "div").host(plus, minus)
+  }),
+  controlsDeprecated: ((key, value, step, action=(()=>{}), icons={ "+":"+", "-":"-"}) => {
     return new Comp({
       key: key,
       type: "long-button",
       value: value,
-      set: (value, comp)=>{
+      set: (value, comp) => {
         let key_monitor = comp.find(`${key}-monitor`)  
         key_monitor.element.html(value)
         action(value, comp)
@@ -55,15 +75,7 @@ const Button = {
   })
 }
 
-const Monitor = {
-  simple: ((key, val=0, tag="p", action=null) => {
-    return (new Comp({
-      key: key,
-      value: val,
-      set: ((value, master, comp) => { if(action) return action(value, comp, master);comp.find(key+"-monitor").element.text(value) })
-    })).with(`<${tag}>${val}</${tag}>`, key+"-monitor")
-  })
-}
+
 
 const variantUIActivate = (element) => {
   // console.log(`activating ${element.key} to ${element.value}`)

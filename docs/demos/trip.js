@@ -17,7 +17,6 @@ export default function trip(paper){
 
     setTimeout(() => {
       $("#trip-prompt").fadeOut()
-      // ("Have a nice trip! Epilepsy warning")  
     }, 50)
     setTimeout( () => {
 

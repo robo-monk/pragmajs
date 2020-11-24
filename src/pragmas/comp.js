@@ -101,14 +101,7 @@ export default class Comp extends Pragma {
     return this
   }
 
-  with(id, key){
-    let new_element = new Comp({
-      key: key,
-      element: $(id)
-    })
-    this.add(new_element)
-    return this
-  }
+  with(id, key){ return this.contain(Compose(key).as(id)) }
 
   from(id, skip_id=false){
     id = $(id)
@@ -118,6 +111,7 @@ export default class Comp extends Pragma {
     this.isAppended = true
     return this.as(id, true)
   }
+
   as(id, skip_id=false){
     let newElement = $(id)
     if (!skip_id) newElement.attr( "id", this.key )

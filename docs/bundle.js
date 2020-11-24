@@ -7605,7 +7605,7 @@ function trip(paper) {
       "background": "rgb(10,10,30)"
     });
     setTimeout(() => {
-      $("#trip-prompt").fadeOut(); // ("Have a nice trip! Epilepsy warning")  
+      $("#trip-prompt").fadeOut();
     }, 50);
     setTimeout(() => {
       paper.element.text("");
@@ -48218,10 +48218,22 @@ const buttonValue = (key, ext, value, step, icon) => {
   return buttonAction(key + ext, value, icon, (master, comp) => {
     comp.parent.value += step;
   });
-}; // TODO add icons
-
+};
 
 exports.buttonValue = buttonValue;
+const Monitor = {
+  simple: (key, val = 0, tag = "p", action = null) => {
+    return new _comp.default({
+      key: key,
+      value: val,
+      set: (value, master, comp) => {
+        if (action) return action(value, comp, master);
+        comp.find(key + "-monitor").element.text(value);
+      }
+    }).with(`<${tag}>${val}</${tag}>`, key + "-monitor");
+  }
+};
+exports.Monitor = Monitor;
 const Button = {
   action: (key, icon, action, tippy) => {
     let btn = new _comp.default({
@@ -48234,7 +48246,17 @@ const Button = {
     if (tippy) btn.setTippy(tippy);
     return btn;
   },
-  controls: (key, value, step, action = () => {}, icons = {
+  controls: (key, value, step, action, icons) => {
+    let plus = Button.action(key + "+", icons["+"] || "+", master => {
+      master.value += step;
+    });
+    let minus = Button.action(key + "-", icons["-"] || "-", master => {
+      master.value += -step;
+      console.log(master.value);
+    });
+    return Monitor.simple(key, value, "div").host(plus, minus);
+  },
+  controlsDeprecated: (key, value, step, action = () => {}, icons = {
     "+": "+",
     "-": "-"
   }) => {
@@ -48257,19 +48279,6 @@ const Button = {
   }
 };
 exports.Button = Button;
-const Monitor = {
-  simple: (key, val = 0, tag = "p", action = null) => {
-    return new _comp.default({
-      key: key,
-      value: val,
-      set: (value, master, comp) => {
-        if (action) return action(value, comp, master);
-        comp.find(key + "-monitor").element.text(value);
-      }
-    }).with(`<${tag}>${val}</${tag}>`, key + "-monitor");
-  }
-};
-exports.Monitor = Monitor;
 
 const variantUIActivate = element => {
   // console.log(`activating ${element.key} to ${element.value}`)
@@ -48723,12 +48732,7 @@ class Comp extends _pragma.default {
   }
 
   with(id, key) {
-    let new_element = new Comp({
-      key: key,
-      element: (0, _jquery.default)(id)
-    });
-    this.add(new_element);
-    return this;
+    return this.contain((0, _templates.Compose)(key).as(id));
   }
 
   from(id, skip_id = false) {
