@@ -1,10 +1,11 @@
 import $ from "jquery"
 
 import { Bridge, Select, Compose, Button, IconBuilder } from "../../../src"
+import { mode_ify } from "./conf/modes"
 
 const LectorSettings = (parent) => {
 
-  let colors = ["tomato", "navy", "lime"]
+  let colors = ["#a8f19a", "#eddd6e", "#edd1b0", "#96adfc"]
   let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"]
   let modes = ["HotBox", "Underneath", "Faded"]
 
@@ -17,16 +18,13 @@ const LectorSettings = (parent) => {
 
   let colorsComp = Select.color("markercolors", colors,
     (v, comp, key) => {
-      modifyBody({
-        "background": colors[comp.find(key).value]
-      })
+      // parent.mark.css(`background ${v}`)
+      mode_ify(parent.mark, modes[0], v)
     }).bind("c")
 
   let fontComp = Select.font("readerfont", fonts,
     (v, comp, key) => {
-      modifyBody({
-        "font-family": fonts[comp.find(key).value]
-      })
+      $("w").css({ "font-family": v })
     }).bind("f")
 
   // could be equivelant to ?
@@ -41,7 +39,8 @@ const LectorSettings = (parent) => {
   let modeComp = Select.attr("markermode", modes,
     (v, comp, key) => {
       // on value change
-      console.log(v)
+      mode_ify(parent.mark, v, colors[0])
+      // console.log(v)
     },
     (key, index) => {
       // icon contruction

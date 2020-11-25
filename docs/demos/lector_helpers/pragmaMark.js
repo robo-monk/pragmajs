@@ -38,7 +38,8 @@ export default class PragmaMark extends Pragma {
     return this.parent.settings
   }
 
-  set color(index) {
+  set color(hex) {
+    return 
     this.settings.set({ "color": this.colors[index] })
     this.element.css({ "background": this.colors[index] })
   }

@@ -67,7 +67,7 @@ class Watcher:
             m = self.modified_since(file, self.last)
             # print(self.isOkFile(file))
             if m and self.isOkFile(file):
-                self.last = m + 500
+                self.last = m + 5
                 cp = self.last
                 print("modified at " + str(cp))
                 print("-----")

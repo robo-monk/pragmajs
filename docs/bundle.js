@@ -6485,7 +6485,7 @@ _core.default.initHighlightingOnLoad(); // console.time()
 // let lec = new Lector($("#article"), settings)
 // lec.read()
 
-},{"../dist":1,"./demos/bigdemo":3,"./demos/helloworld":4,"./demos/lector":5,"./demos/timerdemo":15,"./demos/todo":16,"./demos/trip":17,"highlight.js/lib/core":21,"highlight.js/lib/languages/javascript":22,"js-beautify":24}],3:[function(require,module,exports){
+},{"../dist":1,"./demos/bigdemo":3,"./demos/helloworld":4,"./demos/lector":5,"./demos/timerdemo":16,"./demos/todo":17,"./demos/trip":18,"highlight.js/lib/core":22,"highlight.js/lib/languages/javascript":23,"js-beautify":25}],3:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6576,7 +6576,7 @@ function bigdemo(paper, test = () => {}) {
   return ["settingsWrapper", "commiter"];
 }
 
-},{"../../src":54,"jquery":23}],4:[function(require,module,exports){
+},{"../../src":55,"jquery":24}],4:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6625,7 +6625,7 @@ function helloworld() {
 // console.log("yyet")
 // }
 
-},{"../../src":54}],5:[function(require,module,exports){
+},{"../../src":55}],5:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6719,7 +6719,9 @@ const Word = (element, i) => {
           comp.parent.value = comp.key;
         });
       },
-      "mouseover": (w, comp) => comp.css("background #5e38c74a"),
+      "mouseover": (w, comp) => {
+        comp.css("background #5e38c74a");
+      },
       "mouseout": (w, comp) => comp.css("background transparent")
     });
   } // w.element.css({"border": ".5px dashed lightgray"}) 
@@ -6746,7 +6748,7 @@ const Lector = (l, options = default_options) => {
     key: "lector"
   }).connectTo(w);
   console.table(w);
-  lec.settings = (0, _index.LectorSettings)().pragmatize("#lector");
+  lec.settings = (0, _index.LectorSettings)(lec).pragmatize("#lector");
   lec.mark = new _index.PragmaMark(lec);
   lec.value = 0; // w.value = 0
 
@@ -6795,7 +6797,44 @@ function lector(paper) {
   return ["lector"];
 }
 
-},{"../../src":54,"./lector_helpers/index":9}],6:[function(require,module,exports){
+},{"../../src":55,"./lector_helpers/index":10}],6:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.mode_ify = void 0;
+const reset = `border 0
+               border-radius 3px
+               z-index 10
+               opacity 1
+               mix-blend-mode darken;`;
+
+const modes = (mode, bg) => {
+  return reset.concat({
+    "hotbox": `background ${bg}`,
+    "underneath": `background transparent
+                   border-bottom 3px solid ${bg}
+                   border-radius 4px
+                   `,
+    "faded": `
+      background linear-gradient(0.25turn, rgba(255, 0, 0, 0), ${bg}, ${bg}, ${bg}, rgba(255, 0, 0, 0))
+    `
+  }[mode]);
+}; // TODO add default modes
+
+
+const mode_ify = (mark, mode = "hotbox", bg = "#edd1b0") => {
+  mode = mode.toString().toLowerCase(); // console.log("mode-ifying,", mark)
+  // console.log(mode, bg)
+  // console.log(modes(mode, bg))
+
+  mark.css(modes(mode, bg));
+};
+
+exports.mode_ify = mode_ify;
+
+},{}],7:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6805,7 +6844,7 @@ exports.greek_prefixes = void 0;
 const greek_prefixes = ['an', 'an', 'ap', 'di', 'dy', 'ec', 'eg', 'en', 'em', 'eo', 'ep', 'eu', 'id', 'is', 'my', 'ne', 'od', 'oo', 'ot', 'sy', 'ur', 'ur', 'zo', 'pto', 'pyl', 'acr', 'aer', 'agr', 'ana', 'ant', 'apo', 'aut', 'bar', 'bio', 'cac', 'cat', 'cen', 'cen', 'con', 'cub', 'cyn', 'dec', 'dek', 'dem', 'dia', 'dox', 'eco', 'ego', 'eme', 'eos', 'epi', 'erg', 'eso', 'eth', 'eur', 'exo', 'geo', 'gen', 'hem', 'hal', 'hen', 'hex', 'hod', 'hol', 'hor', 'hor', 'hyo', 'hyp', 'ide', 'idi', 'iso', 'kil', 'lei', 'lep', 'lip', 'log', 'meg', 'mei', 'men', 'mer', 'mes', 'mim', 'mis', 'mit', 'mne', 'mon', 'myx', 'nes', 'nom', 'oct', 'oed', 'oen', 'omm', 'ont', 'opt', 'pan', 'pam', 'par', 'ped', 'pin', 'pis', 'pol', 'por', 'pro', 'rhe', 'sei', 'sit', 'syn', 'syl', 'sym', 'tax', 'the', 'the', 'tom', 'ton', 'top', 'tox', 'tri', 'ulo', 'uro', 'uro', 'xen', 'xer', 'zon', 'zyg', 'psil', 'prot', 'pros', 'amph', 'anem', 'anti', 'anth', 'arct', 'astr', 'athl', 'auto', 'basi', 'bibl', 'briz', 'brom', 'brom', 'call', 'carp', 'carp', 'cata', 'chir', 'cine', 'cirr', 'clad', 'clav', 'coel', 'copr', 'cosm', 'crep', 'cris', 'crit', 'cten', 'cyan', 'cycl', 'cyst', 'deca', 'deka', 'delt', 'derm', 'dexi', 'dino', 'dipl', 'ecto', 'endo', 'engy', 'eoso', 'etho', 'ethi', 'ethm', 'ethn', 'etym', 'fant', 'glia', 'gram', 'gymn', 'haem', 'hapl', 'heli', 'hemi', 'hept', 'herp', 'heur', 'hipp', 'home', 'horm', 'hyal', 'hydr', 'hygr', 'hypn', 'icos', 'kine', 'lamp', 'leps', 'leuc', 'leuk', 'lith', 'metr', 'meta', 'micr', 'myri', 'myth', 'narc', 'naut', 'necr', 'nect', 'nema', 'neur', 'noth', 'noto', 'oeco', 'ogdo', 'olig', 'onom', 'ophi', 'orch', 'orth', 'pach', 'paed', 'pale', 'path', 'patr', 'pect', 'pent', 'pept', 'peri', 'petr', 'phae', 'phag', 'pher', 'phil', 'phob', 'phon', 'phor', 'phos', 'phot', 'phyl', 'phys', 'plac', 'plas', 'plec', 'plut', 'pneu', 'poie', 'pole', 'poli', 'poli', 'poly', 'raph', 'rhag', 'rhig', 'rhin', 'rhiz', 'rhod', 'sarc', 'scel', 'scop', 'sema', 'siph', 'soma', 'soph', 'stea', 'steg', 'sten', 'stig', 'stom', 'styl', 'tach', 'tars', 'taur', 'tele', 'tele', 'temn', 'tetr', 'than', 'thus', 'ther', 'thym', 'thyr', 'trag', 'trit', 'trop', 'xiph', 'proct', 'ptych', 'amphi', 'arche', 'archi', 'arche', 'arist', 'arthr', 'bathy', 'batho', 'blenn', 'blast', 'botan', 'brady', 'bront', 'calli', 'calyp', 'cardi', 'centr', 'ceram', 'cerat', 'chlor', 'chore', 'chrom', 'chron', 'chrys', 'clast', 'clist', 'cochl', 'corac', 'cotyl', 'crani', 'cross', 'crypt', 'dendr', 'dodec', 'dynam', 'ennea', 'gastr', 'graph', 'heter', 'homal', 'hyper', 'klept', 'lekan', 'macro', 'melan', 'meter', 'morph', 'nephr', 'nomad', 'odont', 'organ', 'osteo', 'palae', 'palin', 'peran', 'phleg', 'phloe', 'phren', 'phryn', 'phyll', 'plagi', 'platy', 'plesi', 'pleth', 'pleur', 'pogon', 'polem', 'potam', 'rhabd', 'rhomb', 'scaph', 'schem', 'schis', 'scler', 'scoli', 'scept', 'scyph', 'selen', 'solen', 'sperm', 'sphen', 'spher', 'stern', 'stich', 'stoch', 'taeni', 'techn', 'therm', 'thyre', 'traum', 'trema', 'trich', 'troch', 'troph', 'xanth', 'psych', 'archae', 'brachi', 'brachy', 'bronch', 'cathar', 'cephal', 'chelon', 'cleist', 'cosmet', 'cylind', 'dactyl', 'deuter', 'dogmat', 'erythr', 'galact', 'hendec', 'ichthy', 'mening', 'myrmec', 'omphal', 'opisth', 'opoter', 'ornith', 'ostrac', 'persic', 'phalar', 'phaner', 'phragm', 'plinth', 'prasin', 'presby', 'rhynch', 'scalen', 'strept', 'stroph', 'thalam', 'theori', 'trachy', 'trapez', 'tympan', 'aesthet', 'anthrop', 'branchi', 'cleithr', 'epistem', 'parthen', 'phalang', 'pharmac', 'porphyr', 'sacchar', 'sphinct', 'stalact', 'stalagm', 'thalass', 'oesophag', 'ophthalm', 'physalid', 'pentecost', 'treiskaidek'];
 exports.greek_prefixes = greek_prefixes;
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6882,7 +6921,7 @@ function howGreek(word) {
   return 0;
 }
 
-},{"./greek":6,"compromise":20,"jquery":23}],8:[function(require,module,exports){
+},{"./greek":7,"compromise":21,"jquery":24}],9:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6896,7 +6935,7 @@ function wfyInner(desc) {
 
   for (let txt of desc.textContent.split(" ")) {
     let noWhiteSpace = txt.replace(/\s/g, "");
-    inner += noWhiteSpace.length != 0 ? "<w>" + txt.replaceAll(" ", " </w><w>") + " </w>" : txt;
+    inner += noWhiteSpace.length != 0 ? "<w>" + txt.replaceAll(" ", "</w> <w>") + "</w> " : txt;
   }
 
   $(desc).replaceWith(inner);
@@ -6921,7 +6960,7 @@ function wfy(element) {
   return true;
 }
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6970,7 +7009,7 @@ var _pragmaMark = _interopRequireDefault(require("./pragmaMark"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./helpers/wfy.js":8,"./lectorSettings":10,"./pragmaLector":12,"./pragmaMark":13,"./pragmaWord":14}],10:[function(require,module,exports){
+},{"./helpers/wfy.js":9,"./lectorSettings":11,"./pragmaLector":13,"./pragmaMark":14,"./pragmaWord":15}],11:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6982,10 +7021,12 @@ var _jquery = _interopRequireDefault(require("jquery"));
 
 var _src = require("../../../src");
 
+var _modes = require("./conf/modes");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const LectorSettings = parent => {
-  let colors = ["tomato", "navy", "lime"];
+  let colors = ["#a8f19a", "#eddd6e", "#edd1b0", "#96adfc"];
   let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"];
   let modes = ["HotBox", "Underneath", "Faded"];
   let icons = new _src.IconBuilder();
@@ -6996,14 +7037,13 @@ const LectorSettings = parent => {
   }
 
   let colorsComp = _src.Select.color("markercolors", colors, (v, comp, key) => {
-    modifyBody({
-      "background": colors[comp.find(key).value]
-    });
+    // parent.mark.css(`background ${v}`)
+    (0, _modes.mode_ify)(parent.mark, modes[0], v);
   }).bind("c");
 
   let fontComp = _src.Select.font("readerfont", fonts, (v, comp, key) => {
-    modifyBody({
-      "font-family": fonts[comp.find(key).value]
+    (0, _jquery.default)("w").css({
+      "font-family": v
     });
   }).bind("f"); // could be equivelant to ?
   // font Comp = Select.font.from(fonts).onChange(...).onMouseOver
@@ -7017,7 +7057,7 @@ const LectorSettings = parent => {
 
   let modeComp = _src.Select.attr("markermode", modes, (v, comp, key) => {
     // on value change
-    console.log(v);
+    (0, _modes.mode_ify)(parent.mark, v, colors[0]); // console.log(v)
   }, (key, index) => {
     // icon contruction
     return {
@@ -7081,7 +7121,7 @@ const LectorSettings = parent => {
 
 exports.LectorSettings = LectorSettings;
 
-},{"../../../src":54,"jquery":23}],11:[function(require,module,exports){
+},{"../../../src":55,"./conf/modes":6,"jquery":24}],12:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7107,7 +7147,7 @@ class PinkyPromise {
 
 exports.default = PinkyPromise;
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7163,7 +7203,7 @@ class PragmaLector extends _src.Comp {
 
 exports.default = PragmaLector;
 
-},{"../../../src":54}],13:[function(require,module,exports){
+},{"../../../src":55}],14:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7343,7 +7383,7 @@ class PragmaMark extends _src.Pragma {
 
 exports.default = PragmaMark;
 
-},{"../../../src":54,"./pragmaWord":14,"animejs":19,"jquery":23}],14:[function(require,module,exports){
+},{"../../../src":55,"./pragmaWord":15,"animejs":20,"jquery":24}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7499,7 +7539,7 @@ class PragmaWord extends _src.Comp {
 
 exports.default = PragmaWord;
 
-},{"../../../src":54,"./helpers/pragmaWordHelper.js":7,"./pinkyPromise":11}],15:[function(require,module,exports){
+},{"../../../src":55,"./helpers/pragmaWordHelper.js":8,"./pinkyPromise":12}],16:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7533,7 +7573,7 @@ function timer() {
   return ["timer"];
 }
 
-},{"../../src":54}],16:[function(require,module,exports){
+},{"../../src":55}],17:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7575,7 +7615,7 @@ function todo(paper) {
   return ["todo"];
 }
 
-},{"../../src":54,"mousetrap":48}],17:[function(require,module,exports){
+},{"../../src":55,"mousetrap":49}],18:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7666,7 +7706,7 @@ function trip(paper) {
   return ["trip"];
 }
 
-},{"../../src":54}],18:[function(require,module,exports){
+},{"../../src":55}],19:[function(require,module,exports){
 (function (process){(function (){
 /**
  * @popperjs/core v2.5.4 - MIT License
@@ -9536,7 +9576,7 @@ exports.preventOverflow = preventOverflow$1;
 
 
 }).call(this)}).call(this,require('_process'))
-},{"_process":57}],19:[function(require,module,exports){
+},{"_process":58}],20:[function(require,module,exports){
 /*
  * anime.js v3.2.1
  * (c) 2020 Julian Garnier
@@ -10850,7 +10890,7 @@ anime.random = function (min, max) { return Math.floor(Math.random() * (max - mi
 
 module.exports = anime;
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 /* compromise 13.7.0 MIT */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
@@ -25276,7 +25316,7 @@ module.exports = anime;
 
 })));
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 // https://github.com/substack/deep-freeze/blob/master/index.js
 /** @param {any} obj */
 function deepFreeze(obj) {
@@ -27485,7 +27525,7 @@ var highlight = HLJS({});
 
 module.exports = highlight;
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 const IDENT_RE = '[A-Za-z$_][0-9A-Za-z$_]*';
 const KEYWORDS = [
   "as", // for exports
@@ -28085,7 +28125,7 @@ function javascript(hljs) {
 
 module.exports = javascript;
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v3.5.1
  * https://jquery.com/
@@ -38959,7 +38999,7 @@ if ( typeof noGlobal === "undefined" ) {
 return jQuery;
 } );
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 /*jshint node:true */
 /* globals define */
 /*
@@ -39046,7 +39086,7 @@ if (typeof define === "function" && define.amd) {
 
   })(module);
 }
-},{"./src/index":42}],25:[function(require,module,exports){
+},{"./src/index":43}],26:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -39110,7 +39150,7 @@ Directives.prototype.readIgnored = function(input) {
 
 module.exports.Directives = Directives;
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -39304,7 +39344,7 @@ InputScanner.prototype.lookBack = function(testVal) {
 
 module.exports.InputScanner = InputScanner;
 
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -39499,7 +39539,7 @@ module.exports.Options = Options;
 module.exports.normalizeOpts = _normalizeOpts;
 module.exports.mergeOpts = _mergeOpts;
 
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 /*jshint node:true */
 /*
   The MIT License (MIT)
@@ -39920,7 +39960,7 @@ Output.prototype.ensure_empty_line_above = function(starts_with, ends_with) {
 
 module.exports.Output = Output;
 
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -40016,7 +40056,7 @@ Pattern.prototype._update = function() {};
 
 module.exports.Pattern = Pattern;
 
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -40209,7 +40249,7 @@ TemplatablePattern.prototype._read_template = function() {
 
 module.exports.TemplatablePattern = TemplatablePattern;
 
-},{"./pattern":29}],31:[function(require,module,exports){
+},{"./pattern":30}],32:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -40265,7 +40305,7 @@ function Token(type, text, newlines, whitespace_before) {
 
 module.exports.Token = Token;
 
-},{}],32:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -40407,7 +40447,7 @@ Tokenizer.prototype._readWhitespace = function() {
 module.exports.Tokenizer = Tokenizer;
 module.exports.TOKEN = TOKEN;
 
-},{"../core/inputscanner":26,"../core/token":31,"../core/tokenstream":33,"./whitespacepattern":34}],33:[function(require,module,exports){
+},{"../core/inputscanner":27,"../core/token":32,"../core/tokenstream":34,"./whitespacepattern":35}],34:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -40487,7 +40527,7 @@ TokenStream.prototype.add = function(token) {
 
 module.exports.TokenStream = TokenStream;
 
-},{}],34:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -40594,7 +40634,7 @@ WhitespacePattern.prototype.__split = function(regexp, input_string) {
 
 module.exports.WhitespacePattern = WhitespacePattern;
 
-},{"../core/pattern":29}],35:[function(require,module,exports){
+},{"../core/pattern":30}],36:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -41077,7 +41117,7 @@ Beautifier.prototype.beautify = function() {
 
 module.exports.Beautifier = Beautifier;
 
-},{"../core/directives":25,"../core/inputscanner":26,"../core/output":28,"./options":37}],36:[function(require,module,exports){
+},{"../core/directives":26,"../core/inputscanner":27,"../core/output":29,"./options":38}],37:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -41121,7 +41161,7 @@ module.exports.defaultOptions = function() {
   return new Options();
 };
 
-},{"./beautifier":35,"./options":37}],37:[function(require,module,exports){
+},{"./beautifier":36,"./options":38}],38:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -41179,7 +41219,7 @@ Options.prototype = new BaseOptions();
 
 module.exports.Options = Options;
 
-},{"../core/options":27}],38:[function(require,module,exports){
+},{"../core/options":28}],39:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -42046,7 +42086,7 @@ Beautifier.prototype._do_optional_end_element = function(parser_token) {
 
 module.exports.Beautifier = Beautifier;
 
-},{"../core/output":28,"../html/options":40,"../html/tokenizer":41}],39:[function(require,module,exports){
+},{"../core/output":29,"../html/options":41,"../html/tokenizer":42}],40:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -42090,7 +42130,7 @@ module.exports.defaultOptions = function() {
   return new Options();
 };
 
-},{"./beautifier":38,"./options":40}],40:[function(require,module,exports){
+},{"./beautifier":39,"./options":41}],41:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -42183,7 +42223,7 @@ Options.prototype = new BaseOptions();
 
 module.exports.Options = Options;
 
-},{"../core/options":27}],41:[function(require,module,exports){
+},{"../core/options":28}],42:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -42517,7 +42557,7 @@ Tokenizer.prototype._read_content_word = function(c) {
 module.exports.Tokenizer = Tokenizer;
 module.exports.TOKEN = TOKEN;
 
-},{"../core/directives":25,"../core/pattern":29,"../core/templatablepattern":30,"../core/tokenizer":32}],42:[function(require,module,exports){
+},{"../core/directives":26,"../core/pattern":30,"../core/templatablepattern":31,"../core/tokenizer":33}],43:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -42563,7 +42603,7 @@ module.exports.js = js_beautify;
 module.exports.css = css_beautify;
 module.exports.html = style_html;
 
-},{"./css/index":36,"./html/index":39,"./javascript/index":45}],43:[function(require,module,exports){
+},{"./css/index":37,"./html/index":40,"./javascript/index":46}],44:[function(require,module,exports){
 /* jshint node: true, curly: false */
 // Parts of this section of code is taken from acorn.
 //
@@ -42622,7 +42662,7 @@ exports.newline = /[\n\r\u2028\u2029]/;
 exports.lineBreak = new RegExp('\r\n|' + exports.newline.source);
 exports.allLineBreaks = new RegExp(exports.lineBreak.source, 'g');
 
-},{}],44:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -44079,7 +44119,7 @@ Beautifier.prototype.handle_eof = function(current_token) {
 
 module.exports.Beautifier = Beautifier;
 
-},{"../core/output":28,"../core/token":31,"./acorn":43,"./options":46,"./tokenizer":47}],45:[function(require,module,exports){
+},{"../core/output":29,"../core/token":32,"./acorn":44,"./options":47,"./tokenizer":48}],46:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -44123,7 +44163,7 @@ module.exports.defaultOptions = function() {
   return new Options();
 };
 
-},{"./beautifier":44,"./options":46}],46:[function(require,module,exports){
+},{"./beautifier":45,"./options":47}],47:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -44218,7 +44258,7 @@ Options.prototype = new BaseOptions();
 
 module.exports.Options = Options;
 
-},{"../core/options":27}],47:[function(require,module,exports){
+},{"../core/options":28}],48:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -44786,7 +44826,7 @@ module.exports.TOKEN = TOKEN;
 module.exports.positionable_operators = positionable_operators.slice();
 module.exports.line_starters = line_starters.slice();
 
-},{"../core/directives":25,"../core/inputscanner":26,"../core/pattern":29,"../core/templatablepattern":30,"../core/tokenizer":32,"./acorn":43}],48:[function(require,module,exports){
+},{"../core/directives":26,"../core/inputscanner":27,"../core/pattern":30,"../core/templatablepattern":31,"../core/tokenizer":33,"./acorn":44}],49:[function(require,module,exports){
 /*global define:false */
 /**
  * Copyright 2012-2017 Craig Campbell
@@ -45846,7 +45886,7 @@ module.exports.line_starters = line_starters.slice();
     }
 }) (typeof window !== 'undefined' ? window : null, typeof  window !== 'undefined' ? document : null);
 
-},{}],49:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 (function (process){(function (){
 /**!
 * tippy.js v6.2.7
@@ -48175,7 +48215,7 @@ exports.sticky = sticky;
 
 
 }).call(this)}).call(this,require('_process'))
-},{"@popperjs/core":18,"_process":57}],50:[function(require,module,exports){
+},{"@popperjs/core":19,"_process":58}],51:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -48189,7 +48229,7 @@ function forArg(args, cb) {
   }
 }
 
-},{}],51:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -48461,7 +48501,7 @@ const Bridge = (stream, keys = [], beam = (object, trigger) => console.table(obj
 
 exports.Bridge = Bridge;
 
-},{"../pragmas/comp":55}],52:[function(require,module,exports){
+},{"../pragmas/comp":56}],53:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -48484,7 +48524,7 @@ const db = {
 };
 exports.db = db;
 
-},{}],53:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -48520,7 +48560,7 @@ class IconBuilder {
 
 exports.default = IconBuilder;
 
-},{"./icondb":52}],54:[function(require,module,exports){
+},{"./icondb":53}],55:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -48615,7 +48655,7 @@ var _icons = _interopRequireDefault(require("./icons/icons"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./composers/templates.js":51,"./icons/icons":53,"./pragmas/comp.js":55,"./pragmas/pragma.js":56}],55:[function(require,module,exports){
+},{"./composers/templates.js":52,"./icons/icons":54,"./pragmas/comp.js":56,"./pragmas/pragma.js":57}],56:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -49040,7 +49080,7 @@ class Comp extends _pragma.default {
 
 exports.default = Comp;
 
-},{"../composers/helpers":50,"../composers/templates":51,"./pragma":56,"jquery":23,"mousetrap":48,"tippy.js":49}],56:[function(require,module,exports){
+},{"../composers/helpers":51,"../composers/templates":52,"./pragma":57,"jquery":24,"mousetrap":49,"tippy.js":50}],57:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -49147,11 +49187,46 @@ class Pragma {
     return this.left() + this.width() / 2 - relative_width / 2;
   }
 
+  css(str) {
+    // background red, text-align center,
+    // text-align center, 
+    str = str.replaceAll("\n", ";").replaceAll(":", " ");
+    let cssDict = new Map();
+
+    for (let style of str.split(";")) {
+      if (style.replace(/\s/g, "").length < 2) continue;
+      style = style.trim().split(" ");
+      let key = style[0];
+      style.shift();
+      cssDict.set(key, style.join(" "));
+    } // check css properties
+
+
+    let unsupported = [];
+
+    for (const [key, value] of cssDict.entries()) {
+      if (!CSS.supports(key, value)) unsupported.push(`${key.trim()}: ${value.trim()}`);
+    }
+
+    try {
+      if (unsupported.length > 0) throw "css syntax";
+      this.element.css(Object.fromEntries(cssDict));
+    } catch (error) {
+      console.error(`%c 🧯 pragma.js  %c \n
+      encountered a soft error 🔫 %c \n
+      \nSoft error while trying to parse and apply CSS to Pragma [${this.key}] %c\n
+      \n${error == "css syntax" ? `Potential typos: \n\t${unsupported.join("\n\t")}` : ''}
+      `, "font-size:15px", "font-size: 12px;", "color:whitesmoke", "color:white");
+    }
+
+    return this;
+  }
+
 }
 
 exports.default = Pragma;
 
-},{"jquery":23}],57:[function(require,module,exports){
+},{"jquery":24}],58:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 

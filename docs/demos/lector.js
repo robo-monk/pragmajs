@@ -37,7 +37,9 @@ const Word = (element, i) => {
           comp.parent.value = comp.key
         })
       },
-      "mouseover": (w, comp) => comp.css("background #5e38c74a"),
+      "mouseover": (w, comp) => {
+        comp.css("background #5e38c74a")
+      },
       "mouseout": (w, comp) => comp.css("background transparent")
     })
   }
@@ -64,7 +66,7 @@ const Lector = (l, options=default_options) => {
   let w = Word(l)
   let lec = new PragmaLector({key:"lector"}).connectTo(w)
   console.table(w)
-  lec.settings = LectorSettings().pragmatize("#lector")
+  lec.settings = LectorSettings(lec).pragmatize("#lector")
 
   lec.mark = new PragmaMark(lec)
   lec.value = 0
