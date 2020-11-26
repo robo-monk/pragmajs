@@ -3898,11 +3898,11 @@
 
         n.r(t), n.d(t, {
           Bridge: () => b,
-          Button: () => u,
+          Button: () => c,
           Comp: () => gt,
           Compose: () => h,
           IconBuilder: () => xt,
-          Monitor: () => c,
+          Monitor: () => u,
           Pragma: () => o,
           Select: () => p,
           Value: () => m,
@@ -3924,11 +3924,10 @@
           }
 
           generate_key(e) {
-            this.key = e || btoa(Math.random()).substr(10, 5);
+            this.key = null != e ? e : btoa(Math.random()).substr(10, 5);
           }
 
           find(e) {
-            if (this.key == e) return this;
             if (this.childMap.has(e)) return this.childMap.get(e);
 
             for (let [t, n] of this.childMap) {
@@ -3939,7 +3938,7 @@
 
           add(e) {
             if (this.childMap.has(e.key)) return e.key = e.key + "~", this.add(e);
-            this.childMap.set(e.key, e);
+            e.parent = this, this.childMap.set(e.key, e);
           }
 
           get kidsum() {
@@ -3990,6 +3989,31 @@
             return this.left() + this.width() / 2 - e / 2;
           }
 
+          css(e) {
+            e = e.replaceAll("\n", ";").replaceAll(":", " ");
+            let t = new Map();
+
+            for (let n of e.split(";")) {
+              if (n.replace(/\s/g, "").length < 2) continue;
+              n = n.trim().split(" ");
+              let e = n[0];
+              n.shift(), t.set(e, n.join(" "));
+            }
+
+            let n = [];
+
+            for (const [e, r] of t.entries()) CSS.supports(e, r) || n.push(`${e.trim()}: ${r.trim()}`);
+
+            try {
+              if (n.length > 0) throw "css syntax";
+              this.element.css(Object.fromEntries(t));
+            } catch (e) {
+              console.error(`%c 🧯 pragma.js  %c \n\n      encountered a soft error 🔫 %c \n\n      \nSoft error while trying to parse and apply CSS to Pragma [${this.key}] %c\n\n      \n${"css syntax" == e ? "Potential typos: \n\t" + n.join("\n\t") : ""}\n      `, "font-size:15px", "font-size: 12px;", "color:whitesmoke", "color:white");
+            }
+
+            return this;
+          }
+
         }
 
         const a = (e, t, n, r) => ({
@@ -4005,6 +4029,16 @@
           t.parent.value += r;
         }),
               u = {
+          simple: (e, t = 0, n = "p", r = null) => new gt({
+            key: e,
+            value: t,
+            set: (t, n, i) => {
+              if (r) return r(t, i, n);
+              i.find(e + "-monitor").element.text(t);
+            }
+          }).with(`<${n}>${t}</${n}>`, e + "-monitor")
+        },
+              c = {
           action: (e, t, n, r) => {
             let i = new gt({
               key: e,
@@ -4014,7 +4048,16 @@
             });
             return r && i.setTippy(r), i;
           },
-          controls: (e, t, n, r = () => {}, i = {
+          controls: (e, t, n, r, i) => {
+            let o = c.action(e + "+", i["+"] || "+", e => {
+              e.value += n;
+            }),
+                a = c.action(e + "-", i["-"] || "-", e => {
+              e.value += -n, console.log(e.value);
+            });
+            return u.simple(e, t, "div").host(o, a);
+          },
+          controlsDeprecated: (e, t, n, r = () => {}, i = {
             "+": "+",
             "-": "-"
           }) => new gt({
@@ -4030,16 +4073,6 @@
               icon: t
             }, s(e, "+", t, n, i["+"])]
           })
-        },
-              c = {
-          simple: (e, t = 0, n = "p", r = null) => new gt({
-            key: e,
-            value: t,
-            set: (t, n, i) => {
-              if (r) return r(t, i, n);
-              i.find(e + "-monitor").element.text(t);
-            }
-          }).with(`<${n}>${t}</${n}>`, e + "-monitor")
         },
               l = (e, t, n, r, i, o) => new gt(f({
           key: e,
@@ -5966,7 +5999,7 @@
 
         class gt extends o {
           constructor(e, t = null) {
-            super(), this.keys = [], this.actualValue = null, this.parent = t, this.build(e), this.log_txt = "", this.addToChain((e, t, n = this) => {
+            super(), this.actualValue = null, this.parent = t, this.build(e), this.log_txt = "", this.addToChain((e, t, n = this) => {
               this.master && (t.doChain(e, t, n), t.log(`${n.key} -> ${e}`));
             });
           }
@@ -6019,7 +6052,7 @@
           }
 
           pragmatize(e) {
-            return e instanceof o && (e = e.element), i()(e || document.body).append(this.element), this;
+            return e instanceof o && (e = e.element), i()(e || document.body).append(this.element), this.isAppended = !0, this;
           }
 
           chain(e) {
@@ -6027,26 +6060,32 @@
           }
 
           with(e, t) {
-            let n = new gt({
-              key: t,
-              element: i()(e)
-            });
-            return this.add(n), this;
+            return this.contain(h(t).as(e));
           }
 
-          as(e) {
-            let t = i()(e);
-            return t.attr("id", this.key), this.element && this.element.replaceWith(t), this.element = t, this;
+          from(e, t = !1) {
+            return e = i()(e), this.element.remove(), this.element = null, !t && e.attr("id") && (this.key = e.attr("id")), this.isAppended = !0, this.as(e, !0);
+          }
+
+          as(e, t = !1) {
+            let n = i()(e);
+            return t || n.attr("id", this.key), this.element && this.element.replaceWith(n), this.element = n, this;
           }
 
           compose(e = !1, t = "div") {
             return this.as(i()(document.createElement(t)));
           }
 
+          addSilently(e) {
+            return vt(arguments, e => {
+              super.add(e);
+            }), this;
+          }
+
           add(e) {
-            vt(arguments, e => {
-              super.add(e), this.keys.push(e.key), this.element.append(e.element);
-            });
+            return vt(arguments, e => {
+              super.add(e), e.isAppended || this.element.append(e.element);
+            }), this;
           }
 
           buildInside(e) {
@@ -6060,7 +6099,7 @@
 
           contain() {
             return vt(arguments, e => {
-              this.add(e), e.parent = this;
+              this.add(e);
             }), this;
           }
 
@@ -6101,7 +6140,7 @@
           }
 
           build(e) {
-            this.compose(!0), e.icon && this.illustrate(e.icon), e.elements && this.buildArray(e.elements), e.hover_element && this.buildInside(e.hover_element), e.value && (this.value = e.value), e.set && this.addToChain((t, n, r) => e.set(t, n, r)), e.key && (this.key = e.key, this.element.attr("id", this.key)), e.type && (this.type = e.type, this.element.addClass("pragma-" + e.type)), e.click && (this.onclick = () => {
+            this.compose(!0), e.icon && this.illustrate(e.icon), e.elements && this.buildArray(e.elements), e.hover_element && this.buildInside(e.hover_element), e.value && (this.value = e.value), e.set && this.addToChain((t, n, r) => e.set(t, n, r)), null != e.key && (this.key = e.key, this.element.attr("id", this.key)), e.type && (this.type = e.type, this.element.addClass("pragma-" + e.type)), e.click && (this.onclick = () => {
               e.click(this.master, this);
             }, this.element.addClass("pragma-clickable"), this.setup_listeners({
               click: this.onclick
@@ -6136,9 +6175,7 @@
           }
 
           bind(e, t, n) {
-            return t = this.proc_bind_cb(t), mt().bind(e, () => {
-              t(this);
-            }, n), this;
+            return t = this.proc_bind_cb(t), mt().bind(e, () => t(this), n), this;
           }
 
           get allChildren() {
@@ -6205,6 +6242,18 @@
             Object.entries(e).forEach(([e, t]) => {
               this.element.on(e, e => t(e, this));
             });
+          }
+
+          css(e) {
+            let t = {};
+
+            for (let n of e.split(", ")) {
+              n = n.split(" ");
+              let e = n[0];
+              n.shift(), t[e] = n.join(" ");
+            }
+
+            return this.element.css(t), this;
           }
 
         }
@@ -6568,8 +6617,8 @@ function bigdemo(paper, test = () => {}) {
   let syncedKeys = ["markercolors", "readerfont", "markermode", "wpm"];
   let freadyBridge = (0, _src.Bridge)(settings, syncedKeys, (object, trigger) => {
     paper.element.append(`<li>${trigger.key} -> ${trigger.value}</li>`);
-  });
-  settings.chain(freadyBridge);
+  }); //settings.chain(freadyBridge)
+
   test(settings); // every time a value is changed, do the 
   // freadyBridge's actions as well
 
@@ -7091,7 +7140,7 @@ const LectorSettings = parent => {
   settings.pragmatize();
   let syncedKeys = ["markercolors", "readerfont", "markermode", "wpm"];
   let freadyBridge = (0, _src.Bridge)(settings, syncedKeys, (object, trigger) => {
-    paper.element.append(`<li>${trigger.key} -> ${trigger.value}</li>`);
+    console.log(object);
   });
   return settings; // let colors = ["tomato", "navy", "lime"]
   // let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"]
@@ -7255,7 +7304,8 @@ class PragmaMark extends _src.Pragma {
     return this.parent.settings;
   }
 
-  set color(index) {
+  set color(hex) {
+    return;
     this.settings.set({
       "color": this.colors[index]
     });
@@ -48471,6 +48521,7 @@ const host = (a, b) => {
 exports.host = host;
 
 const Bridge = (stream, keys = [], beam = (object, trigger) => console.table(object)) => {
+  //console.log(stream, keys, beam)
   function syncableObj(master) {
     let sync = {};
 
@@ -48494,7 +48545,12 @@ const Bridge = (stream, keys = [], beam = (object, trigger) => console.table(obj
 
   let bridgeComp = Compose(stream.key + "Bridge");
   bridgeComp.addToChain((v, master, trigger) => {
-    if (keys.includes(trigger.key)) transmit(syncableObj(master), trigger);
+    //console.log(v, master, trigger)
+    transmit(v, trigger);
+  });
+  stream.addToChain((v, master, trigger) => {
+    //bridgeComp.value = syncableObj
+    if (keys.includes(trigger.key)) bridgeComp.value = syncableObj(master, trigger); //if (keys.includes(trigger.key)) transmit(syncableObj(master), trigger) 
   });
   return bridgeComp;
 };
@@ -49058,22 +49114,6 @@ class Comp extends _pragma.default {
     Object.entries(listeners).forEach(([on, cb]) => {
       this.element.on(on, event => cb(event, this));
     });
-  }
-
-  css(str) {
-    // background red, text-align center,
-    // text-align center, 
-    let cssDict = {};
-
-    for (let style of str.split(", ")) {
-      style = style.split(" ");
-      let key = style[0];
-      style.shift();
-      cssDict[key] = style.join(" ");
-    }
-
-    this.element.css(cssDict);
-    return this;
   }
 
 }

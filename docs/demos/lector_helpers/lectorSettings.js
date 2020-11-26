@@ -77,12 +77,13 @@ const LectorSettings = (parent) => {
   settings.pragmatize()
 
   let syncedKeys = ["markercolors", "readerfont", "markermode", "wpm"]
+
   let freadyBridge = Bridge(settings, syncedKeys,
     (object, trigger) => {
-      paper.element.append(`<li>${trigger.key} -> ${trigger.value}</li>`)
+      console.log(object)
     })
 
-    return settings
+  return settings
 
 
 

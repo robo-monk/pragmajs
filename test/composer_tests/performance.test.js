@@ -1,5 +1,5 @@
 import { Variants, Comp, Select, Compose, contain } from "../../src"
-import  bigdemo from "../../docs/demos/bigdemo.js"
+import bigdemo from "../../docs/demos/bigdemo.js"
 
 function bench(cb){
   let time = new Date().getTime()

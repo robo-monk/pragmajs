@@ -90,7 +90,7 @@ export default function bigdemo(paper, test=(()=>{})) {
       paper.element.append(`<li>${trigger.key} -> ${trigger.value}</li>`)
     })
 
-  settings.chain(freadyBridge)
+  //settings.chain(freadyBridge)
 
   test(settings)
   // every time a value is changed, do the 

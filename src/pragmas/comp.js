@@ -370,17 +370,5 @@ export default class Comp extends Pragma {
     })
   }
 
-  css(str){
-    // background red, text-align center,
-    // text-align center, 
-    let cssDict = {}
-    for(let style of str.split(", ")){
-      style = style.split(" ") 
-      let key = style[0]
-      style.shift()
-      cssDict[key] = style.join(" ")
-    }
-    this.element.css(cssDict)
-    return this
-  }
+  
 }
