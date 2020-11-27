@@ -4137,9 +4137,7 @@
               b = (e, t = [], n = (e, t) => console.table(e)) => {
           let r = h(e.key + "Bridge");
           return r.addToChain((e, i, o) => {
-            t.includes(o.key) && function (e, t) {
-              n(e, t);
-            }(function (e) {
+            t.includes(o.key) && (r.actualValue = function (e) {
               let n = {};
 
               for (let i of t) {
@@ -4148,8 +4146,10 @@
               }
 
               return n;
-            }(i), o);
-          }), r;
+            }(i), function (e) {
+              n(r.value, e);
+            }(o));
+          }), e.chain(r), r;
         };
 
         function x(e) {
@@ -6244,18 +6244,6 @@
             });
           }
 
-          css(e) {
-            let t = {};
-
-            for (let n of e.split(", ")) {
-              n = n.split(" ");
-              let e = n[0];
-              n.shift(), t[e] = n.join(" ");
-            }
-
-            return this.element.css(t), this;
-          }
-
         }
 
         const yt = {
@@ -6431,13 +6419,14 @@ const Block = (key, block, nextblock) => {
     }]
   }).contain(doblock, copyblock);
 }; //rainbow.color()
-// let tripblock = Block("tripdemo", trip)
-// let bgblock = Block("bigdemo", bigdemo, tripblock)
-// let todoblock= Block("tododemo", todo, bgblock)
-// let timer2block= Block("timerdemo2", timer2, todoblock)
-// let timerblock= Block("timerdemo", timer, timer2block)
-// let hwblock = Block("helloworld", helloworld, timerblock)
-// paper.contain(hwblock)
+//
+//let tripblock = Block("tripdemo", trip)
+//let bgblock = Block("bigdemo", bigdemo, tripblock)
+//let todoblock= Block("tododemo", todo, bgblock)
+//let timer2block= Block("timerdemo2", timer2, todoblock)
+//let timerblock= Block("timerdemo", timer, timer2block)
+//let hwblock = Block("helloworld", helloworld, timerblock)
+//paper.contain(hwblock)
 
 
 let lectorblock = Block("lector", _lector.default);
@@ -6873,12 +6862,14 @@ const modes = (mode, bg) => {
 }; // TODO add default modes
 
 
-const mode_ify = (mark, mode = "hotbox", bg = "#edd1b0") => {
+const mode_ify = (mark, mode = "hotbox", bg = "#edd1b0", skip = false) => {
   mode = mode.toString().toLowerCase(); // console.log("mode-ifying,", mark)
   // console.log(mode, bg)
   // console.log(modes(mode, bg))
 
-  mark.css(modes(mode, bg));
+  let css = modes(mode, bg);
+  if (!skip) mark.css(css);
+  return css;
 };
 
 exports.mode_ify = mode_ify;
@@ -7111,13 +7102,14 @@ const LectorSettings = parent => {
     // icon contruction
     return {
       type: "pointerModeOption",
-      html: "M"
+      html: "<div class='mini-pointer'></div>"
     };
   }).bind("m", null, "keyup"); // key, initial val, step
 
 
   let wpmSet = (value, comp) => {
     /* on set */
+    console.log(value, comp);
   };
 
   let wpmComp = _src.Button.controls("wpm", 250, 10, wpmSet, {
@@ -48312,15 +48304,22 @@ const buttonValue = (key, ext, value, step, icon) => {
 
 exports.buttonValue = buttonValue;
 const Monitor = {
-  simple: (key, val = 0, tag = "p", action = null) => {
+  custom: (key, val = 0, tag, action) => {
     return new _comp.default({
       key: key,
       value: val,
       set: (value, master, comp) => {
         if (action) return action(value, comp, master);
-        comp.find(key + "-monitor").element.text(value);
       }
     }).with(`<${tag}>${val}</${tag}>`, key + "-monitor");
+  },
+  simple: (key, val = 0, tag = "p", action = null) => {
+    let actionCb = (value, comp, master) => {
+      comp.find(key + "-monitor").element.text(value);
+      if (action) return action(value, comp, master);
+    };
+
+    return Monitor.custom(key, val, tag, actionCb);
   }
 };
 exports.Monitor = Monitor;
@@ -48337,35 +48336,13 @@ const Button = {
     return btn;
   },
   controls: (key, value, step, action, icons) => {
-    let plus = Button.action(key + "+", icons["+"] || "+", master => {
-      master.value += step;
+    let plus = Button.action(key + "+", icons["+"] || "+", (master, comp) => {
+      comp.parent.value += step;
     });
-    let minus = Button.action(key + "-", icons["-"] || "-", master => {
-      master.value += -step;
-      console.log(master.value);
+    let minus = Button.action(key + "-", icons["-"] || "-", (master, comp) => {
+      comp.parent.value += -step;
     });
-    return Monitor.simple(key, value, "div").host(plus, minus);
-  },
-  controlsDeprecated: (key, value, step, action = () => {}, icons = {
-    "+": "+",
-    "-": "-"
-  }) => {
-    return new _comp.default({
-      key: key,
-      type: "long-button",
-      value: value,
-      set: (value, comp) => {
-        let key_monitor = comp.find(`${key}-monitor`);
-        key_monitor.element.html(value);
-        action(value, comp);
-      },
-      elements: [// TODO fix this
-      buttonValue(key, "-", value, -step, icons["-"]), {
-        key: `${key}-monitor`,
-        type: "monitor",
-        icon: value
-      }, buttonValue(key, "+", value, step, icons["+"])]
-    });
+    return Monitor.simple(key, value, "div").prepend(plus).append(minus);
   }
 };
 exports.Button = Button;
@@ -48522,7 +48499,7 @@ exports.host = host;
 
 const Bridge = (stream, keys = [], beam = (object, trigger) => console.table(object)) => {
   //console.log(stream, keys, beam)
-  function syncableObj(master) {
+  function makeData(master) {
     let sync = {};
 
     for (let key of keys) {
@@ -48539,19 +48516,24 @@ const Bridge = (stream, keys = [], beam = (object, trigger) => console.table(obj
     return sync;
   }
 
-  function transmit(object, trigger) {
-    beam(object, trigger);
+  let bridgeComp = Compose(stream.key + "Bridge");
+
+  function transmit(trigger) {
+    beam(bridgeComp.value, trigger);
   }
 
-  let bridgeComp = Compose(stream.key + "Bridge");
   bridgeComp.addToChain((v, master, trigger) => {
     //console.log(v, master, trigger)
-    transmit(v, trigger);
+    if (keys.includes(trigger.key)) {
+      bridgeComp.actualValue = makeData(master);
+      transmit(trigger);
+    }
   });
-  stream.addToChain((v, master, trigger) => {
-    //bridgeComp.value = syncableObj
-    if (keys.includes(trigger.key)) bridgeComp.value = syncableObj(master, trigger); //if (keys.includes(trigger.key)) transmit(syncableObj(master), trigger) 
-  });
+  stream.chain(bridgeComp); //stream.addToChain(((v, master, trigger) => {
+  ////bridgeComp.value = syncableObj
+  ////if (keys.includes(trigger.key)) transmit(syncableObj(master), trigger) 
+  //}))
+
   return bridgeComp;
 };
 
@@ -48748,7 +48730,10 @@ class Comp extends _pragma.default {
 
         master.log(`${trigger.key} -> ${v}`);
       }
-    });
+    }); // api
+
+    this.append = this.add;
+    this.do = this.addToChain;
   }
 
   log(n) {
@@ -48773,10 +48758,6 @@ class Comp extends _pragma.default {
       }
     });
     return this;
-  }
-
-  do(cb) {
-    return this.addToChain(cb);
   }
 
   addToChain(cb) {
@@ -48853,19 +48834,29 @@ class Comp extends _pragma.default {
     return this.as((0, _jquery.default)(document.createElement(tag)));
   }
 
-  addSilently(child) {
+  addSilently() {
     (0, _helpers.forArg)(arguments, child => {
       super.add(child);
     });
     return this;
   }
 
-  add(child) {
+  add() {
     (0, _helpers.forArg)(arguments, child => {
       // if (this.containsKey(child.key)) {
       // }
       super.add(child);
       if (!child.isAppended) this.element.append(child.element);
+    });
+    return this;
+  }
+
+  prepend() {
+    (0, _helpers.forArg)(arguments, child => {
+      // if (this.containsKey(child.key)) {
+      // }
+      super.add(child);
+      if (!child.isAppended) this.element.prepend(child.element);
     });
     return this;
   }
@@ -48881,6 +48872,7 @@ class Comp extends _pragma.default {
   }
 
   contain() {
+    //this.add(arguments)
     (0, _helpers.forArg)(arguments, comp => {
       this.add(comp);
     });

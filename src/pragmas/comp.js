@@ -22,6 +22,10 @@ export default class Comp extends Pragma {
         master.log(`${trigger.key} -> ${v}`)
       }
     }))
+
+    // api
+    this.append = this.add
+    this.do = this.addToChain
   }
 
   log(n){
@@ -49,7 +53,6 @@ export default class Comp extends Pragma {
     return this
   }
 
-  do(cb){ return this.addToChain(cb) }
   addToChain(cb){
     if (!this.actionChain) this.actionChain = []
     this.actionChain.push(cb)
@@ -125,19 +128,29 @@ export default class Comp extends Pragma {
     return this.as($(document.createElement(tag)))
   }
 
-  addSilently(child){
+  addSilently(){
     forArg(arguments, (child) => {
       super.add(child)
     })
     return this
   }
 
-  add(child){
+  add(){
     forArg(arguments, (child) => {
       // if (this.containsKey(child.key)) {
       // }
       super.add(child)
       if (!child.isAppended) this.element.append(child.element)
+    })
+    return this
+  }
+
+  prepend(){
+    forArg(arguments, (child) => {
+      // if (this.containsKey(child.key)) {
+      // }
+      super.add(child)
+      if (!child.isAppended) this.element.prepend(child.element)
     })
     return this
   }
@@ -153,6 +166,7 @@ export default class Comp extends Pragma {
   }
 
   contain(){
+    //this.add(arguments)
     forArg(arguments, (comp) => {
       this.add(comp)
     })

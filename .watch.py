@@ -89,9 +89,11 @@ tailwind = "npx tailwindcss build " + tailwind_file + ".css -o " + tailwind_file
 
 watcher = Watcher().include(".js").exclude("tmp, bundle.js")
 watcher.watch("./src", "BUNDLING SOURCE", browserify)
+watcher.watch("./docs", "BUNDLING SOURCE", browserify)
 
-watcher2 = Watcher().include(".js, .css").exclude("tmp, .tail.css, bundle.js")
-watcher2.watch("./docs", "BUNDLING DOCS & TAILWIND", (browserify + a + tailwind))
+# watcher2 = Watcher().include(".js, .css").exclude("tmp, .tail.css, bundle.js")
+# watcher2.watch("./docs", "BUNDLING DOCS & TAILWIND", (browserify + a + tailwind))
+# watcher2.watch("./docs", "BUNDLING DOCS", (browserify + a + tailwind))
 
 
 # package_directories = [ "./src", "./docs" ]

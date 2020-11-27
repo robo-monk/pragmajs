@@ -42,7 +42,8 @@
   },
   "scripts": {
     "build": "webpack",
-    "test": "jest"
+    "test": "jest",
+    "watch": "watchify docs/demo.js -t babelify -o docs/bundle.js -v"
   },
   "dependencies": {
     "jquery": "^3.5.1",

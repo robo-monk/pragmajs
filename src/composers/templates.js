@@ -19,13 +19,22 @@ const buttonValue = (key, ext, value, step, icon) => {
 }
 
 const Monitor = {
-  simple: ((key, val=0, tag="p", action=null) => {
-    return (new Comp({
+  custom: ((key, val=0, tag, action) => {
+    return new Comp({
       key: key,
       value: val,
-      set: ((value, master, comp) => { if(action) return action(value, comp, master);comp.find(key+"-monitor").element.text(value) })
-    })).with(`<${tag}>${val}</${tag}>`, key+"-monitor")
-  })
+      set: ((value, master, comp) => { 
+        if(action) return action(value, comp, master)
+      })
+    }).with(`<${tag}>${val}</${tag}>`, key+"-monitor")
+  }),
+  simple: ((key, val=0, tag="p", action=null) => {
+    let actionCb = (value, comp, master) => {
+      comp.find(key+"-monitor").element.text(value) 
+      if (action) return action(value, comp, master)
+    }
+    return Monitor.custom(key, val, tag, actionCb) 
+  }),
 }
 
 const Button = {
@@ -41,37 +50,15 @@ const Button = {
   }),
   controls: ((key, value, step, action, icons) => {
 
-    let plus = Button.action(key+"+", icons["+"] || "+", (master) => {
-      master.value += step
+    let plus = Button.action(key+"+", icons["+"] || "+", (master, comp) => {
+      comp.parent.value += step
     })
 
-    let minus = Button.action(key+"-", icons["-"] || "-", (master) => {
-      master.value += -step
-      console.log(master.value)
+    let minus = Button.action(key+"-", icons["-"] || "-", (master, comp) => {
+      comp.parent.value += -step
     })
-    return Monitor.simple(key, value, "div").host(plus, minus)
-  }),
-  controlsDeprecated: ((key, value, step, action=(()=>{}), icons={ "+":"+", "-":"-"}) => {
-    return new Comp({
-      key: key,
-      type: "long-button",
-      value: value,
-      set: (value, comp) => {
-        let key_monitor = comp.find(`${key}-monitor`)  
-        key_monitor.element.html(value)
-        action(value, comp)
-      },
-      elements: [
-        // TODO fix this
-        buttonValue(key, "-", value, -step, icons["-"]),
-        {
-          key: `${key}-monitor`,
-          type: "monitor",
-          icon: value
-        },
-        buttonValue(key, "+", value, step, icons["+"]),
-      ]
-    })
+
+    return Monitor.simple(key, value, "div").prepend(plus).append(minus)
   })
 }
 
@@ -214,7 +201,7 @@ const Bridge = (stream, keys=[], beam=((object, trigger) => console.table(object
     beam(bridgeComp.value, trigger)
   }
 
-  bridgeComp.addToChain(((v, master, trigger) => {
+  bridgeComp.do(((v, master, trigger) => {
     //console.log(v, master, trigger)
     if (keys.includes(trigger.key)) {
       bridgeComp.actualValue = makeData(master)

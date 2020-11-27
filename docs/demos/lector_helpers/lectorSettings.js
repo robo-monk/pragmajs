@@ -46,13 +46,16 @@ const LectorSettings = (parent) => {
       // icon contruction
       return {
         type: "pointerModeOption",
-        html: "M"
+        html: "<div class='mini-pointer'></div>"
       }
     }).bind("m", null, "keyup")
 
 
   // key, initial val, step
-  let wpmSet = (value, comp ) => { /* on set */ }
+  let wpmSet = (value, comp ) => { 
+  /* on set */ 
+    console.log(value,comp)
+  }
   let wpmComp = Button.controls("wpm", 250, 10, wpmSet, {
     "+": icons.grab("plus"),
     "-": icons.grab("minus")
@@ -76,8 +79,8 @@ const LectorSettings = (parent) => {
   let settings = Compose("settingsWrapper").contain(popUpSettings, wpmComp)
   settings.pragmatize()
 
-  let syncedKeys = ["markercolors", "readerfont", "markermode", "wpm"]
 
+  let syncedKeys = ["markercolors", "readerfont", "markermode", "wpm"]
   let freadyBridge = Bridge(settings, syncedKeys,
     (object, trigger) => {
       console.log(object)
