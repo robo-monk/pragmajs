@@ -129,7 +129,7 @@ const Select = {
         return `<div class="${attr.type}" style='width:25px;height:25px;border-radius:25px;${attr.css}'>${attr.html}</div>`
       },
       set: (v, comp, key) => {
-        onset(attrs[v], comp, key)
+        if (onset) onset(attrs[v], comp, key)
       },
       variants: attrs
     })).setRange(0, attrs.length-1).setLoop()

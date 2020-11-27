@@ -1,6 +1,7 @@
 // a pragma is defined as a concept, which has an actual physical object "connected"
 // with it
 import $, { expr } from "jquery"
+import { parse } from "../composers/helpers"
 
 class Pragma {
   constructor(element=null, listeners={}, key){
@@ -74,39 +75,12 @@ class Pragma {
   x(relative_width){
     return this.left() + this.width()/2 - relative_width/2
   }
-
   css(str){
-    // background red, text-align center,
-    // text-align center, 
-    str = str.replaceAll("\n", ";").replaceAll(":", " ")
-    let cssDict = new Map()
-    for(let style of str.split(";")){
-      if (style.replace(/\s/g, "").length<2) continue
-      style = style.trim().split(" ") 
-      let key = style[0]
-      style.shift()
-      cssDict.set(key, style.join(" "))
-    }
-
-    // check css properties
-    let unsupported = []
-    for (const [key, value] of cssDict.entries()){
-      if (!CSS.supports(key, value)) unsupported.push(`${key.trim()}: ${value.trim()}`)
-    }
-
-    try {
-      if (unsupported.length > 0) throw "css syntax"
-      this.element.css(Object.fromEntries(cssDict))
-    } catch (error) {
-      console.error(`%c 🧯 pragma.js  %c \n
-      encountered a soft error 🔫 %c \n
-      \nSoft error while trying to parse and apply CSS to Pragma [${this.key}] %c\n
-      \n${ error=="css syntax" ? `Potential typos: \n\t${unsupported.join("\n\t")}` : '' }
-      `, "font-size:15px", "font-size: 12px;", "color:whitesmoke", "color:white")
-      
-    }
+    if (this.element) this.element.css(Object.fromEntries(parse.cssToDict(str)))
     return this
   }
 }
+
+
 
 export { Pragma as default }

@@ -5,4 +5,5 @@ export { Select, Button, Variants, Value, Compose, pragmatize, contain, host, Br
 export { Pragma, Comp } 
 import IconBuilder from "./icons/icons"
 export { IconBuilder } 
+export { parse } from "./composers/helpers"
 

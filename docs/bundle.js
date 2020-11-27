@@ -6862,14 +6862,13 @@ const modes = (mode, bg) => {
 }; // TODO add default modes
 
 
-const mode_ify = (mark, mode = "hotbox", bg = "#edd1b0", skip = false) => {
-  if (!mark) return false;
+const mode_ify = (mark, mode = "hotbox", bg = "#edd1b0") => {
   mode = mode.toString().toLowerCase(); // console.log("mode-ifying,", mark)
   // console.log(mode, bg)
   // console.log(modes(mode, bg))
 
   let css = modes(mode, bg);
-  if (!skip) mark.css(css);
+  if (mark) mark.css(css);
   return css;
 };
 
@@ -7077,19 +7076,9 @@ const LectorSettings = parent => {
     (0, _jquery.default)(document.body).css(dict);
   }
 
-  let colorsComp = _src.Select.color("markercolor", colors, (v, comp, key) => {
-    // parent.mark.css(`background ${v}`)
-    (0, _jquery.default)(".pointer-color").css({
-      "background": v
-    });
-    (0, _modes.mode_ify)(parent.mark, modes[0], v);
-  }).bind("c");
+  let colorsComp = _src.Select.color("markercolor", colors).bind("c");
 
-  let fontComp = _src.Select.font("readerfont", fonts, (v, comp, key) => {
-    (0, _jquery.default)("w").css({
-      "font-family": v
-    });
-  }).bind("f").html.class("font-selector"); // TODO
+  let fontComp = _src.Select.font("readerfont", fonts).bind("f").html.class("font-selector"); // TODO
   // font Comp = Select.font.from(fonts).onChange(...).onMouseOver
   // bind rules
   // if type is choices default would be to 
@@ -7099,21 +7088,23 @@ const LectorSettings = parent => {
   // to bind, do that click action 
 
 
-  let modeComp = _src.Select.attr("markermode", modes, (v, comp, key) => {
-    // on value change
-    (0, _modes.mode_ify)(parent.mark, v, colors[0]); // console.log(v)
+  let modeComp = _src.Select.attr("markermode", modes, (v, comp, key) => {// on value change
+    //mode_ify(parent.mark, v, colors[0])
+    // console.log(v)
   }, (key, index) => {
-    // icon contruction
+    //console.log(mode_ify(null, modes[index], "transparent"))
+    console.log(_src.parse.css((0, _modes.mode_ify)(null, modes[index], "transparent"))); // icon contruction
+
     return {
       type: "pointerModeOption",
-      html: "<div class='pointer-color' style='width:35px; height:15px;'></div>"
+      html: `<div class='pointer-color' style='display: block; width:35px; height:15px; ${_src.parse.css((0, _modes.mode_ify)(null, modes[index], "transparent") + "; mix-blend-mode normal")}'></div>`
     };
   }).bind("m", null, "keyup"); // key, initial val, step
 
 
   let wpmSet = (value, comp) => {
     /* on set */
-    console.log(value, comp);
+    //console.log(value,comp)
   };
 
   let wpmComp = _src.Button.controls("wpm", 250, 10, wpmSet, {
@@ -7122,20 +7113,33 @@ const LectorSettings = parent => {
   }).setRange(10, 300).html.class("inline-grid grid-cols-3 gap-x-1 items-center"); //wpmComp.children.forEach(child => child.html.class("items-center"))
   //wpmComp.find("wpm+").bind(["=", "+"]).html.class("flex content-center")
   //wpmComp.find("wpm-").bind("-").html.class("flex content-center")
+  //let linkComp = Button.action("commiter", "C",
+  //() => {
+  //alert("lazy")
+  //}).pragmatize().bind("o")
 
 
-  let linkComp = _src.Button.action("commiter", "C", () => {
-    alert("lazy");
-  }).pragmatize().bind("o");
-
-  let popUpSettings = (0, _src.Compose)("popupsettings", "⚙️").contain(colorsComp, fontComp, modeComp); // TODO host & contain array
-
+  let popUpSettings = (0, _src.Compose)("popupsettings", "⚙️").host(colorsComp, fontComp, modeComp);
   popUpSettings.illustrate(icons.grab("settings")); // icons
 
   let settings = (0, _src.Compose)("settingsWrapper").contain(popUpSettings, wpmComp).html.class("items-center");
   settings.pragmatize();
   let syncedKeys = ["markercolor", "readerfont", "markermode", "wpm"];
   let freadyBridge = (0, _src.Bridge)(settings, syncedKeys, (object, trigger) => {
+    // on set of any watched attribute
+    let color = colors[object.markercolor];
+    let mode = modes[object.markermode];
+    let font = fonts[object.readerfont]; // modify pointer
+
+    let modeCss = (0, _modes.mode_ify)(parent.mark, mode, color);
+    console.log(modeComp);
+    modeComp.children.forEach(child => {
+      if (color) child.css(`background ${color}`); //console.log(parse.css(modeCss))
+    });
+    (0, _jquery.default)("w").css({
+      "font-family": font
+    }); // sync data
+
     console.log(object);
   });
   freadyBridge.set({
@@ -48274,12 +48278,63 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.forArg = forArg;
+exports.parse = exports.throwSoft = void 0;
 
 function forArg(args, cb) {
   for (let i = 0; i < args.length; i += 1) {
     cb(args[i]);
   }
 }
+
+const throwSoft = (desc, potential = "fixes", fixes = ['plip', 'plop']) => {
+  console.error(`%c 🧯 pragma.js  %c \n
+      encountered a soft error 🔫 %c \n
+      \n${desc} %c\n
+      \n${potential != null ? `Potential ${potential}: \n\t${fixes.join("\n\t")}` : ''}
+      `, "font-size:15px", "font-size: 12px;", "color:whitesmoke", "color:white"); // throw "pragmajs: " + desc
+};
+
+exports.throwSoft = throwSoft;
+const parse = {
+  cssToDict: str => {
+    // console.log(`parsing pcss`)
+    //console.log(str)
+    str = str.replaceAll("\n", ";").replaceAll(":", " ");
+    let cssDict = new Map();
+
+    for (let style of str.split(";")) {
+      if (style.replace(/\s/g, "").length < 2) continue;
+      style = style.trim().split(" ");
+      let key = style[0];
+      style.shift();
+      cssDict.set(key.trim(), style.join(" ").trim());
+    } // check css properties
+
+
+    let unsupported = [];
+
+    for (const [key, value] of cssDict.entries()) {
+      if (!CSS.supports(key, value)) unsupported.push(`${key.trim()}: ${value.trim()}`);
+    }
+
+    if (unsupported.length > 0) {
+      throwSoft(`CSS syntax error`, 'typos', unsupported);
+    }
+
+    return cssDict;
+  },
+  css: pcss => {
+    let css = "";
+
+    for (let [key, value] of parse.cssToDict(pcss)) {
+      //console.log(key, value)
+      css += `${key}:${value};`;
+    }
+
+    return css;
+  }
+};
+exports.parse = parse;
 
 },{}],52:[function(require,module,exports){
 "use strict";
@@ -48432,7 +48487,7 @@ const Select = {
         return `<div class="${attr.type}" style='width:25px;height:25px;border-radius:25px;${attr.css}'>${attr.html}</div>`;
       },
       set: (v, comp, key) => {
-        onset(attrs[v], comp, key);
+        if (onset) onset(attrs[v], comp, key);
       },
       variants: attrs
     })).setRange(0, attrs.length - 1).setLoop();
@@ -48699,6 +48754,12 @@ Object.defineProperty(exports, "IconBuilder", {
     return _icons.default;
   }
 });
+Object.defineProperty(exports, "parse", {
+  enumerable: true,
+  get: function () {
+    return _helpers.parse;
+  }
+});
 
 var _pragma = _interopRequireDefault(require("./pragmas/pragma.js"));
 
@@ -48708,9 +48769,11 @@ var _templates = require("./composers/templates.js");
 
 var _icons = _interopRequireDefault(require("./icons/icons"));
 
+var _helpers = require("./composers/helpers");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./composers/templates.js":52,"./icons/icons":54,"./pragmas/comp.js":56,"./pragmas/pragma.js":57}],56:[function(require,module,exports){
+},{"./composers/helpers":51,"./composers/templates.js":52,"./icons/icons":54,"./pragmas/comp.js":56,"./pragmas/pragma.js":57}],56:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -49148,6 +49211,8 @@ exports.default = void 0;
 
 var _jquery = _interopRequireWildcard(require("jquery"));
 
+var _helpers = require("../composers/helpers");
+
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
@@ -49246,37 +49311,7 @@ class Pragma {
   }
 
   css(str) {
-    // background red, text-align center,
-    // text-align center, 
-    str = str.replaceAll("\n", ";").replaceAll(":", " ");
-    let cssDict = new Map();
-
-    for (let style of str.split(";")) {
-      if (style.replace(/\s/g, "").length < 2) continue;
-      style = style.trim().split(" ");
-      let key = style[0];
-      style.shift();
-      cssDict.set(key, style.join(" "));
-    } // check css properties
-
-
-    let unsupported = [];
-
-    for (const [key, value] of cssDict.entries()) {
-      if (!CSS.supports(key, value)) unsupported.push(`${key.trim()}: ${value.trim()}`);
-    }
-
-    try {
-      if (unsupported.length > 0) throw "css syntax";
-      this.element.css(Object.fromEntries(cssDict));
-    } catch (error) {
-      console.error(`%c 🧯 pragma.js  %c \n
-      encountered a soft error 🔫 %c \n
-      \nSoft error while trying to parse and apply CSS to Pragma [${this.key}] %c\n
-      \n${error == "css syntax" ? `Potential typos: \n\t${unsupported.join("\n\t")}` : ''}
-      `, "font-size:15px", "font-size: 12px;", "color:whitesmoke", "color:white");
-    }
-
+    if (this.element) this.element.css(Object.fromEntries(_helpers.parse.cssToDict(str)));
     return this;
   }
 
@@ -49284,7 +49319,7 @@ class Pragma {
 
 exports.default = Pragma;
 
-},{"jquery":24}],58:[function(require,module,exports){
+},{"../composers/helpers":51,"jquery":24}],58:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
