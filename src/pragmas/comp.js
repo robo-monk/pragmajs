@@ -84,10 +84,16 @@ export default class Comp extends Pragma {
     return this.parent.master
   }
 
-  // TODO this algo sucks
-  // convert to binary search after shorting kids in a smart way
-
-  
+  get html(){
+    return {
+      class: ((v, reset=false) => { 
+        if (reset) this.element.removeClass()
+        this.element.addClass(v)
+        return this 
+      }),
+      more: "more cool api capabilities coming soon. Usage: pragma.html.class('lucid').......pragmatize()"
+    }
+  }
 
   // actions kinda 
 

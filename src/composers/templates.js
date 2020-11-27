@@ -216,7 +216,12 @@ const Bridge = (stream, keys=[], beam=((object, trigger) => console.table(object
     ////bridgeComp.value = syncableObj
     ////if (keys.includes(trigger.key)) transmit(syncableObj(master), trigger) 
   //}))
-
+  bridgeComp.set = (obj) => {
+    for (let [key, value] of Object.entries(obj)){
+      //console.log(key)
+      stream.find(key).value=value
+    }
+  }
   
 
   return bridgeComp

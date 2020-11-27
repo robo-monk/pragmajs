@@ -6,7 +6,7 @@ import { mode_ify } from "./conf/modes"
 const LectorSettings = (parent) => {
 
   let colors = ["#a8f19a", "#eddd6e", "#edd1b0", "#96adfc"]
-  let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"]
+  let fonts = ["Helvetica", "Poppins", "Open Sans", "Space Mono"]
   let modes = ["HotBox", "Underneath", "Faded"]
 
   let icons = new IconBuilder()
@@ -16,9 +16,10 @@ const LectorSettings = (parent) => {
     $(document.body).css(dict)
   }
 
-  let colorsComp = Select.color("markercolors", colors,
+  let colorsComp = Select.color("markercolor", colors,
     (v, comp, key) => {
       // parent.mark.css(`background ${v}`)
+      $(".pointer-color").css({"background": v})
       mode_ify(parent.mark, modes[0], v)
     }).bind("c")
 
@@ -26,8 +27,9 @@ const LectorSettings = (parent) => {
     (v, comp, key) => {
       $("w").css({ "font-family": v })
     }).bind("f")
+    .html.class("font-selector")
 
-  // could be equivelant to ?
+  // TODO
   // font Comp = Select.font.from(fonts).onChange(...).onMouseOver
 
   // bind rules
@@ -46,7 +48,7 @@ const LectorSettings = (parent) => {
       // icon contruction
       return {
         type: "pointerModeOption",
-        html: "<div class='mini-pointer'></div>"
+        html: "<div class='pointer-color' style='width:35px; height:15px;'></div>"
       }
     }).bind("m", null, "keyup")
 
@@ -56,13 +58,18 @@ const LectorSettings = (parent) => {
   /* on set */ 
     console.log(value,comp)
   }
+
   let wpmComp = Button.controls("wpm", 250, 10, wpmSet, {
     "+": icons.grab("plus"),
     "-": icons.grab("minus")
   }).setRange(10, 300)
+    .html.class("inline-grid grid-cols-3 gap-x-1 items-center")
 
-  wpmComp.find("wpm+").bind(["=", "+"])
-  wpmComp.find("wpm-").bind("-")
+  //wpmComp.children.forEach(child => child.html.class("items-center"))
+
+  //wpmComp.find("wpm+").bind(["=", "+"]).html.class("flex content-center")
+  //wpmComp.find("wpm-").bind("-").html.class("flex content-center")
+
 
   let linkComp = Button.action("commiter", "C",
     () => {
@@ -70,21 +77,28 @@ const LectorSettings = (parent) => {
     }).pragmatize().bind("o")
 
   let popUpSettings = Compose("popupsettings", "⚙️")
-    .host(colorsComp, fontComp, modeComp)
+    .contain(colorsComp, fontComp, modeComp)
   // TODO host & contain array
 
   popUpSettings.illustrate(icons.grab("settings")) // icons
 
 
-  let settings = Compose("settingsWrapper").contain(popUpSettings, wpmComp)
+  let settings = Compose("settingsWrapper").contain(popUpSettings, wpmComp).html.class("items-center")
   settings.pragmatize()
 
 
-  let syncedKeys = ["markercolors", "readerfont", "markermode", "wpm"]
+  let syncedKeys = ["markercolor", "readerfont", "markermode", "wpm"]
   let freadyBridge = Bridge(settings, syncedKeys,
     (object, trigger) => {
       console.log(object)
     })
+
+  freadyBridge.set({
+    wpm: 280,
+    readerfont: 1,
+    markercolor:1,
+    markermode: 1
+  })
 
   return settings
 

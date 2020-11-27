@@ -19,6 +19,7 @@ const modes = (mode, bg) => {
 
 // TODO add default modes
 export const mode_ify = (mark, mode = "hotbox", bg ="#edd1b0", skip=false) => {
+  if (!mark) return false
   mode = mode.toString().toLowerCase()
   // console.log("mode-ifying,", mark)
   // console.log(mode, bg)

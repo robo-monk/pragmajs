@@ -6863,6 +6863,7 @@ const modes = (mode, bg) => {
 
 
 const mode_ify = (mark, mode = "hotbox", bg = "#edd1b0", skip = false) => {
+  if (!mark) return false;
   mode = mode.toString().toLowerCase(); // console.log("mode-ifying,", mark)
   // console.log(mode, bg)
   // console.log(modes(mode, bg))
@@ -7067,7 +7068,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 const LectorSettings = parent => {
   let colors = ["#a8f19a", "#eddd6e", "#edd1b0", "#96adfc"];
-  let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"];
+  let fonts = ["Helvetica", "Poppins", "Open Sans", "Space Mono"];
   let modes = ["HotBox", "Underneath", "Faded"];
   let icons = new _src.IconBuilder();
   icons.default.fill = "white";
@@ -7076,8 +7077,11 @@ const LectorSettings = parent => {
     (0, _jquery.default)(document.body).css(dict);
   }
 
-  let colorsComp = _src.Select.color("markercolors", colors, (v, comp, key) => {
+  let colorsComp = _src.Select.color("markercolor", colors, (v, comp, key) => {
     // parent.mark.css(`background ${v}`)
+    (0, _jquery.default)(".pointer-color").css({
+      "background": v
+    });
     (0, _modes.mode_ify)(parent.mark, modes[0], v);
   }).bind("c");
 
@@ -7085,7 +7089,7 @@ const LectorSettings = parent => {
     (0, _jquery.default)("w").css({
       "font-family": v
     });
-  }).bind("f"); // could be equivelant to ?
+  }).bind("f").html.class("font-selector"); // TODO
   // font Comp = Select.font.from(fonts).onChange(...).onMouseOver
   // bind rules
   // if type is choices default would be to 
@@ -7102,7 +7106,7 @@ const LectorSettings = parent => {
     // icon contruction
     return {
       type: "pointerModeOption",
-      html: "<div class='mini-pointer'></div>"
+      html: "<div class='pointer-color' style='width:35px; height:15px;'></div>"
     };
   }).bind("m", null, "keyup"); // key, initial val, step
 
@@ -7115,24 +7119,30 @@ const LectorSettings = parent => {
   let wpmComp = _src.Button.controls("wpm", 250, 10, wpmSet, {
     "+": icons.grab("plus"),
     "-": icons.grab("minus")
-  }).setRange(10, 300);
+  }).setRange(10, 300).html.class("inline-grid grid-cols-3 gap-x-1 items-center"); //wpmComp.children.forEach(child => child.html.class("items-center"))
+  //wpmComp.find("wpm+").bind(["=", "+"]).html.class("flex content-center")
+  //wpmComp.find("wpm-").bind("-").html.class("flex content-center")
 
-  wpmComp.find("wpm+").bind(["=", "+"]);
-  wpmComp.find("wpm-").bind("-");
 
   let linkComp = _src.Button.action("commiter", "C", () => {
     alert("lazy");
   }).pragmatize().bind("o");
 
-  let popUpSettings = (0, _src.Compose)("popupsettings", "⚙️").host(colorsComp, fontComp, modeComp); // TODO host & contain array
+  let popUpSettings = (0, _src.Compose)("popupsettings", "⚙️").contain(colorsComp, fontComp, modeComp); // TODO host & contain array
 
   popUpSettings.illustrate(icons.grab("settings")); // icons
 
-  let settings = (0, _src.Compose)("settingsWrapper").contain(popUpSettings, wpmComp);
+  let settings = (0, _src.Compose)("settingsWrapper").contain(popUpSettings, wpmComp).html.class("items-center");
   settings.pragmatize();
-  let syncedKeys = ["markercolors", "readerfont", "markermode", "wpm"];
+  let syncedKeys = ["markercolor", "readerfont", "markermode", "wpm"];
   let freadyBridge = (0, _src.Bridge)(settings, syncedKeys, (object, trigger) => {
     console.log(object);
+  });
+  freadyBridge.set({
+    wpm: 280,
+    readerfont: 1,
+    markercolor: 1,
+    markermode: 1
   });
   return settings; // let colors = ["tomato", "navy", "lime"]
   // let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"]
@@ -48522,7 +48532,7 @@ const Bridge = (stream, keys = [], beam = (object, trigger) => console.table(obj
     beam(bridgeComp.value, trigger);
   }
 
-  bridgeComp.addToChain((v, master, trigger) => {
+  bridgeComp.do((v, master, trigger) => {
     //console.log(v, master, trigger)
     if (keys.includes(trigger.key)) {
       bridgeComp.actualValue = makeData(master);
@@ -48533,6 +48543,13 @@ const Bridge = (stream, keys = [], beam = (object, trigger) => console.table(obj
   ////bridgeComp.value = syncableObj
   ////if (keys.includes(trigger.key)) transmit(syncableObj(master), trigger) 
   //}))
+
+  bridgeComp.set = obj => {
+    for (let [key, value] of Object.entries(obj)) {
+      //console.log(key)
+      stream.find(key).value = value;
+    }
+  };
 
   return bridgeComp;
 };
@@ -48790,9 +48807,18 @@ class Comp extends _pragma.default {
   get master() {
     if (this.parent == null || this.parent.parent == null) return this.parent;
     return this.parent.master;
-  } // TODO this algo sucks
-  // convert to binary search after shorting kids in a smart way
-  // actions kinda 
+  }
+
+  get html() {
+    return {
+      class: (v, reset = false) => {
+        if (reset) this.element.removeClass();
+        this.element.addClass(v);
+        return this;
+      },
+      more: "more cool api capabilities coming soon. Usage: pragma.html.class('lucid').......pragmatize()"
+    };
+  } // actions kinda 
 
 
   pragmatize(where) {
