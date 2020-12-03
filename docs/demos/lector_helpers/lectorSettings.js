@@ -74,6 +74,10 @@ const LectorSettings = (parent) => {
   popUpSettings.illustrate(icons.grab("settings")) // icons
 
   let settings = Compose("settingsWrapper").contain(popUpSettings, wpmComp).html.class("items-center")
+  // extend settings
+  settings.get = (key) => { 
+    return settings.bridge ? settings.bridge.value[key] : null
+  }
   settings.pragmatize()
 
   let syncedKeys = ["markercolor", "readerfont", "markermode", "wpm"]
@@ -85,7 +89,7 @@ const LectorSettings = (parent) => {
       let font = fonts[object.readerfont]
       // modify pointer
       let modeCss = mode_ify(parent.mark, mode, color)
-      console.log(modeComp)
+      //console.log(modeComp)
 
       modeComp.children.forEach((child) => {
         if (color) child.css(`background ${color}`)
@@ -95,7 +99,10 @@ const LectorSettings = (parent) => {
       $("w").css({ "font-family": font })
       
       // sync data
-      console.log(object)
+      //console.log(object)
+      
+      settings.bridge = freadyBridge
+      //console.log(settings.value)
     })
 
   freadyBridge.set({
@@ -105,6 +112,10 @@ const LectorSettings = (parent) => {
     markermode: 1
   })
 
+  
+
+
+  //settings.parent = parent
   return settings
 
 

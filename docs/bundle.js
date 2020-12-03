@@ -6675,6 +6675,7 @@ var _src = require("../../src");
 
 var _index = require("./lector_helpers/index");
 
+// find all descendands of object # TODO put it somewhere else
 var __indexOf = [].indexOf || function (e) {
   for (var t = 0, n = this.length; t < n; t++) {
     if (t in this && this[t] === e) return t;
@@ -6718,18 +6719,7 @@ jQuery.fn.descendants = function (e) {
   }
 
   return jQuery(i);
-}; // function wfy(element){
-//   let html = ""
-//   element.find("*").each((i, el) => {
-//     // console.log(el.text())
-//     el = $(el)
-//     console.log(el.text())
-//     html += el.html()
-//   })
-//   console.log(html)
-//   element.html(html)
-//   // element.html(element.text())
-// }
+}; // TODO add more default options
 
 
 const default_options = {
@@ -6744,9 +6734,7 @@ const Word = (element, i) => {
   let w = new _index.PragmaWord({
     key: i,
     value: 0
-  }).from(element, true); // let nw = new PragmaWord(element, i)
-  // w = nw
-
+  }).from(element, true);
   let thisw = w.element.find('w');
 
   if (thisw.length == 0) {
@@ -6790,7 +6778,8 @@ const Lector = (l, options = default_options) => {
   lec.mark = new _index.PragmaMark(lec);
   lec.value = 0; // w.value = 0
 
-  lec.addToChain((v, comp, oter) => {// comp.element.fadeOut()
+  lec.addToChain((v, comp, other) => {//console.log(v,comp, other)
+    // comp.element.fadeOut()
     // console.log(v, comp, oter)
     // console.log( w.currentWord.pre.text(), w.currentWord.text(), w.currentWord.next.text())
     // console.log( w.currentWord.text(), w.currentWord.first_in_line)
@@ -7122,7 +7111,12 @@ const LectorSettings = parent => {
   let popUpSettings = (0, _src.Compose)("popupsettings", "⚙️").host(colorsComp, fontComp, modeComp);
   popUpSettings.illustrate(icons.grab("settings")); // icons
 
-  let settings = (0, _src.Compose)("settingsWrapper").contain(popUpSettings, wpmComp).html.class("items-center");
+  let settings = (0, _src.Compose)("settingsWrapper").contain(popUpSettings, wpmComp).html.class("items-center"); // extend settings
+
+  settings.get = key => {
+    return settings.bridge ? settings.bridge.value[key] : null;
+  };
+
   settings.pragmatize();
   let syncedKeys = ["markercolor", "readerfont", "markermode", "wpm"];
   let freadyBridge = (0, _src.Bridge)(settings, syncedKeys, (object, trigger) => {
@@ -7131,23 +7125,25 @@ const LectorSettings = parent => {
     let mode = modes[object.markermode];
     let font = fonts[object.readerfont]; // modify pointer
 
-    let modeCss = (0, _modes.mode_ify)(parent.mark, mode, color);
-    console.log(modeComp);
+    let modeCss = (0, _modes.mode_ify)(parent.mark, mode, color); //console.log(modeComp)
+
     modeComp.children.forEach(child => {
       if (color) child.css(`background ${color}`); //console.log(parse.css(modeCss))
     });
     (0, _jquery.default)("w").css({
       "font-family": font
     }); // sync data
+    //console.log(object)
 
-    console.log(object);
+    settings.bridge = freadyBridge; //console.log(settings.value)
   });
   freadyBridge.set({
     wpm: 280,
     readerfont: 1,
     markercolor: 1,
     markermode: 1
-  });
+  }); //settings.parent = parent
+
   return settings; // let colors = ["tomato", "navy", "lime"]
   // let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"]
   // let modes = ["HotBox", "Underneath", "Faded"]
@@ -7325,7 +7321,6 @@ class PragmaMark extends _src.Pragma {
   }
 
   get fovea() {
-    return 4;
     return this.settings.get("fovea") || 4;
   }
 
@@ -7340,8 +7335,7 @@ class PragmaMark extends _src.Pragma {
   }
 
   get wpm() {
-    return 250;
-    return this.settings.find('wpm');
+    return this.settings.get("wpm") || 260;
   }
 
   set wpm(n) {
@@ -7352,7 +7346,7 @@ class PragmaMark extends _src.Pragma {
 
   pause() {
     return new Promise((resolve, reject) => {
-      if (this.pausing) reject("already pausing");
+      if (this.pausing) return reject("already pausing");
       this.pausing = true;
 
       if (this.currentlyMarking && this.current_anime && this.last_marked) {
@@ -7516,14 +7510,17 @@ class PragmaWord extends _src.Comp {
     return new _pinkyPromise.default(resolve => {
       if (this.currentPromise) {
         this.currentPromise.catch(e => {
-          console.warn(e);
-          this.currentPromise = null;
+          //console.log("broke read chain")
+          this.mark.pause().catch(e => {
+            // this will trigger if mark is already pausing and not done yet
+            console.warn("prevent pause event from bubbling. Chill on the keyboard bro");
+          }).then(() => {
+            this.currentPromise = null;
+            resolve("done pausing");
+            console.log(" ---- -- -- - PAUSED");
+          });
         });
         this.currentPromise.cancel("pause");
-        this.mark.pause().then(() => {
-          this.currentPromise = null;
-          resolve("done pausing");
-        });
       } else {
         resolve("already paused");
       }
@@ -7568,6 +7565,7 @@ class PragmaWord extends _src.Comp {
   read() {
     // console.log('reading ' + this.text())
     // if (this.hasKids) console.log(this.currentWord)
+    //console.log('fuck if this works it will be sad')
     if (this.currentPromise) return new Promise((resolve, reject) => {
       resolve('already reading');
     });

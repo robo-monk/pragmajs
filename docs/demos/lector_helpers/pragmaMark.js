@@ -34,9 +34,7 @@ export default class PragmaMark extends Pragma {
     return this
   }
 
-  get settings() {
-    return this.parent.settings
-  }
+  get settings() { return this.parent.settings }
 
   set color(hex) {
     return 
@@ -47,7 +45,6 @@ export default class PragmaMark extends Pragma {
     return this.fovea * 30
   }
   get fovea() {
-    return 4
     return this.settings.get("fovea") || 4
   }
   set fovea(n) {
@@ -55,19 +52,15 @@ export default class PragmaMark extends Pragma {
     this.settings.set({ "fovea": n })
     this.element.css({ "width": this.settings.find("fovea") * 30 })
   }
-  get wpm() {
-    return 250
-    return this.settings.find('wpm')
-  }
-  set wpm(n) {
-    this.settings.set({ "wpm": n })
-  }
 
+  get wpm() { return this.settings.get("wpm") || 260 }
+  set wpm(n) { this.settings.set({ "wpm": n }) }
+    
   pause() {
     return new Promise((resolve, reject) => {
-      if (this.pausing) reject("already pausing")
+      if (this.pausing) return reject("already pausing")
+      
       this.pausing = true
-
       if (this.currentlyMarking && this.current_anime && this.last_marked) {
         //console.log(this.current_anime.seek(1))
         let temp = this.last_marked

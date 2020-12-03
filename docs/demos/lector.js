@@ -1,21 +1,10 @@
 import { Compose, Pragma, Comp } from "../../src"
 import { wfy, PragmaWord, PragmaLector, PragmaMark, LectorSettings } from "./lector_helpers/index"
 
+// find all descendands of object # TODO put it somewhere else
 var __indexOf = [].indexOf || function (e) { for (var t = 0, n = this.length; t < n; t++) { if (t in this && this[t] === e) return t } return -1 }; /* indexOf polyfill ends here*/ jQuery.fn.descendants = function (e) { var t, n, r, i, s, o; t = e === "all" ? [1, 3] : e ? [3] : [1]; i = []; n = function (e) { var r, s, o, u, a, f; u = e.childNodes; f = []; for (s = 0, o = u.length; s < o; s++) { r = u[s]; if (a = r.nodeType, __indexOf.call(t, a) >= 0) { i.push(r) } if (r.childNodes.length) { f.push(n(r)) } else { f.push(void 0) } } return f }; for (s = 0, o = this.length; s < o; s++) { r = this[s]; n(r) } return jQuery(i) }
 
-// function wfy(element){
-//   let html = ""
-//   element.find("*").each((i, el) => {
-//     // console.log(el.text())
-//     el = $(el)
-//     console.log(el.text())
-//     html += el.html()
-//   })
-//   console.log(html)
-//   element.html(html)
-//   // element.html(element.text())
-// }
-
+// TODO add more default options
 const default_options = {
   wfy: true
 }
@@ -26,10 +15,7 @@ const Mark = (element, word) => {
 
 const Word = (element, i) => {
   let w = new PragmaWord({key: i, value: 0}).from(element, true)
-  // let nw = new PragmaWord(element, i)
-  // w = nw
   let thisw = w.element.find('w')
-
   if (thisw.length==0) {
     w.listen({
       "click": (e, comp) => {
@@ -72,7 +58,8 @@ const Lector = (l, options=default_options) => {
   lec.mark = new PragmaMark(lec)
   lec.value = 0
   // w.value = 0
-  lec.addToChain((v, comp, oter) => {
+  lec.addToChain((v, comp, other) => {
+    //console.log(v,comp, other)
     // comp.element.fadeOut()
     // console.log(v, comp, oter)
     // console.log( w.currentWord.pre.text(), w.currentWord.text(), w.currentWord.next.text())

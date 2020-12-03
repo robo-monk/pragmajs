@@ -53,16 +53,18 @@ export default class PragmaWord extends Comp {
     return new PinkyPromise( resolve => {
       if (this.currentPromise){
         this.currentPromise.catch((e)=>{
-          console.warn(e)
-          this.currentPromise = null
+          //console.log("broke read chain")
+          this.mark.pause().catch(e => {
+            // this will trigger if mark is already pausing and not done yet
+            console.warn("prevent pause event from bubbling. Chill on the keyboard bro")
+          }).then(() => {
+            this.currentPromise = null
+            resolve("done pausing")
+            console.log(" ---- -- -- - PAUSED")
+          })
         })
         this.currentPromise.cancel("pause")
-
-        this.mark.pause().then(() => {
-          this.currentPromise = null
-          resolve("done pausing")
-        })
-      }else{ resolve("already paused")}
+      } else { resolve("already paused") }
     })
   }
 
@@ -105,6 +107,8 @@ export default class PragmaWord extends Comp {
   read(){
     // console.log('reading ' + this.text())
     // if (this.hasKids) console.log(this.currentWord)
+    
+    //console.log('fuck if this works it will be sad')
     if (this.currentPromise) return new Promise((resolve, reject) => { 
       resolve('already reading') 
     })
