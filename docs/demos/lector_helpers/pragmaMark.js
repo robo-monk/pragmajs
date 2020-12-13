@@ -1,25 +1,30 @@
 // mark is responsible for marking words in the screen
 import $ from "jquery"
-import { Pragma } from "../../../src"
+import { Pragma, Comp } from "../../../src"
 import { PragmaWord } from "./pragmaWord"
 import anime from "animejs"
 
-export default class PragmaMark extends Pragma {
+const defaultStyles = `
+  position absolute
+  outline solid 0px red
+  background-color #ffdf6c
+  width 10px
+  height 20px
+  z-index 10
+  opacity 1
+  mix-blend-mode darken
+  border-radius 3px
+`
+export default class PragmaMark extends Comp {
   constructor(parent) {
-    super($("<marker></marker>"))
-    this.element.css({
-      'position': 'absolute',
-      'outline': 'solid 0px red',
-      'background-color': '#FFDf6C',
-      'width': '10px',
-      'height': '20px',
-      'z-index': '10',
-      'opacity': '100%',
-      'mix-blend-mode': 'darken',
-      'border-radius': '3px'
-    })
+    super('marker')
+
     this.parent = parent
+    this.element = $("<marker></marker>")
+    console.log(this.element)
     this.parent.element.append(this.element)
+    this.css(defaultStyles)
+    //this.parent.element.append(this.element)
     this.currentlyMarking = null
     //this.element.width("180px")
     this.colors = ["tomato", "#FFDFD6", "teal"]
@@ -61,6 +66,7 @@ export default class PragmaMark extends Pragma {
       if (this.pausing) return reject("already pausing")
       
       this.pausing = true
+
       if (this.currentlyMarking && this.current_anime && this.last_marked) {
         //console.log(this.current_anime.seek(1))
         let temp = this.last_marked

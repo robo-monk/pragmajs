@@ -6726,8 +6726,11 @@ const default_options = {
   wfy: true
 };
 
-const Mark = (element, word) => {
-  return new Mark();
+const Mark = lec => {
+  console.log('created new mark thru the template');
+  let mark = new _index.PragmaMark(lec);
+  mark.pragmatize(document.body);
+  return mark;
 };
 
 const Word = (element, i) => {
@@ -6746,7 +6749,7 @@ const Word = (element, i) => {
         });
       },
       "mouseover": (w, comp) => {
-        comp.css("background #5e38c74a");
+        comp.css("background #5e38c74a"); // TODO add customizable options this, maybe a theme thing
       },
       "mouseout": (w, comp) => comp.css("background transparent")
     });
@@ -6775,10 +6778,11 @@ const Lector = (l, options = default_options) => {
   }).connectTo(w);
   console.table(w);
   lec.settings = (0, _index.LectorSettings)(lec).pragmatize("#lector");
-  lec.mark = new _index.PragmaMark(lec);
+  lec.mark = Mark(lec);
   lec.value = 0; // w.value = 0
 
-  lec.addToChain((v, comp, other) => {//console.log(v,comp, other)
+  lec.addToChain((v, comp, other) => {
+    console.log('lectors shit', v, comp, other); //console.log(v,comp, other)
     // comp.element.fadeOut()
     // console.log(v, comp, oter)
     // console.log( w.currentWord.pre.text(), w.currentWord.text(), w.currentWord.next.text())
@@ -7133,8 +7137,8 @@ const LectorSettings = parent => {
     (0, _jquery.default)("w").css({
       "font-family": font
     }); // sync data
-    //console.log(object)
 
+    console.log(object);
     settings.bridge = freadyBridge; //console.log(settings.value)
   });
   freadyBridge.set({
@@ -7273,22 +7277,27 @@ var _animejs = _interopRequireDefault(require("animejs"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // mark is responsible for marking words in the screen
-class PragmaMark extends _src.Pragma {
+const defaultStyles = `
+  position absolute
+  outline solid 0px red
+  background-color #ffdf6c
+  width 10px
+  height 20px
+  z-index 10
+  opacity 1
+  mix-blend-mode darken
+  border-radius 3px
+`;
+
+class PragmaMark extends _src.Comp {
   constructor(parent) {
-    super((0, _jquery.default)("<marker></marker>"));
-    this.element.css({
-      'position': 'absolute',
-      'outline': 'solid 0px red',
-      'background-color': '#FFDf6C',
-      'width': '10px',
-      'height': '20px',
-      'z-index': '10',
-      'opacity': '100%',
-      'mix-blend-mode': 'darken',
-      'border-radius': '3px'
-    });
+    super('marker');
     this.parent = parent;
+    this.element = (0, _jquery.default)("<marker></marker>");
+    console.log(this.element);
     this.parent.element.append(this.element);
+    this.css(defaultStyles); //this.parent.element.append(this.element)
+
     this.currentlyMarking = null; //this.element.width("180px")
 
     this.colors = ["tomato", "#FFDFD6", "teal"];
@@ -48797,8 +48806,14 @@ class Comp extends _pragma.default {
   constructor(map, parent = null) {
     super();
     this.actualValue = null;
-    this.parent = parent;
-    this.build(map);
+
+    if (map instanceof Object) {
+      this.build(map);
+      this.parent = parent;
+    } else {
+      this.key = map;
+    }
+
     this.log_txt = ""; // this.unchain()
     // TODO add init chain or smth like thatjj
 

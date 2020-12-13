@@ -9,8 +9,11 @@ const default_options = {
   wfy: true
 }
 
-const Mark = (element, word) => {
-  return new Mark
+const Mark = (lec) => {
+  console.log('created new mark thru the template')
+  let mark = new PragmaMark(lec)
+  //mark.pragmatize(lec.element)
+  return mark
 }
 
 const Word = (element, i) => {
@@ -25,7 +28,7 @@ const Word = (element, i) => {
         })
       },
       "mouseover": (w, comp) => {
-        comp.css("background #5e38c74a")
+        comp.css("background #5e38c74a") // TODO add customizable options this, maybe a theme thing
       },
       "mouseout": (w, comp) => comp.css("background transparent")
     })
@@ -55,10 +58,11 @@ const Lector = (l, options=default_options) => {
   console.table(w)
   lec.settings = LectorSettings(lec).pragmatize("#lector")
 
-  lec.mark = new PragmaMark(lec)
+  lec.mark = Mark(lec)
   lec.value = 0
   // w.value = 0
   lec.addToChain((v, comp, other) => {
+    console.log('lectors shit', v, comp, other)
     //console.log(v,comp, other)
     // comp.element.fadeOut()
     // console.log(v, comp, oter)

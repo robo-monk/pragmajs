@@ -99,7 +99,7 @@ const LectorSettings = (parent) => {
       $("w").css({ "font-family": font })
       
       // sync data
-      //console.log(object)
+      console.log(object)
       
       settings.bridge = freadyBridge
       //console.log(settings.value)

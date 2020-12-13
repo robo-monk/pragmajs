@@ -11,12 +11,13 @@ export default class Comp extends Pragma {
     this.actualValue = null
 
     if (map instanceof Object){
-      this.build(map)
-      this.parent = parent
+      console.log(map)
     }else{
-      this.key = map
+      console.log('not an object', map)
     }
 
+    this.parent = parent
+    this.build(map)
     this.log_txt = ""
 
     // this.unchain()
