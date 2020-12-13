@@ -59,9 +59,11 @@ export default class Comp extends Pragma {
     return this
   }
 
-  addToChain(cb){
+  addToChain(){
     if (!this.actionChain) this.actionChain = []
-    this.actionChain.push(cb)
+    forArg(arguments, (cb => {
+      this.actionChain.push(cb)
+    }))
     return this
   }
 

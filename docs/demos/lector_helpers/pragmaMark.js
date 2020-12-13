@@ -15,6 +15,8 @@ const defaultStyles = `
   mix-blend-mode darken
   border-radius 3px
 `
+
+
 export default class PragmaMark extends Comp {
   constructor(parent) {
     super('marker')
@@ -32,6 +34,15 @@ export default class PragmaMark extends Comp {
     $(window).on("resize", () => {
       this.mark(this.last_marked, 0)
     })
+
+    this.runningFor = 0
+  }
+
+  set last_marked(n){
+    this.value = n  
+  }
+  get last_marked(){
+    return this.value
   }
 
   setWidth(n) {
@@ -70,6 +81,7 @@ export default class PragmaMark extends Comp {
       if (this.currentlyMarking && this.current_anime && this.last_marked) {
         //console.log(this.current_anime.seek(1))
         let temp = this.last_marked
+        this.runningFor = 0
         //console.table(temp)
         this.current_anime.complete()
         this.current_anime.remove('marker')
@@ -97,12 +109,11 @@ export default class PragmaMark extends Comp {
         width: blueprint.width,
         easing: blueprint.ease || 'easeInOutExpo',
         duration: duration,
-        complete: (anim) => {
+      }).finished.then((anim) => {
           this.currentlyMarking = null
           complete()
           resolve()
-        }
-      })
+        })
     })
   }
 
@@ -119,6 +130,7 @@ export default class PragmaMark extends Comp {
       ease: ease
     }, time, () => {
       // console.log(`FROM MARK -> marked ${word.text()}`)
+      this.last_marked = word 
     })
   }
 
@@ -136,6 +148,7 @@ export default class PragmaMark extends Comp {
       }, first_transition)
         .then(() => {
           this.last_marked = word
+          this.runningFor += 1
           this.mark(word, word.time(this.wpm) * after_weight, false, "linear").then(() => {
             resolve()
           })

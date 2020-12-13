@@ -1,5 +1,5 @@
 import { Compose, Pragma, Comp } from "../../src"
-import { wfy, PragmaWord, PragmaLector, PragmaMark, LectorSettings } from "./lector_helpers/index"
+import { wfy, isOnScreen, scrollTo, onScroll, PragmaWord, PragmaLector, PragmaMark, LectorSettings } from "./lector_helpers/index"
 
 // find all descendands of object # TODO put it somewhere else
 var __indexOf = [].indexOf || function (e) { for (var t = 0, n = this.length; t < n; t++) { if (t in this && this[t] === e) return t } return -1 }; /* indexOf polyfill ends here*/ jQuery.fn.descendants = function (e) { var t, n, r, i, s, o; t = e === "all" ? [1, 3] : e ? [3] : [1]; i = []; n = function (e) { var r, s, o, u, a, f; u = e.childNodes; f = []; for (s = 0, o = u.length; s < o; s++) { r = u[s]; if (a = r.nodeType, __indexOf.call(t, a) >= 0) { i.push(r) } if (r.childNodes.length) { f.push(n(r)) } else { f.push(void 0) } } return f }; for (s = 0, o = this.length; s < o; s++) { r = this[s]; n(r) } return jQuery(i) }
@@ -10,9 +10,71 @@ const default_options = {
 }
 
 const Mark = (lec) => {
-  console.log('created new mark thru the template')
   let mark = new PragmaMark(lec)
-  //mark.pragmatize(lec.element)
+  
+  function logger(w){
+    //mark.log(w.text())
+    //console.log(mark.logs)
+  }
+
+  // auto scroll feature
+  // TODO put somewhere else
+  let scrollingIntoView = false
+  let usersLastScroll = 0
+
+  function userIsScrolling(){ return usersLastScroll - Date.now() > -10 }
+  function autoScroll(w){
+
+    if (userIsScrolling() || isOnScreen(mark) || scrollingIntoView) return false
+    // else we're out of view
+      
+    scrollingIntoView = true 
+    let cbs = []
+    if (lec.isReading){
+      lec.pause()  
+      cbs.push(() => {
+        lec.read()
+      })
+    }
+
+    cbs.push(()=>{
+      console.warn("suck my diiiiiiiiiick")
+    })
+
+    //console.warn("mark is out of screen")
+    //console.log('lec reading:', lec.isReading)
+
+    scrollTo(mark).then(() => {
+      cbs.forEach(cb => cb())
+      scrollingIntoView = false 
+    })
+  }
+
+  const threshold = 40 // how fast should you scroll to pause the pointer
+  let lastScroll = 0
+  onScroll((s) => {
+    usersLastScroll = !scrollingIntoView ? Date.now() : usersLastScroll
+    console.log('user is scrolling', userIsScrolling())
+
+    if (userIsScrolling() && lec.isReading){
+      let dscroll = Math.abs(lastScroll-s)
+      lastScroll = s
+      if (dscroll>threshold){
+        console.log('ds=', dscroll)
+        // on too fast scroll
+        // TODO prevent from calling pause to many times
+        lec.pause()
+      }  
+    }
+  })
+
+  mark.listen({
+    "mouseover": (e, comp) => {
+      console.log('mouseover mark')
+    }
+  })
+
+  mark.addToChain(logger, autoScroll)
   return mark
 }
 
@@ -62,7 +124,7 @@ const Lector = (l, options=default_options) => {
   lec.value = 0
   // w.value = 0
   lec.addToChain((v, comp, other) => {
-    console.log('lectors shit', v, comp, other)
+    //console.log('lectors shit', v, comp, other)
     //console.log(v,comp, other)
     // comp.element.fadeOut()
     // console.log(v, comp, oter)
