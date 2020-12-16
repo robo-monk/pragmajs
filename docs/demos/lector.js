@@ -22,14 +22,19 @@ const Mark = (lec) => {
   let scrollingIntoView = false
   let usersLastScroll = 0
 
-  function userIsScrolling(){ return usersLastScroll - Date.now() > -10 }
+  function userIsScrolling(){
+    return usersLastScroll - Date.now() > -10 
+  }
+
   function autoScroll(w){
 
     if (userIsScrolling() || isOnScreen(mark) || scrollingIntoView) return false
     // else we're out of view
       
     scrollingIntoView = true 
-    let cbs = []
+    let cbs = [] // these will be the callbacks that are gonna run when the scroll is done
+    // TODO  make a class Chain that does this.
+    // Chain.add(cb), Chain.do() to execute and shit
     if (lec.isReading){
       lec.pause()  
       cbs.push(() => {

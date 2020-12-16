@@ -3,6 +3,7 @@ import $ from "jquery"
 import { Pragma, Comp } from "../../../src"
 import { PragmaWord } from "./pragmaWord"
 import anime from "animejs"
+import { airway } from "./helpers/airway.js"
 
 const defaultStyles = `
   position absolute
@@ -36,6 +37,7 @@ export default class PragmaMark extends Comp {
     })
 
     this.runningFor = 0
+    this.pausing = false
   }
 
   set last_marked(n){
@@ -81,20 +83,21 @@ export default class PragmaMark extends Comp {
       if (this.currentlyMarking && this.current_anime && this.last_marked) {
         //console.log(this.current_anime.seek(1))
         let temp = this.last_marked
+        console.log('mark was running for', this.runningFor)
         this.runningFor = 0
         //console.table(temp)
         this.current_anime.complete()
         this.current_anime.remove('marker')
         //this.current_anime = null
         this.mark(temp, 80, true).then(() => {
-          this.pausing = false
           resolve("paused")
         }).catch(e => {
-          this.pausing = false
           reject("could not mark")
+        }).then(c => {
+          this.pausing = false
         })
       }
-    });
+    })
   }
 
   moveTo(blueprint, duration, complete = (() => { })) {
@@ -102,18 +105,19 @@ export default class PragmaMark extends Comp {
     return new Promise((resolve, reject) => {
       this.currentlyMarking = blueprint
       this.current_anime = anime({
-        targets: 'marker',
+        targets: this.element[0],
         left: blueprint.left,
         top: blueprint.top,
         height: blueprint.height,
         width: blueprint.width,
         easing: blueprint.ease || 'easeInOutExpo',
         duration: duration,
-      }).finished.then((anim) => {
+        complete: (anim) => {
           this.currentlyMarking = null
           complete()
           resolve()
-        })
+        }
+      })
     })
   }
 
@@ -136,23 +140,59 @@ export default class PragmaMark extends Comp {
 
   guide(word) {
     if (!(word instanceof Pragma)) return new Promise((r) => { console.warn("cannot guide thru"); r("error") })
-    const before_weight = .4
-    const after_weight = (1 - before_weight)
+
     return new Promise((resolve, reject) => {
-      let first_transition = word.isFirstInLine ? 500 : this.last_marked ? this.last_marked.time(this.wpm) * before_weight : 0
       let first_ease = word.isFirstInLine ? "easeInOutExpo" : "linear"
       return this.moveTo({
         top: word.top(),
         left: word.x(this.width()) - word.width() / 2,
         height: word.height(), ease: first_ease
-      }, first_transition)
+      }, this.calcDuration(word, 1))
         .then(() => {
           this.last_marked = word
           this.runningFor += 1
-          this.mark(word, word.time(this.wpm) * after_weight, false, "linear").then(() => {
+          this.mark(word, this.calcDuration(word, 2), false, "linear").then(() => {
             resolve()
           })
         })
     })
+  }
+
+  calcDuration(word, dw=1){ 
+    /*  @dw - either 1 or 2
+      * 1. yee|t th|e green fox
+      * 2. yeet |the| green fox
+      * 1. yeet th|e gr|een fox
+      * 
+      * The marking of "the"(and every word) happens in 2 instances. First mark
+      * will transition from "yeet" (1) and then in will mark "the", and immedietly afterwards
+      * it will transition from "the" to "green" (1) etc...
+      * 
+      * */
+
+    if (!word instanceof Pragma) return this.throw(`Could not calculate duration for [${word}] since it doest appear to be a Pragma Object`)
+    if (dw!=1 && dw!=2) return this.throw(`could not calculate duration for ${word.text()} since dw was not 1 or 2`)
+    if (word.isFirstInLine) return 500 // mark has to change line
+    if (!this.last_marked) return 0 // failsafe
+
+    const before_weight = .4
+    const weight = dw==1 ? before_weight : 1 - before_weight
+
+    let w = dw==1 ? this.last_marked : word
+    //const filters = [(d) => { return d*weight }]
+    console.log(weight)
+
+    let duration = w.time(this.wpm)
+    const filters = [(d) => { return d*weight }, airway]
+
+
+    filters.forEach(f => {
+      //console.log(f, duration, this.runningFor)
+      //console.log(duration, f(duration, this.runningFor))
+       duration = f(duration, this.runningFor)
+    })
+
+    return duration
+    //return airway(duration)*weight// TODO make this a chain of callbacks
   }
 }

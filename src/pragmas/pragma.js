@@ -1,7 +1,7 @@
 // a pragma is defined as a concept, which has an actual physical object "connected"
 // with it
 import $, { expr } from "jquery"
-import { parse } from "../composers/helpers"
+import { parse, throwSoft } from "../composers/helpers"
 
 class Pragma {
   constructor(element=null, listeners={}, key){
@@ -10,6 +10,9 @@ class Pragma {
     // this.children = []
     this.childMap = new Map()
     this.setup_listeners(listeners)
+  }
+  throw(e, f, ff=[]){
+    throwSoft(e, f, ff, this)
   }
   get children() {
     return Array.from(this.childMap.values())

@@ -6523,7 +6523,7 @@ _core.default.initHighlightingOnLoad(); // console.time()
 // let lec = new Lector($("#article"), settings)
 // lec.read()
 
-},{"../dist":1,"./demos/bigdemo":3,"./demos/helloworld":4,"./demos/lector":5,"./demos/timerdemo":18,"./demos/todo":19,"./demos/trip":20,"highlight.js/lib/core":24,"highlight.js/lib/languages/javascript":25,"js-beautify":27}],3:[function(require,module,exports){
+},{"../dist":1,"./demos/bigdemo":3,"./demos/helloworld":4,"./demos/lector":5,"./demos/timerdemo":19,"./demos/todo":20,"./demos/trip":21,"highlight.js/lib/core":25,"highlight.js/lib/languages/javascript":26,"js-beautify":28}],3:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6614,7 +6614,7 @@ function bigdemo(paper, test = () => {}) {
   return ["settingsWrapper", "commiter"];
 }
 
-},{"../../src":57,"jquery":26}],4:[function(require,module,exports){
+},{"../../src":58,"jquery":27}],4:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6663,7 +6663,7 @@ function helloworld() {
 // console.log("yyet")
 // }
 
-},{"../../src":57}],5:[function(require,module,exports){
+},{"../../src":58}],5:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6746,7 +6746,9 @@ const Mark = lec => {
     if (userIsScrolling() || (0, _index.isOnScreen)(mark) || scrollingIntoView) return false; // else we're out of view
 
     scrollingIntoView = true;
-    let cbs = [];
+    let cbs = []; // these will be the callbacks that are gonna run when the scroll is done
+    // TODO  make a class Chain that does this.
+    // Chain.add(cb), Chain.do() to execute and shit
 
     if (lec.isReading) {
       lec.pause();
@@ -6889,7 +6891,7 @@ function lector(paper) {
   return ["lector"];
 }
 
-},{"../../src":57,"./lector_helpers/index":12}],6:[function(require,module,exports){
+},{"../../src":58,"./lector_helpers/index":13}],6:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6929,6 +6931,31 @@ const mode_ify = (mark, mode = "hotbox", bg = "#edd1b0") => {
 exports.mode_ify = mode_ify;
 
 },{}],7:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.airway = airway;
+// airway handles the start of the marker animation
+// the target is to make it as smooooooooooooooooth
+// as possible
+//
+//
+const conf = {
+  threshold: 8,
+  // will run for the first 8 words
+  divider: 8 // the lower the slower the acceleration
+
+};
+
+function airway(time = 0, session = 0) {
+  console.log(time, session);
+  if (session > conf.threshold) return time;
+  return time * (conf.threshold - session) / conf.divider + time;
+}
+
+},{}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6996,7 +7023,7 @@ function onScroll(cb = s => {}) {
   });
 }
 
-},{"./pragmafy.js":10,"animejs":22}],8:[function(require,module,exports){
+},{"./pragmafy.js":11,"animejs":23}],9:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7006,7 +7033,7 @@ exports.greek_prefixes = void 0;
 const greek_prefixes = ['an', 'an', 'ap', 'di', 'dy', 'ec', 'eg', 'en', 'em', 'eo', 'ep', 'eu', 'id', 'is', 'my', 'ne', 'od', 'oo', 'ot', 'sy', 'ur', 'ur', 'zo', 'pto', 'pyl', 'acr', 'aer', 'agr', 'ana', 'ant', 'apo', 'aut', 'bar', 'bio', 'cac', 'cat', 'cen', 'cen', 'con', 'cub', 'cyn', 'dec', 'dek', 'dem', 'dia', 'dox', 'eco', 'ego', 'eme', 'eos', 'epi', 'erg', 'eso', 'eth', 'eur', 'exo', 'geo', 'gen', 'hem', 'hal', 'hen', 'hex', 'hod', 'hol', 'hor', 'hor', 'hyo', 'hyp', 'ide', 'idi', 'iso', 'kil', 'lei', 'lep', 'lip', 'log', 'meg', 'mei', 'men', 'mer', 'mes', 'mim', 'mis', 'mit', 'mne', 'mon', 'myx', 'nes', 'nom', 'oct', 'oed', 'oen', 'omm', 'ont', 'opt', 'pan', 'pam', 'par', 'ped', 'pin', 'pis', 'pol', 'por', 'pro', 'rhe', 'sei', 'sit', 'syn', 'syl', 'sym', 'tax', 'the', 'the', 'tom', 'ton', 'top', 'tox', 'tri', 'ulo', 'uro', 'uro', 'xen', 'xer', 'zon', 'zyg', 'psil', 'prot', 'pros', 'amph', 'anem', 'anti', 'anth', 'arct', 'astr', 'athl', 'auto', 'basi', 'bibl', 'briz', 'brom', 'brom', 'call', 'carp', 'carp', 'cata', 'chir', 'cine', 'cirr', 'clad', 'clav', 'coel', 'copr', 'cosm', 'crep', 'cris', 'crit', 'cten', 'cyan', 'cycl', 'cyst', 'deca', 'deka', 'delt', 'derm', 'dexi', 'dino', 'dipl', 'ecto', 'endo', 'engy', 'eoso', 'etho', 'ethi', 'ethm', 'ethn', 'etym', 'fant', 'glia', 'gram', 'gymn', 'haem', 'hapl', 'heli', 'hemi', 'hept', 'herp', 'heur', 'hipp', 'home', 'horm', 'hyal', 'hydr', 'hygr', 'hypn', 'icos', 'kine', 'lamp', 'leps', 'leuc', 'leuk', 'lith', 'metr', 'meta', 'micr', 'myri', 'myth', 'narc', 'naut', 'necr', 'nect', 'nema', 'neur', 'noth', 'noto', 'oeco', 'ogdo', 'olig', 'onom', 'ophi', 'orch', 'orth', 'pach', 'paed', 'pale', 'path', 'patr', 'pect', 'pent', 'pept', 'peri', 'petr', 'phae', 'phag', 'pher', 'phil', 'phob', 'phon', 'phor', 'phos', 'phot', 'phyl', 'phys', 'plac', 'plas', 'plec', 'plut', 'pneu', 'poie', 'pole', 'poli', 'poli', 'poly', 'raph', 'rhag', 'rhig', 'rhin', 'rhiz', 'rhod', 'sarc', 'scel', 'scop', 'sema', 'siph', 'soma', 'soph', 'stea', 'steg', 'sten', 'stig', 'stom', 'styl', 'tach', 'tars', 'taur', 'tele', 'tele', 'temn', 'tetr', 'than', 'thus', 'ther', 'thym', 'thyr', 'trag', 'trit', 'trop', 'xiph', 'proct', 'ptych', 'amphi', 'arche', 'archi', 'arche', 'arist', 'arthr', 'bathy', 'batho', 'blenn', 'blast', 'botan', 'brady', 'bront', 'calli', 'calyp', 'cardi', 'centr', 'ceram', 'cerat', 'chlor', 'chore', 'chrom', 'chron', 'chrys', 'clast', 'clist', 'cochl', 'corac', 'cotyl', 'crani', 'cross', 'crypt', 'dendr', 'dodec', 'dynam', 'ennea', 'gastr', 'graph', 'heter', 'homal', 'hyper', 'klept', 'lekan', 'macro', 'melan', 'meter', 'morph', 'nephr', 'nomad', 'odont', 'organ', 'osteo', 'palae', 'palin', 'peran', 'phleg', 'phloe', 'phren', 'phryn', 'phyll', 'plagi', 'platy', 'plesi', 'pleth', 'pleur', 'pogon', 'polem', 'potam', 'rhabd', 'rhomb', 'scaph', 'schem', 'schis', 'scler', 'scoli', 'scept', 'scyph', 'selen', 'solen', 'sperm', 'sphen', 'spher', 'stern', 'stich', 'stoch', 'taeni', 'techn', 'therm', 'thyre', 'traum', 'trema', 'trich', 'troch', 'troph', 'xanth', 'psych', 'archae', 'brachi', 'brachy', 'bronch', 'cathar', 'cephal', 'chelon', 'cleist', 'cosmet', 'cylind', 'dactyl', 'deuter', 'dogmat', 'erythr', 'galact', 'hendec', 'ichthy', 'mening', 'myrmec', 'omphal', 'opisth', 'opoter', 'ornith', 'ostrac', 'persic', 'phalar', 'phaner', 'phragm', 'plinth', 'prasin', 'presby', 'rhynch', 'scalen', 'strept', 'stroph', 'thalam', 'theori', 'trachy', 'trapez', 'tympan', 'aesthet', 'anthrop', 'branchi', 'cleithr', 'epistem', 'parthen', 'phalang', 'pharmac', 'porphyr', 'sacchar', 'sphinct', 'stalact', 'stalagm', 'thalass', 'oesophag', 'ophthalm', 'physalid', 'pentecost', 'treiskaidek'];
 exports.greek_prefixes = greek_prefixes;
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7083,7 +7110,7 @@ function howGreek(word) {
   return 0;
 }
 
-},{"./greek":8,"compromise":23,"jquery":26}],10:[function(require,module,exports){
+},{"./greek":9,"compromise":24,"jquery":27}],11:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7110,7 +7137,7 @@ function jqueryfy(el) {
   return (0, _jquery.default)(el);
 }
 
-},{"../../../../src/":57,"jquery":26}],11:[function(require,module,exports){
+},{"../../../../src/":58,"jquery":27}],12:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7149,7 +7176,7 @@ function wfy(element) {
   return true;
 }
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7218,7 +7245,7 @@ var _pragmaMark = _interopRequireDefault(require("./pragmaMark"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./helpers/autoScroll.js":7,"./helpers/wfy.js":11,"./lectorSettings":13,"./pragmaLector":15,"./pragmaMark":16,"./pragmaWord":17}],13:[function(require,module,exports){
+},{"./helpers/autoScroll.js":8,"./helpers/wfy.js":12,"./lectorSettings":14,"./pragmaLector":16,"./pragmaMark":17,"./pragmaWord":18}],14:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7352,7 +7379,7 @@ const LectorSettings = parent => {
 
 exports.LectorSettings = LectorSettings;
 
-},{"../../../src":57,"./conf/modes":6,"jquery":26}],14:[function(require,module,exports){
+},{"../../../src":58,"./conf/modes":6,"jquery":27}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7378,7 +7405,7 @@ class PinkyPromise {
 
 exports.default = PinkyPromise;
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7434,7 +7461,7 @@ class PragmaLector extends _src.Comp {
 
 exports.default = PragmaLector;
 
-},{"../../../src":57}],16:[function(require,module,exports){
+},{"../../../src":58}],17:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7449,6 +7476,8 @@ var _src = require("../../../src");
 var _pragmaWord = require("./pragmaWord");
 
 var _animejs = _interopRequireDefault(require("animejs"));
+
+var _airway = require("./helpers/airway.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -7481,6 +7510,7 @@ class PragmaMark extends _src.Comp {
       this.mark(this.last_marked, 0);
     });
     this.runningFor = 0;
+    this.pausing = false;
   }
 
   set last_marked(n) {
@@ -7546,17 +7576,18 @@ class PragmaMark extends _src.Comp {
       if (this.currentlyMarking && this.current_anime && this.last_marked) {
         //console.log(this.current_anime.seek(1))
         let temp = this.last_marked;
+        console.log('mark was running for', this.runningFor);
         this.runningFor = 0; //console.table(temp)
 
         this.current_anime.complete();
         this.current_anime.remove('marker'); //this.current_anime = null
 
         this.mark(temp, 80, true).then(() => {
-          this.pausing = false;
           resolve("paused");
         }).catch(e => {
-          this.pausing = false;
           reject("could not mark");
+        }).then(c => {
+          this.pausing = false;
         });
       }
     });
@@ -7567,17 +7598,18 @@ class PragmaMark extends _src.Comp {
     return new Promise((resolve, reject) => {
       this.currentlyMarking = blueprint;
       this.current_anime = (0, _animejs.default)({
-        targets: 'marker',
+        targets: this.element[0],
         left: blueprint.left,
         top: blueprint.top,
         height: blueprint.height,
         width: blueprint.width,
         easing: blueprint.ease || 'easeInOutExpo',
-        duration: duration
-      }).finished.then(anim => {
-        this.currentlyMarking = null;
-        complete();
-        resolve();
+        duration: duration,
+        complete: anim => {
+          this.currentlyMarking = null;
+          complete();
+          resolve();
+        }
       });
     });
   }
@@ -7606,31 +7638,62 @@ class PragmaMark extends _src.Comp {
       console.warn("cannot guide thru");
       r("error");
     });
-    const before_weight = .4;
-    const after_weight = 1 - before_weight;
     return new Promise((resolve, reject) => {
-      let first_transition = word.isFirstInLine ? 500 : this.last_marked ? this.last_marked.time(this.wpm) * before_weight : 0;
       let first_ease = word.isFirstInLine ? "easeInOutExpo" : "linear";
       return this.moveTo({
         top: word.top(),
         left: word.x(this.width()) - word.width() / 2,
         height: word.height(),
         ease: first_ease
-      }, first_transition).then(() => {
+      }, this.calcDuration(word, 1)).then(() => {
         this.last_marked = word;
         this.runningFor += 1;
-        this.mark(word, word.time(this.wpm) * after_weight, false, "linear").then(() => {
+        this.mark(word, this.calcDuration(word, 2), false, "linear").then(() => {
           resolve();
         });
       });
     });
   }
 
+  calcDuration(word, dw = 1) {
+    /*  @dw - either 1 or 2
+      * 1. yee|t th|e green fox
+      * 2. yeet |the| green fox
+      * 1. yeet th|e gr|een fox
+      * 
+      * The marking of "the"(and every word) happens in 2 instances. First mark
+      * will transition from "yeet" (1) and then in will mark "the", and immedietly afterwards
+      * it will transition from "the" to "green" (1) etc...
+      * 
+      * */
+    if (!word instanceof _src.Pragma) return this.throw(`Could not calculate duration for [${word}] since it doest appear to be a Pragma Object`);
+    if (dw != 1 && dw != 2) return this.throw(`could not calculate duration for ${word.text()} since dw was not 1 or 2`);
+    if (word.isFirstInLine) return 500; // mark has to change line
+
+    if (!this.last_marked) return 0; // failsafe
+
+    const before_weight = .4;
+    const weight = dw == 1 ? before_weight : 1 - before_weight;
+    let w = dw == 1 ? this.last_marked : word; //const filters = [(d) => { return d*weight }]
+
+    console.log(weight);
+    let duration = w.time(this.wpm);
+    const filters = [d => {
+      return d * weight;
+    }, _airway.airway];
+    filters.forEach(f => {
+      //console.log(f, duration, this.runningFor)
+      //console.log(duration, f(duration, this.runningFor))
+      duration = f(duration, this.runningFor);
+    });
+    return duration; //return airway(duration)*weight// TODO make this a chain of callbacks
+  }
+
 }
 
 exports.default = PragmaMark;
 
-},{"../../../src":57,"./pragmaWord":17,"animejs":22,"jquery":26}],17:[function(require,module,exports){
+},{"../../../src":58,"./helpers/airway.js":7,"./pragmaWord":18,"animejs":23,"jquery":27}],18:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7790,7 +7853,7 @@ class PragmaWord extends _src.Comp {
 
 exports.default = PragmaWord;
 
-},{"../../../src":57,"./helpers/pragmaWordHelper.js":9,"./pinkyPromise":14}],18:[function(require,module,exports){
+},{"../../../src":58,"./helpers/pragmaWordHelper.js":10,"./pinkyPromise":15}],19:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7824,7 +7887,7 @@ function timer() {
   return ["timer"];
 }
 
-},{"../../src":57}],19:[function(require,module,exports){
+},{"../../src":58}],20:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7866,7 +7929,7 @@ function todo(paper) {
   return ["todo"];
 }
 
-},{"../../src":57,"mousetrap":51}],20:[function(require,module,exports){
+},{"../../src":58,"mousetrap":52}],21:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7957,7 +8020,7 @@ function trip(paper) {
   return ["trip"];
 }
 
-},{"../../src":57}],21:[function(require,module,exports){
+},{"../../src":58}],22:[function(require,module,exports){
 (function (process){(function (){
 /**
  * @popperjs/core v2.5.4 - MIT License
@@ -9827,7 +9890,7 @@ exports.preventOverflow = preventOverflow$1;
 
 
 }).call(this)}).call(this,require('_process'))
-},{"_process":60}],22:[function(require,module,exports){
+},{"_process":61}],23:[function(require,module,exports){
 /*
  * anime.js v3.2.1
  * (c) 2020 Julian Garnier
@@ -11141,7 +11204,7 @@ anime.random = function (min, max) { return Math.floor(Math.random() * (max - mi
 
 module.exports = anime;
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 /* compromise 13.7.0 MIT */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
@@ -25567,7 +25630,7 @@ module.exports = anime;
 
 })));
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 // https://github.com/substack/deep-freeze/blob/master/index.js
 /** @param {any} obj */
 function deepFreeze(obj) {
@@ -27776,7 +27839,7 @@ var highlight = HLJS({});
 
 module.exports = highlight;
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 const IDENT_RE = '[A-Za-z$_][0-9A-Za-z$_]*';
 const KEYWORDS = [
   "as", // for exports
@@ -28376,7 +28439,7 @@ function javascript(hljs) {
 
 module.exports = javascript;
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v3.5.1
  * https://jquery.com/
@@ -39250,7 +39313,7 @@ if ( typeof noGlobal === "undefined" ) {
 return jQuery;
 } );
 
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 /*jshint node:true */
 /* globals define */
 /*
@@ -39337,7 +39400,7 @@ if (typeof define === "function" && define.amd) {
 
   })(module);
 }
-},{"./src/index":45}],28:[function(require,module,exports){
+},{"./src/index":46}],29:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -39401,7 +39464,7 @@ Directives.prototype.readIgnored = function(input) {
 
 module.exports.Directives = Directives;
 
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -39595,7 +39658,7 @@ InputScanner.prototype.lookBack = function(testVal) {
 
 module.exports.InputScanner = InputScanner;
 
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -39790,7 +39853,7 @@ module.exports.Options = Options;
 module.exports.normalizeOpts = _normalizeOpts;
 module.exports.mergeOpts = _mergeOpts;
 
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 /*jshint node:true */
 /*
   The MIT License (MIT)
@@ -40211,7 +40274,7 @@ Output.prototype.ensure_empty_line_above = function(starts_with, ends_with) {
 
 module.exports.Output = Output;
 
-},{}],32:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -40307,7 +40370,7 @@ Pattern.prototype._update = function() {};
 
 module.exports.Pattern = Pattern;
 
-},{}],33:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -40500,7 +40563,7 @@ TemplatablePattern.prototype._read_template = function() {
 
 module.exports.TemplatablePattern = TemplatablePattern;
 
-},{"./pattern":32}],34:[function(require,module,exports){
+},{"./pattern":33}],35:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -40556,7 +40619,7 @@ function Token(type, text, newlines, whitespace_before) {
 
 module.exports.Token = Token;
 
-},{}],35:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -40698,7 +40761,7 @@ Tokenizer.prototype._readWhitespace = function() {
 module.exports.Tokenizer = Tokenizer;
 module.exports.TOKEN = TOKEN;
 
-},{"../core/inputscanner":29,"../core/token":34,"../core/tokenstream":36,"./whitespacepattern":37}],36:[function(require,module,exports){
+},{"../core/inputscanner":30,"../core/token":35,"../core/tokenstream":37,"./whitespacepattern":38}],37:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -40778,7 +40841,7 @@ TokenStream.prototype.add = function(token) {
 
 module.exports.TokenStream = TokenStream;
 
-},{}],37:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -40885,7 +40948,7 @@ WhitespacePattern.prototype.__split = function(regexp, input_string) {
 
 module.exports.WhitespacePattern = WhitespacePattern;
 
-},{"../core/pattern":32}],38:[function(require,module,exports){
+},{"../core/pattern":33}],39:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -41368,7 +41431,7 @@ Beautifier.prototype.beautify = function() {
 
 module.exports.Beautifier = Beautifier;
 
-},{"../core/directives":28,"../core/inputscanner":29,"../core/output":31,"./options":40}],39:[function(require,module,exports){
+},{"../core/directives":29,"../core/inputscanner":30,"../core/output":32,"./options":41}],40:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -41412,7 +41475,7 @@ module.exports.defaultOptions = function() {
   return new Options();
 };
 
-},{"./beautifier":38,"./options":40}],40:[function(require,module,exports){
+},{"./beautifier":39,"./options":41}],41:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -41470,7 +41533,7 @@ Options.prototype = new BaseOptions();
 
 module.exports.Options = Options;
 
-},{"../core/options":30}],41:[function(require,module,exports){
+},{"../core/options":31}],42:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -42337,7 +42400,7 @@ Beautifier.prototype._do_optional_end_element = function(parser_token) {
 
 module.exports.Beautifier = Beautifier;
 
-},{"../core/output":31,"../html/options":43,"../html/tokenizer":44}],42:[function(require,module,exports){
+},{"../core/output":32,"../html/options":44,"../html/tokenizer":45}],43:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -42381,7 +42444,7 @@ module.exports.defaultOptions = function() {
   return new Options();
 };
 
-},{"./beautifier":41,"./options":43}],43:[function(require,module,exports){
+},{"./beautifier":42,"./options":44}],44:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -42474,7 +42537,7 @@ Options.prototype = new BaseOptions();
 
 module.exports.Options = Options;
 
-},{"../core/options":30}],44:[function(require,module,exports){
+},{"../core/options":31}],45:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -42808,7 +42871,7 @@ Tokenizer.prototype._read_content_word = function(c) {
 module.exports.Tokenizer = Tokenizer;
 module.exports.TOKEN = TOKEN;
 
-},{"../core/directives":28,"../core/pattern":32,"../core/templatablepattern":33,"../core/tokenizer":35}],45:[function(require,module,exports){
+},{"../core/directives":29,"../core/pattern":33,"../core/templatablepattern":34,"../core/tokenizer":36}],46:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -42854,7 +42917,7 @@ module.exports.js = js_beautify;
 module.exports.css = css_beautify;
 module.exports.html = style_html;
 
-},{"./css/index":39,"./html/index":42,"./javascript/index":48}],46:[function(require,module,exports){
+},{"./css/index":40,"./html/index":43,"./javascript/index":49}],47:[function(require,module,exports){
 /* jshint node: true, curly: false */
 // Parts of this section of code is taken from acorn.
 //
@@ -42913,7 +42976,7 @@ exports.newline = /[\n\r\u2028\u2029]/;
 exports.lineBreak = new RegExp('\r\n|' + exports.newline.source);
 exports.allLineBreaks = new RegExp(exports.lineBreak.source, 'g');
 
-},{}],47:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -44370,7 +44433,7 @@ Beautifier.prototype.handle_eof = function(current_token) {
 
 module.exports.Beautifier = Beautifier;
 
-},{"../core/output":31,"../core/token":34,"./acorn":46,"./options":49,"./tokenizer":50}],48:[function(require,module,exports){
+},{"../core/output":32,"../core/token":35,"./acorn":47,"./options":50,"./tokenizer":51}],49:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -44414,7 +44477,7 @@ module.exports.defaultOptions = function() {
   return new Options();
 };
 
-},{"./beautifier":47,"./options":49}],49:[function(require,module,exports){
+},{"./beautifier":48,"./options":50}],50:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -44509,7 +44572,7 @@ Options.prototype = new BaseOptions();
 
 module.exports.Options = Options;
 
-},{"../core/options":30}],50:[function(require,module,exports){
+},{"../core/options":31}],51:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -45077,7 +45140,7 @@ module.exports.TOKEN = TOKEN;
 module.exports.positionable_operators = positionable_operators.slice();
 module.exports.line_starters = line_starters.slice();
 
-},{"../core/directives":28,"../core/inputscanner":29,"../core/pattern":32,"../core/templatablepattern":33,"../core/tokenizer":35,"./acorn":46}],51:[function(require,module,exports){
+},{"../core/directives":29,"../core/inputscanner":30,"../core/pattern":33,"../core/templatablepattern":34,"../core/tokenizer":36,"./acorn":47}],52:[function(require,module,exports){
 /*global define:false */
 /**
  * Copyright 2012-2017 Craig Campbell
@@ -46137,7 +46200,7 @@ module.exports.line_starters = line_starters.slice();
     }
 }) (typeof window !== 'undefined' ? window : null, typeof  window !== 'undefined' ? document : null);
 
-},{}],52:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 (function (process){(function (){
 /**!
 * tippy.js v6.2.7
@@ -48466,7 +48529,7 @@ exports.sticky = sticky;
 
 
 }).call(this)}).call(this,require('_process'))
-},{"@popperjs/core":21,"_process":60}],53:[function(require,module,exports){
+},{"@popperjs/core":22,"_process":61}],54:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -48481,9 +48544,10 @@ function forArg(args, cb) {
   }
 }
 
-const throwSoft = (desc, potential = "fixes", fixes = ['plip', 'plop']) => {
+const throwSoft = (desc, potential = null, fixes = ['rerun the code 10 times'], trigger = null) => {
   console.error(`%c 🧯 pragma.js  %c \n
       encountered a soft error 🔫 %c \n
+      \n${trigger ? `Triggered by: [${trigger.key} ${trigger}]` : ``}
       \n${desc} %c\n
       \n${potential != null ? `Potential ${potential}: \n\t${fixes.join("\n\t")}` : ''}
       `, "font-size:15px", "font-size: 12px;", "color:whitesmoke", "color:white"); // throw "pragmajs: " + desc
@@ -48531,7 +48595,7 @@ const parse = {
 };
 exports.parse = parse;
 
-},{}],54:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -48806,7 +48870,7 @@ const Bridge = (stream, keys = [], beam = (object, trigger) => console.table(obj
 
 exports.Bridge = Bridge;
 
-},{"../pragmas/comp":58}],55:[function(require,module,exports){
+},{"../pragmas/comp":59}],56:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -48829,7 +48893,7 @@ const db = {
 };
 exports.db = db;
 
-},{}],56:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -48865,7 +48929,7 @@ class IconBuilder {
 
 exports.default = IconBuilder;
 
-},{"./icondb":55}],57:[function(require,module,exports){
+},{"./icondb":56}],58:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -48968,7 +49032,7 @@ var _helpers = require("./composers/helpers");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./composers/helpers":53,"./composers/templates.js":54,"./icons/icons":56,"./pragmas/comp.js":58,"./pragmas/pragma.js":59}],58:[function(require,module,exports){
+},{"./composers/helpers":54,"./composers/templates.js":55,"./icons/icons":57,"./pragmas/comp.js":59,"./pragmas/pragma.js":60}],59:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -49404,7 +49468,7 @@ class Comp extends _pragma.default {
 
 exports.default = Comp;
 
-},{"../composers/helpers":53,"../composers/templates":54,"./pragma":59,"jquery":26,"mousetrap":51,"tippy.js":52}],59:[function(require,module,exports){
+},{"../composers/helpers":54,"../composers/templates":55,"./pragma":60,"jquery":27,"mousetrap":52,"tippy.js":53}],60:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -49429,6 +49493,10 @@ class Pragma {
 
     this.childMap = new Map();
     this.setup_listeners(listeners);
+  }
+
+  throw(e, f, ff = []) {
+    (0, _helpers.throwSoft)(e, f, ff, this);
   }
 
   get children() {
@@ -49522,7 +49590,7 @@ class Pragma {
 
 exports.default = Pragma;
 
-},{"../composers/helpers":53,"jquery":26}],60:[function(require,module,exports){
+},{"../composers/helpers":54,"jquery":27}],61:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
