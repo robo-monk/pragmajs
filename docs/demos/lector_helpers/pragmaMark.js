@@ -4,6 +4,7 @@ import { Pragma, Comp } from "../../../src"
 import { PragmaWord } from "./pragmaWord"
 import anime from "animejs"
 import { airway } from "./helpers/airway.js"
+import PinkyPromise from "./pinkyPromise"
 
 const defaultStyles = `
   position absolute
@@ -16,7 +17,6 @@ const defaultStyles = `
   mix-blend-mode darken
   border-radius 3px
 `
-
 
 export default class PragmaMark extends Comp {
   constructor(parent) {
@@ -100,7 +100,7 @@ export default class PragmaMark extends Comp {
     })
   }
 
-  moveTo(blueprint, duration, complete = (() => { })) {
+  moveTo(blueprint, duration, complete = (() => {})) {
     if (this.currentlyMarking) return new Promise((resolve, reject) => resolve());
     return new Promise((resolve, reject) => {
       this.currentlyMarking = blueprint
@@ -127,26 +127,28 @@ export default class PragmaMark extends Comp {
     let w = fit ? word.width() + 5 : this.cw
     //this.setWidth(w)
     return this.moveTo({
-      top: word.top(),
-      left: word.x(w),
-      height: word.height(),
-      width: w,
-      ease: ease
-    }, time, () => {
-      // console.log(`FROM MARK -> marked ${word.text()}`)
-      this.last_marked = word 
-    })
+        top: word.top(),
+        left: word.x(w),
+        height: word.height(),
+        width: w,
+        ease: ease
+      }, time, () => {
+        //console.log(`FROM MARK -> marked ${word.text()}`)
+        this.last_marked = word 
+        word.parent.value = word.index
+      })
   }
 
   guide(word) {
-    if (!(word instanceof Pragma)) return new Promise((r) => { console.warn("cannot guide thru"); r("error") })
-
-    return new Promise((resolve, reject) => {
+    if (!(word instanceof Pragma)) return new Promise((resolve, reject) => { console.warn("cannot guide thru"); reject("error") })
+    return new PinkyPromise((resolve, reject) => {
       let first_ease = word.isFirstInLine ? "easeInOutExpo" : "linear"
       return this.moveTo({
         top: word.top(),
         left: word.x(this.width()) - word.width() / 2,
-        height: word.height(), ease: first_ease
+        height: word.height(),
+        width: this.cw,
+        ease: first_ease
       }, this.calcDuration(word, 1))
         .then(() => {
           this.last_marked = word
@@ -159,6 +161,7 @@ export default class PragmaMark extends Comp {
   }
 
   calcDuration(word, dw=1){ 
+
     /*  @dw - either 1 or 2
       * 1. yee|t th|e green fox
       * 2. yeet |the| green fox
@@ -170,8 +173,8 @@ export default class PragmaMark extends Comp {
       * 
       * */
 
-    if (!word instanceof Pragma) return this.throw(`Could not calculate duration for [${word}] since it doest appear to be a Pragma Object`)
-    if (dw!=1 && dw!=2) return this.throw(`could not calculate duration for ${word.text()} since dw was not 1 or 2`)
+    if (!word instanceof Pragma) return this.throw(`Could not calculate marking duration for [${word}] since it does not appear to be a Pragma Object`)
+    if (dw!=1 && dw!=2) return this.throw(`Could not calculate duration for ${word.text()} since dw was not 1 or 2`)
     if (word.isFirstInLine) return 500 // mark has to change line
     if (!this.last_marked) return 0 // failsafe
 
@@ -180,7 +183,6 @@ export default class PragmaMark extends Comp {
 
     let w = dw==1 ? this.last_marked : word
     //const filters = [(d) => { return d*weight }]
-    console.log(weight)
 
     let duration = w.time(this.wpm)
     const filters = [(d) => { return d*weight }, airway]

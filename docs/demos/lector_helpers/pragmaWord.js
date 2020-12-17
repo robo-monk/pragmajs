@@ -4,6 +4,9 @@ import { charsMsAt, crush, generateDifficultyIndex, wordValue } from "./helpers/
 
 export default class PragmaWord extends Comp {
 
+  get txt(){
+    return this.text()
+  }
   get index(){
     return this.key
   }
@@ -56,11 +59,11 @@ export default class PragmaWord extends Comp {
           //console.log("broke read chain")
           this.mark.pause().catch(e => {
             // this will trigger if mark is already pausing and not done yet
-            console.warn("prevent pause event from bubbling. Chill on the keyboard bro")
+            console.warn("prevent pause event from bubbling. Chill on the keyboard bro", e)
           }).then(() => {
             this.currentPromise = null
             resolve("done pausing")
-            console.log(" ---- -- -- - PAUSED")
+            console.log("- - - - - PAUSED - - - - - - - -")
           })
         })
         this.currentPromise.cancel("pause")
@@ -92,11 +95,13 @@ export default class PragmaWord extends Comp {
           // this.mark = "MARK V5 " + this.text() + this.key
           // console.log(this.mark)
           // console.log(this.text())
+          console.time(this.text())
           this.mark.guide(this).then(() => {
-            console.log(this.text())
+            console.timeEnd(this.text())
             this.parent.value = this.index + 1
             resolve(` read [ ${this.text()} ] `)
           }).catch((e) => {
+            console.warn('rejected promise read', e)
             reject(e)
           })
       })

@@ -6757,8 +6757,7 @@ const Mark = lec => {
       });
     }
 
-    cbs.push(() => {
-      console.warn("suck my diiiiiiiiiick");
+    cbs.push(() => {//console.warn("suck my diiiiiiiiiick")
     }); //console.warn("mark is out of screen")
     //console.log('lec reading:', lec.isReading)
 
@@ -6780,8 +6779,8 @@ const Mark = lec => {
       lastScroll = s;
 
       if (dscroll > threshold) {
-        console.log('ds=', dscroll); // on too fast scroll
-        // TODO prevent from calling pause to many times
+        console.log('ds=', dscroll); // TODO prevent from calling pause to many times
+        // on too fast scroll, pause mark
 
         lec.pause();
       }
@@ -6950,7 +6949,6 @@ const conf = {
 };
 
 function airway(time = 0, session = 0) {
-  console.log(time, session);
   if (session > conf.threshold) return time;
   return time * (conf.threshold - session) / conf.divider + time;
 }
@@ -7479,6 +7477,8 @@ var _animejs = _interopRequireDefault(require("animejs"));
 
 var _airway = require("./helpers/airway.js");
 
+var _pinkyPromise = _interopRequireDefault(require("./pinkyPromise"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // mark is responsible for marking words in the screen
@@ -7628,22 +7628,24 @@ class PragmaMark extends _src.Comp {
       width: w,
       ease: ease
     }, time, () => {
-      // console.log(`FROM MARK -> marked ${word.text()}`)
+      //console.log(`FROM MARK -> marked ${word.text()}`)
       this.last_marked = word;
+      word.parent.value = word.index;
     });
   }
 
   guide(word) {
-    if (!(word instanceof _src.Pragma)) return new Promise(r => {
+    if (!(word instanceof _src.Pragma)) return new Promise((resolve, reject) => {
       console.warn("cannot guide thru");
-      r("error");
+      reject("error");
     });
-    return new Promise((resolve, reject) => {
+    return new _pinkyPromise.default((resolve, reject) => {
       let first_ease = word.isFirstInLine ? "easeInOutExpo" : "linear";
       return this.moveTo({
         top: word.top(),
         left: word.x(this.width()) - word.width() / 2,
         height: word.height(),
+        width: this.cw,
         ease: first_ease
       }, this.calcDuration(word, 1)).then(() => {
         this.last_marked = word;
@@ -7666,8 +7668,8 @@ class PragmaMark extends _src.Comp {
       * it will transition from "the" to "green" (1) etc...
       * 
       * */
-    if (!word instanceof _src.Pragma) return this.throw(`Could not calculate duration for [${word}] since it doest appear to be a Pragma Object`);
-    if (dw != 1 && dw != 2) return this.throw(`could not calculate duration for ${word.text()} since dw was not 1 or 2`);
+    if (!word instanceof _src.Pragma) return this.throw(`Could not calculate marking duration for [${word}] since it does not appear to be a Pragma Object`);
+    if (dw != 1 && dw != 2) return this.throw(`Could not calculate duration for ${word.text()} since dw was not 1 or 2`);
     if (word.isFirstInLine) return 500; // mark has to change line
 
     if (!this.last_marked) return 0; // failsafe
@@ -7676,7 +7678,6 @@ class PragmaMark extends _src.Comp {
     const weight = dw == 1 ? before_weight : 1 - before_weight;
     let w = dw == 1 ? this.last_marked : word; //const filters = [(d) => { return d*weight }]
 
-    console.log(weight);
     let duration = w.time(this.wpm);
     const filters = [d => {
       return d * weight;
@@ -7693,7 +7694,7 @@ class PragmaMark extends _src.Comp {
 
 exports.default = PragmaMark;
 
-},{"../../../src":58,"./helpers/airway.js":7,"./pragmaWord":18,"animejs":23,"jquery":27}],18:[function(require,module,exports){
+},{"../../../src":58,"./helpers/airway.js":7,"./pinkyPromise":15,"./pragmaWord":18,"animejs":23,"jquery":27}],18:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7710,6 +7711,10 @@ var _pragmaWordHelper = require("./helpers/pragmaWordHelper.js");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 class PragmaWord extends _src.Comp {
+  get txt() {
+    return this.text();
+  }
+
   get index() {
     return this.key;
   }
@@ -7773,11 +7778,11 @@ class PragmaWord extends _src.Comp {
           //console.log("broke read chain")
           this.mark.pause().catch(e => {
             // this will trigger if mark is already pausing and not done yet
-            console.warn("prevent pause event from bubbling. Chill on the keyboard bro");
+            console.warn("prevent pause event from bubbling. Chill on the keyboard bro", e);
           }).then(() => {
             this.currentPromise = null;
             resolve("done pausing");
-            console.log(" ---- -- -- - PAUSED");
+            console.log("- - - - - PAUSED - - - - - - - -");
           });
         });
         this.currentPromise.cancel("pause");
@@ -7810,11 +7815,13 @@ class PragmaWord extends _src.Comp {
       // this.mark = "MARK V5 " + this.text() + this.key
       // console.log(this.mark)
       // console.log(this.text())
+      console.time(this.text());
       this.mark.guide(this).then(() => {
-        console.log(this.text());
+        console.timeEnd(this.text());
         this.parent.value = this.index + 1;
         resolve(` read [ ${this.text()} ] `);
       }).catch(e => {
+        console.warn('rejected promise read', e);
         reject(e);
       });
     }); // console.log(this.mark)

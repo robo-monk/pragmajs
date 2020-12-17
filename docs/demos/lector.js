@@ -43,7 +43,7 @@ const Mark = (lec) => {
     }
 
     cbs.push(()=>{
-      console.warn("suck my diiiiiiiiiick")
+      //console.warn("suck my diiiiiiiiiick")
     })
 
     //console.warn("mark is out of screen")
@@ -66,8 +66,8 @@ const Mark = (lec) => {
       lastScroll = s
       if (dscroll>threshold){
         console.log('ds=', dscroll)
-        // on too fast scroll
         // TODO prevent from calling pause to many times
+        // on too fast scroll, pause mark
         lec.pause()
       }  
     }

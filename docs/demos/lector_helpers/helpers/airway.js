@@ -11,8 +11,6 @@ const conf = {
 }
 
 export function airway(time=0, session=0){
-  console.log(time, session)
   if (session > conf.threshold) return time
   return (time*(conf.threshold - session))/conf.divider + time
-  
 }
