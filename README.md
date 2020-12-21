@@ -1,7 +1,7 @@
 ![npm-size](https://img.shields.io/npm/v/pragmajs?style=for-the-badge)
 ![npm-size](https://img.shields.io/bundlephobia/minzip/pragmajs?style=for-the-badge)
 
-<img width=320px src="docs/logos/pragmajs.png">
+<img width=320px src="docs/logos/pragmajs.svg">
 
 <br>
 
