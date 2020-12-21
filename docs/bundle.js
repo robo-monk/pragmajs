@@ -6837,14 +6837,13 @@ const Lector = (l, options = default_options) => {
   let w = Word(l);
   let lec = new _index.PragmaLector({
     key: "lector"
-  }).connectTo(w);
-  console.table(w);
+  }).connectTo(w); //console.table(w)
+
   lec.settings = (0, _index.LectorSettings)(lec).pragmatize("#lector");
   lec.mark = Mark(lec);
   lec.value = 0; // w.value = 0
 
-  lec.addToChain((v, comp, other) => {//console.log('lectors shit', v, comp, other)
-    //console.log(v,comp, other)
+  lec.addToChain((v, comp, other) => {// console.log(v,comp, other)
     // comp.element.fadeOut()
     // console.log(v, comp, oter)
     // console.log( w.currentWord.pre.text(), w.currentWord.text(), w.currentWord.next.text())
@@ -7260,15 +7259,21 @@ var _modes = require("./conf/modes");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const LectorSettings = parent => {
-  let colors = ["#a8f19a", "#eddd6e", "#edd1b0", "#96adfc"];
-  let fonts = ["Helvetica", "Poppins", "Open Sans", "Space Mono"];
-  let modes = ["HotBox", "Underneath", "Faded"];
+  const colors = ["#a8f19a", "#eddd6e", "#edd1b0", "#96adfc"];
+  const fonts = ["Helvetica", "Poppins", "Open Sans", "Space Mono"];
+  const modes = ["HotBox", "Underneath", "Faded"];
   let icons = new _src.IconBuilder();
   icons.default.fill = "white";
 
   function modifyBody(dict) {
     (0, _jquery.default)(document.body).css(dict);
   }
+
+  let foveaComp = _src.Slider.value("markerfovea", 1, 10).bind(">", comp => {
+    comp.value += 1;
+  }, 'keyup').bind("<", comp => {
+    comp.value -= 1;
+  }, 'keyup');
 
   let colorsComp = _src.Select.color("markercolor", colors).bind("c");
 
@@ -7304,16 +7309,9 @@ const LectorSettings = parent => {
   let wpmComp = _src.Button.controls("wpm", 250, 10, wpmSet, {
     "+": icons.grab("plus"),
     "-": icons.grab("minus")
-  }).setRange(10, 300).html.class("inline-grid grid-cols-3 gap-x-1 items-center"); //wpmComp.children.forEach(child => child.html.class("items-center"))
-  //wpmComp.find("wpm+").bind(["=", "+"]).html.class("flex content-center")
-  //wpmComp.find("wpm-").bind("-").html.class("flex content-center")
-  //let linkComp = Button.action("commiter", "C",
-  //() => {
-  //alert("lazy")
-  //}).pragmatize().bind("o")
+  }).setRange(10, 300).html.class("inline-grid grid-cols-3 gap-x-1 items-center");
 
-
-  let popUpSettings = (0, _src.Compose)("popupsettings", "⚙️").host(colorsComp, fontComp, modeComp);
+  let popUpSettings = (0, _src.Compose)("popupsettings").host(colorsComp, fontComp, modeComp, foveaComp);
   popUpSettings.illustrate(icons.grab("settings")); // icons
 
   let settings = (0, _src.Compose)("settingsWrapper").contain(popUpSettings, wpmComp).html.class("items-center"); // extend settings
@@ -7323,7 +7321,7 @@ const LectorSettings = parent => {
   };
 
   settings.pragmatize();
-  let syncedKeys = ["markercolor", "readerfont", "markermode", "wpm"];
+  let syncedKeys = ["markercolor", "readerfont", "markermode", "wpm", "markerfovea"];
   let freadyBridge = (0, _src.Bridge)(settings, syncedKeys, (object, trigger) => {
     // on set of any watched attribute
     let color = colors[object.markercolor];
@@ -7334,7 +7332,8 @@ const LectorSettings = parent => {
 
     modeComp.children.forEach(child => {
       if (color) child.css(`background ${color}`); //console.log(parse.css(modeCss))
-    });
+    }); // set font
+
     (0, _jquery.default)("w").css({
       "font-family": font
     }); // sync data
@@ -7346,33 +7345,10 @@ const LectorSettings = parent => {
     wpm: 280,
     readerfont: 1,
     markercolor: 1,
-    markermode: 1
-  }); //settings.parent = parent
-
-  return settings; // let colors = ["tomato", "navy", "lime"]
-  // let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"]
-  // let modes = ["HotBox", "Underneath", "Faded"]
-  // let colorsComp = Select.color("markercolors", colors, (v, comp, key) => {
-  //   parent.mark.element.css({ "background": colors[comp.find(key).value] })
-  // })
-  // let fontComp = Select.font("readerfont", fonts, (v, comp, key) => {
-  //   $("w").css({ "font-family": fonts[comp.find(key).value] })
-  // })
-  // let modeComp = Select.attr("markermode", modes, (v, comp, key) => {
-  //   // on set
-  //   console.log(v)
-  // }, (key, index) => {
-  //   // icon
-  //   return { type: "pointerModeOption", html: "M" }
-  // })
-  // let popUpSettings = Compose("popupsettings", "⚙️").contain(colorsComp, fontComp, modeComp)
-  // let settings = Compose("settingsWrapper").contain(popUpSettings)
-  // let syncedKeys = ["markercolors", "readerfont", "markermode"]
-  // let freadyBridge = Bridge(settings, syncedKeys, (object) => {
-  //   // TODO add beam
-  // })
-  // settings.chain(freadyBridge) // every time a value is changed, do the freadyBridge's actions as well
-  // return settings
+    markermode: 0,
+    markerfovea: 5
+  });
+  return settings;
 };
 
 exports.LectorSettings = LectorSettings;
@@ -7545,7 +7521,7 @@ class PragmaMark extends _src.Comp {
   }
 
   get fovea() {
-    return this.settings.get("fovea") || 4;
+    return this.settings.get("markerfovea") || 4;
   }
 
   set fovea(n) {
@@ -48608,7 +48584,7 @@ exports.parse = parse;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Monitor = exports.Bridge = exports.host = exports.contain = exports.pragmatize = exports.Value = exports.Compose = exports.Variants = exports.Select = exports.Button = exports.buttonValue = void 0;
+exports.Monitor = exports.Bridge = exports.host = exports.contain = exports.pragmatize = exports.Value = exports.Compose = exports.Variants = exports.Slider = exports.Select = exports.Button = exports.buttonValue = void 0;
 
 var _comp = _interopRequireDefault(require("../pragmas/comp"));
 
@@ -48650,7 +48626,9 @@ const Monitor = {
       if (action) return action(value, comp, master);
     };
 
-    return Monitor.custom(key, val, tag, actionCb);
+    let mon = Monitor.custom(key, val, tag, actionCb);
+    mon.addToChain(actionCb);
+    return mon;
   }
 };
 exports.Monitor = Monitor;
@@ -48743,6 +48721,30 @@ const composer = (key, icon, elements) => {
   };
 };
 
+const Slider = {
+  simple: (key, min = 0, max = 420, val) => {
+    val = val || (min + max) / 2;
+    let slider = Compose(key).as(`<input type='range' min=${min} max=${max} value=${val}></input>`).setRange(min, max);
+    slider.element.on('input', () => {
+      slider.value = parseInt(slider.element[0].value);
+    });
+    return slider;
+  },
+  value: (key, min, max, val = 0, onupdate) => {
+    let monitor = Monitor.simple(key + "_monitor", val, "div");
+    let slider = Slider.simple(key + "_slider", min, max, val);
+    let el = Compose(key).contain(slider, monitor).setRange(min, max);
+    slider.addToChain(v => {
+      v = parseInt(v);
+      el.value = v;
+    });
+    el.addToChain(v => {
+      slider.element[0].value = v.toString();
+    });
+    return el.chain(monitor);
+  }
+};
+exports.Slider = Slider;
 const Select = {
   attr: (key, attrs, onset, icon, value = 0) => {
     return new _comp.default(map_variants({
@@ -48958,6 +48960,12 @@ Object.defineProperty(exports, "Select", {
   enumerable: true,
   get: function () {
     return _templates.Select;
+  }
+});
+Object.defineProperty(exports, "Slider", {
+  enumerable: true,
+  get: function () {
+    return _templates.Slider;
   }
 });
 Object.defineProperty(exports, "Button", {

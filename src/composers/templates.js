@@ -33,7 +33,9 @@ const Monitor = {
       comp.find(key+"-monitor").element.text(value) 
       if (action) return action(value, comp, master)
     }
-    return Monitor.custom(key, val, tag, actionCb) 
+    let mon =  Monitor.custom(key, val, tag, actionCb) 
+    mon.addToChain(actionCb)
+    return mon
   }),
 }
 
@@ -119,6 +121,34 @@ const composer = (key, icon, elements) => {
   }
 }
 
+const Slider = {
+  simple: (key, min=0, max=420, val) => {
+    val = val || (min+max)/2
+    let slider = Compose(key).as(`<input type='range' min=${min} max=${max} value=${val}></input>`).setRange(min, max)
+    slider.element.on('input', () => {
+      slider.value = parseInt(slider.element[0].value)
+    })
+
+    return slider
+  },
+
+  value: (key, min, max, val=0, onupdate) => {
+    let monitor = Monitor.simple(key+"_monitor", val, "div") 
+    let slider = Slider.simple(key+"_slider", min, max, val)
+    let el = Compose(key).contain(slider, monitor).setRange(min, max)
+
+    slider.addToChain((v) => {
+      v = parseInt(v)
+      el.value = v
+    })
+
+    el.addToChain((v) => {
+      slider.element[0].value = v.toString()
+    })
+
+    return el.chain(monitor)
+  }
+}
 const Select = {
   attr: ((key, attrs, onset, icon, value=0) => {
     return new Comp(map_variants({
@@ -227,5 +257,5 @@ const Bridge = (stream, keys=[], beam=((object, trigger) => console.table(object
   return bridgeComp
 }
 
-export { buttonValue, Button, Select, Variants, Compose, Value, pragmatize, contain, host, Bridge, Monitor}
+export { buttonValue, Button, Select, Slider, Variants, Compose, Value, pragmatize, contain, host, Bridge, Monitor}
 

@@ -63,7 +63,7 @@ export default class PragmaMark extends Comp {
     return this.fovea * 30
   }
   get fovea() {
-    return this.settings.get("fovea") || 4
+    return this.settings.get("markerfovea") || 4
   }
   set fovea(n) {
     console.table(['writing fovea', this.settings.find("fovea")])

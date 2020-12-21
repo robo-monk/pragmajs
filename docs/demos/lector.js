@@ -122,15 +122,14 @@ const Lector = (l, options=default_options) => {
   if (options.wfy) wfy(l)
   let w = Word(l)
   let lec = new PragmaLector({key:"lector"}).connectTo(w)
-  console.table(w)
+  //console.table(w)
   lec.settings = LectorSettings(lec).pragmatize("#lector")
-
   lec.mark = Mark(lec)
+
   lec.value = 0
   // w.value = 0
   lec.addToChain((v, comp, other) => {
-    //console.log('lectors shit', v, comp, other)
-    //console.log(v,comp, other)
+    // console.log(v,comp, other)
     // comp.element.fadeOut()
     // console.log(v, comp, oter)
     // console.log( w.currentWord.pre.text(), w.currentWord.text(), w.currentWord.next.text())
