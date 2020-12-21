@@ -6418,20 +6418,18 @@ const Block = (key, block, nextblock) => {
       element: preElement
     }]
   }).contain(doblock, copyblock);
-}; //rainbow.color()
-//
-//let tripblock = Block("tripdemo", trip)
-//let bgblock = Block("bigdemo", bigdemo, tripblock)
-//let todoblock= Block("tododemo", todo, bgblock)
-//let timer2block= Block("timerdemo2", timer2, todoblock)
-//let timerblock= Block("timerdemo", timer, timer2block)
-//let hwblock = Block("helloworld", helloworld, timerblock)
-//paper.contain(hwblock)
+}; // rainbow.color()
 
 
-let lectorblock = Block("lector", _lector.default);
-paper.contain(lectorblock);
-lectorblock.find("doblock").element.click();
+let tripblock = Block("tripdemo", _trip.default);
+let bgblock = Block("bigdemo", _bigdemo.default, tripblock);
+let todoblock = Block("tododemo", _todo.default, bgblock);
+let timer2block = Block("timerdemo2", _timerdemo.timer2, todoblock);
+let timerblock = Block("timerdemo", _timerdemo.timer, timer2block);
+let hwblock = Block("helloworld", _helloworld.default, timerblock);
+paper.contain(hwblock); // let lectorblock = Block("lector", lector)
+// paper.contain(lectorblock)
+// lectorblock.find("doblock").element.click()
 
 _core.default.initHighlightingOnLoad(); // console.time()
 // console.timeEnd()
