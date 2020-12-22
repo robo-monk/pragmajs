@@ -1,4 +1,6 @@
 import $ from "jquery"
+import db from "./bigdemo_icons_db.json"
+
 import {
   Bridge,
   Select,
@@ -15,7 +17,7 @@ export default function bigdemo(paper, test=(()=>{})) {
   let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"]
   let modes = ["HotBox", "Underneath", "Faded"]
 
-  let icons = new IconBuilder()
+  let icons = new IconBuilder(db)
   icons.default.fill = "white"
 
   function modifyBody(dict) {

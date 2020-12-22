@@ -81,7 +81,7 @@ export default class Comp extends Pragma {
   set value(v){
     let pv = this.proc_value(v)
     this.actualValue = pv[0]
-    if (pv[1]) this.doChain(this.actualValue, this.master) // do the chain if the value is in the range
+    if (pv[1]) this.doChain(this.actualValue, this.master, this) // do the chain if the value is in the range
   }
 
   get value(){

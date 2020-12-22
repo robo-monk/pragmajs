@@ -26,15 +26,14 @@ const Monitor = {
       set: ((value, master, comp) => { 
         if(action) return action(value, comp, master)
       })
-    }).with(`<${tag}>${val}</${tag}>`, key+"-monitor")
+    }).as(`<${tag}>${val}</${tag}>`, key+"-monitor")
   }),
   simple: ((key, val=0, tag="p", action=null) => {
     let actionCb = (value, comp, master) => {
-      comp.find(key+"-monitor").element.text(value) 
+      comp.element.text(value)
       if (action) return action(value, comp, master)
     }
     let mon =  Monitor.custom(key, val, tag, actionCb) 
-    mon.addToChain(actionCb)
     return mon
   }),
 }

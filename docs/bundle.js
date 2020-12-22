@@ -6364,6 +6364,8 @@ var _todo = _interopRequireDefault(require("./demos/todo"));
 
 var _timerdemo = require("./demos/timerdemo");
 
+var _icons = _interopRequireDefault(require("./demos/icons"));
+
 var _trip = _interopRequireDefault(require("./demos/trip"));
 
 var _lector = _interopRequireDefault(require("./demos/lector"));
@@ -6464,7 +6466,8 @@ let todoblock = Block("tododemo", _todo.default, bgblock);
 let timer2block = Block("timerdemo2", _timerdemo.timer2, todoblock);
 let timerblock = Block("timerdemo", _timerdemo.timer, timer2block);
 let hwblock = Block("helloworld", _helloworld.default, timerblock);
-paper.contain(hwblock); // let lectorblock = Block("lector", lector)
+let iconsblock = Block("icons", _icons.default, hwblock);
+paper.contain(iconsblock); // let lectorblock = Block("lector", lector)
 // paper.contain(lectorblock)
 // lectorblock.find("doblock").element.click()
 
@@ -6558,7 +6561,7 @@ _core.default.initHighlightingOnLoad(); // console.time()
 // let lec = new Lector($("#article"), settings)
 // lec.read()
 
-},{"../dist":1,"./demos/bigdemo":3,"./demos/helloworld":4,"./demos/lector":5,"./demos/timerdemo":19,"./demos/todo":20,"./demos/trip":21,"highlight.js/lib/core":25,"highlight.js/lib/languages/javascript":26,"js-beautify":28}],3:[function(require,module,exports){
+},{"../dist":1,"./demos/bigdemo":3,"./demos/helloworld":5,"./demos/icons":7,"./demos/lector":8,"./demos/timerdemo":22,"./demos/todo":23,"./demos/trip":24,"highlight.js/lib/core":28,"highlight.js/lib/languages/javascript":29,"js-beautify":31}],3:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6567,6 +6570,8 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = bigdemo;
 
 var _jquery = _interopRequireDefault(require("jquery"));
+
+var _bigdemo_icons_db = _interopRequireDefault(require("./bigdemo_icons_db.json"));
 
 var _src = require("../../src");
 
@@ -6577,7 +6582,7 @@ function bigdemo(paper, test = () => {}) {
   let colors = ["tomato", "navy", "lime"];
   let fonts = ["Helvetica", "Roboto", "Open Sans", "Space Mono"];
   let modes = ["HotBox", "Underneath", "Faded"];
-  let icons = new _src.IconBuilder();
+  let icons = new _src.IconBuilder(_bigdemo_icons_db.default);
   icons.default.fill = "white";
 
   function modifyBody(dict) {
@@ -6649,7 +6654,9 @@ function bigdemo(paper, test = () => {}) {
   return ["settingsWrapper", "commiter"];
 }
 
-},{"../../src":58,"jquery":27}],4:[function(require,module,exports){
+},{"../../src":60,"./bigdemo_icons_db.json":4,"jquery":30}],4:[function(require,module,exports){
+module.exports={"settings": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"24\" height=\"24\"><path fill=\"none\" d=\"M0 0h24v24H0z\"/><path d=\"M2.132 13.63a9.942 9.942 0 0 1 0-3.26c1.102.026 2.092-.502 2.477-1.431.385-.93.058-2.004-.74-2.763a9.942 9.942 0 0 1 2.306-2.307c.76.798 1.834 1.125 2.764.74.93-.385 1.457-1.376 1.43-2.477a9.942 9.942 0 0 1 3.262 0c-.027 1.102.501 2.092 1.43 2.477.93.385 2.004.058 2.763-.74a9.942 9.942 0 0 1 2.307 2.306c-.798.76-1.125 1.834-.74 2.764.385.93 1.376 1.457 2.477 1.43a9.942 9.942 0 0 1 0 3.262c-1.102-.027-2.092.501-2.477 1.43-.385.93-.058 2.004.74 2.763a9.942 9.942 0 0 1-2.306 2.307c-.76-.798-1.834-1.125-2.764-.74-.93.385-1.457 1.376-1.43 2.477a9.942 9.942 0 0 1-3.262 0c.027-1.102-.501-2.092-1.43-2.477-.93-.385-2.004-.058-2.763.74a9.942 9.942 0 0 1-2.307-2.306c.798-.76 1.125-1.834.74-2.764-.385-.93-1.376-1.457-2.477-1.43zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z\" fill=\"#000\"/></svg>", "plus": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"24\" height=\"24\"><path fill=\"none\" d=\"M0 0h24v24H0z\"/><path d=\"M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2z\" fill=\"#000\"/></svg>", "minus": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"24\" height=\"24\"><path fill=\"none\" d=\"M0 0h24v24H0z\"/><path d=\"M5 11h14v2H5z\" fill=\"#000\"/></svg>"}
+},{}],5:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6698,7 +6705,35 @@ function helloworld() {
 // console.log("yyet")
 // }
 
-},{"../../src":58}],5:[function(require,module,exports){
+},{"../../src":60}],6:[function(require,module,exports){
+module.exports={"home-2-fill": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"24\" height=\"24\"><path fill=\"none\" d=\"M0 0h24v24H0z\"/><path d=\"M20 20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-9H1l10.327-9.388a1 1 0 0 1 1.346 0L23 11h-3v9z\" fill=\"#000\"/></svg>", "ancient-pavilion-fill": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"24\" height=\"24\"><path fill=\"none\" d=\"M0 0h24v24H0z\"/><path d=\"M12.513 2.001a9.004 9.004 0 0 0 9.97 5.877A4.501 4.501 0 0 1 19 11.888V19l2 .001v2H3v-2h2v-7.113a4.503 4.503 0 0 1-3.484-4.01 9.004 9.004 0 0 0 9.972-5.876h1.025zM17 12H7V19h10v-7z\" fill=\"#000\"/></svg>", "brush-4-fill": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"24\" height=\"24\"><path fill=\"none\" d=\"M0 0h24v24H0z\"/><path d=\"M20 16H4v2h16v-2zM3 14V4a1 1 0 0 1 1-1h3v8.273h2V3h11a1 1 0 0 1 1 1v10h1v5a1 1 0 0 1-1 1h-8v3h-2v-3H3a1 1 0 0 1-1-1v-5h1z\" fill=\"#000\"/></svg>", "settings-5-fill": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"24\" height=\"24\"><path fill=\"none\" d=\"M0 0h24v24H0z\"/><path d=\"M2.132 13.63a9.942 9.942 0 0 1 0-3.26c1.102.026 2.092-.502 2.477-1.431.385-.93.058-2.004-.74-2.763a9.942 9.942 0 0 1 2.306-2.307c.76.798 1.834 1.125 2.764.74.93-.385 1.457-1.376 1.43-2.477a9.942 9.942 0 0 1 3.262 0c-.027 1.102.501 2.092 1.43 2.477.93.385 2.004.058 2.763-.74a9.942 9.942 0 0 1 2.307 2.306c-.798.76-1.125 1.834-.74 2.764.385.93 1.376 1.457 2.477 1.43a9.942 9.942 0 0 1 0 3.262c-1.102-.027-2.092.501-2.477 1.43-.385.93-.058 2.004.74 2.763a9.942 9.942 0 0 1-2.306 2.307c-.76-.798-1.834-1.125-2.764-.74-.93.385-1.457 1.376-1.43 2.477a9.942 9.942 0 0 1-3.262 0c.027-1.102-.501-2.092-1.43-2.477-.93-.385-2.004-.058-2.763.74a9.942 9.942 0 0 1-2.307-2.306c.798-.76 1.125-1.834.74-2.764-.385-.93-1.376-1.457-2.477-1.43zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z\" fill=\"#000\"/></svg>"}
+},{}],7:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = illustrate;
+
+var _src = require("../../src");
+
+var _icondb = _interopRequireDefault(require("./icondb.json"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function illustrate(paper) {
+  let icons = new _src.IconBuilder(_icondb.default);
+  icons.default = {
+    fill: "white",
+    width: "55px",
+    height: "55px"
+  };
+  let settings = (0, _src.Compose)("settings").with(icons.grab("home-2-fill")).setTippy("Settings");
+  settings.pragmatize(paper.element);
+  return ["icons"];
+}
+
+},{"../../src":60,"./icondb.json":6}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6924,7 +6959,7 @@ function lector(paper) {
   return ["lector"];
 }
 
-},{"../../src":58,"./lector_helpers/index":13}],6:[function(require,module,exports){
+},{"../../src":60,"./lector_helpers/index":16}],9:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6963,7 +6998,7 @@ const mode_ify = (mark, mode = "hotbox", bg = "#edd1b0") => {
 
 exports.mode_ify = mode_ify;
 
-},{}],7:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6987,7 +7022,7 @@ function airway(time = 0, session = 0) {
   return time * (conf.threshold - session) / conf.divider + time;
 }
 
-},{}],8:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7055,7 +7090,7 @@ function onScroll(cb = s => {}) {
   });
 }
 
-},{"./pragmafy.js":11,"animejs":23}],9:[function(require,module,exports){
+},{"./pragmafy.js":14,"animejs":26}],12:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7065,7 +7100,7 @@ exports.greek_prefixes = void 0;
 const greek_prefixes = ['an', 'an', 'ap', 'di', 'dy', 'ec', 'eg', 'en', 'em', 'eo', 'ep', 'eu', 'id', 'is', 'my', 'ne', 'od', 'oo', 'ot', 'sy', 'ur', 'ur', 'zo', 'pto', 'pyl', 'acr', 'aer', 'agr', 'ana', 'ant', 'apo', 'aut', 'bar', 'bio', 'cac', 'cat', 'cen', 'cen', 'con', 'cub', 'cyn', 'dec', 'dek', 'dem', 'dia', 'dox', 'eco', 'ego', 'eme', 'eos', 'epi', 'erg', 'eso', 'eth', 'eur', 'exo', 'geo', 'gen', 'hem', 'hal', 'hen', 'hex', 'hod', 'hol', 'hor', 'hor', 'hyo', 'hyp', 'ide', 'idi', 'iso', 'kil', 'lei', 'lep', 'lip', 'log', 'meg', 'mei', 'men', 'mer', 'mes', 'mim', 'mis', 'mit', 'mne', 'mon', 'myx', 'nes', 'nom', 'oct', 'oed', 'oen', 'omm', 'ont', 'opt', 'pan', 'pam', 'par', 'ped', 'pin', 'pis', 'pol', 'por', 'pro', 'rhe', 'sei', 'sit', 'syn', 'syl', 'sym', 'tax', 'the', 'the', 'tom', 'ton', 'top', 'tox', 'tri', 'ulo', 'uro', 'uro', 'xen', 'xer', 'zon', 'zyg', 'psil', 'prot', 'pros', 'amph', 'anem', 'anti', 'anth', 'arct', 'astr', 'athl', 'auto', 'basi', 'bibl', 'briz', 'brom', 'brom', 'call', 'carp', 'carp', 'cata', 'chir', 'cine', 'cirr', 'clad', 'clav', 'coel', 'copr', 'cosm', 'crep', 'cris', 'crit', 'cten', 'cyan', 'cycl', 'cyst', 'deca', 'deka', 'delt', 'derm', 'dexi', 'dino', 'dipl', 'ecto', 'endo', 'engy', 'eoso', 'etho', 'ethi', 'ethm', 'ethn', 'etym', 'fant', 'glia', 'gram', 'gymn', 'haem', 'hapl', 'heli', 'hemi', 'hept', 'herp', 'heur', 'hipp', 'home', 'horm', 'hyal', 'hydr', 'hygr', 'hypn', 'icos', 'kine', 'lamp', 'leps', 'leuc', 'leuk', 'lith', 'metr', 'meta', 'micr', 'myri', 'myth', 'narc', 'naut', 'necr', 'nect', 'nema', 'neur', 'noth', 'noto', 'oeco', 'ogdo', 'olig', 'onom', 'ophi', 'orch', 'orth', 'pach', 'paed', 'pale', 'path', 'patr', 'pect', 'pent', 'pept', 'peri', 'petr', 'phae', 'phag', 'pher', 'phil', 'phob', 'phon', 'phor', 'phos', 'phot', 'phyl', 'phys', 'plac', 'plas', 'plec', 'plut', 'pneu', 'poie', 'pole', 'poli', 'poli', 'poly', 'raph', 'rhag', 'rhig', 'rhin', 'rhiz', 'rhod', 'sarc', 'scel', 'scop', 'sema', 'siph', 'soma', 'soph', 'stea', 'steg', 'sten', 'stig', 'stom', 'styl', 'tach', 'tars', 'taur', 'tele', 'tele', 'temn', 'tetr', 'than', 'thus', 'ther', 'thym', 'thyr', 'trag', 'trit', 'trop', 'xiph', 'proct', 'ptych', 'amphi', 'arche', 'archi', 'arche', 'arist', 'arthr', 'bathy', 'batho', 'blenn', 'blast', 'botan', 'brady', 'bront', 'calli', 'calyp', 'cardi', 'centr', 'ceram', 'cerat', 'chlor', 'chore', 'chrom', 'chron', 'chrys', 'clast', 'clist', 'cochl', 'corac', 'cotyl', 'crani', 'cross', 'crypt', 'dendr', 'dodec', 'dynam', 'ennea', 'gastr', 'graph', 'heter', 'homal', 'hyper', 'klept', 'lekan', 'macro', 'melan', 'meter', 'morph', 'nephr', 'nomad', 'odont', 'organ', 'osteo', 'palae', 'palin', 'peran', 'phleg', 'phloe', 'phren', 'phryn', 'phyll', 'plagi', 'platy', 'plesi', 'pleth', 'pleur', 'pogon', 'polem', 'potam', 'rhabd', 'rhomb', 'scaph', 'schem', 'schis', 'scler', 'scoli', 'scept', 'scyph', 'selen', 'solen', 'sperm', 'sphen', 'spher', 'stern', 'stich', 'stoch', 'taeni', 'techn', 'therm', 'thyre', 'traum', 'trema', 'trich', 'troch', 'troph', 'xanth', 'psych', 'archae', 'brachi', 'brachy', 'bronch', 'cathar', 'cephal', 'chelon', 'cleist', 'cosmet', 'cylind', 'dactyl', 'deuter', 'dogmat', 'erythr', 'galact', 'hendec', 'ichthy', 'mening', 'myrmec', 'omphal', 'opisth', 'opoter', 'ornith', 'ostrac', 'persic', 'phalar', 'phaner', 'phragm', 'plinth', 'prasin', 'presby', 'rhynch', 'scalen', 'strept', 'stroph', 'thalam', 'theori', 'trachy', 'trapez', 'tympan', 'aesthet', 'anthrop', 'branchi', 'cleithr', 'epistem', 'parthen', 'phalang', 'pharmac', 'porphyr', 'sacchar', 'sphinct', 'stalact', 'stalagm', 'thalass', 'oesophag', 'ophthalm', 'physalid', 'pentecost', 'treiskaidek'];
 exports.greek_prefixes = greek_prefixes;
 
-},{}],10:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7142,7 +7177,7 @@ function howGreek(word) {
   return 0;
 }
 
-},{"./greek":9,"compromise":24,"jquery":27}],11:[function(require,module,exports){
+},{"./greek":12,"compromise":27,"jquery":30}],14:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7169,7 +7204,7 @@ function jqueryfy(el) {
   return (0, _jquery.default)(el);
 }
 
-},{"../../../../src/":58,"jquery":27}],12:[function(require,module,exports){
+},{"../../../../src/":60,"jquery":30}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7208,7 +7243,7 @@ function wfy(element) {
   return true;
 }
 
-},{}],13:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7277,7 +7312,7 @@ var _pragmaMark = _interopRequireDefault(require("./pragmaMark"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./helpers/autoScroll.js":8,"./helpers/wfy.js":12,"./lectorSettings":14,"./pragmaLector":16,"./pragmaMark":17,"./pragmaWord":18}],14:[function(require,module,exports){
+},{"./helpers/autoScroll.js":11,"./helpers/wfy.js":15,"./lectorSettings":17,"./pragmaLector":19,"./pragmaMark":20,"./pragmaWord":21}],17:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7388,7 +7423,7 @@ const LectorSettings = parent => {
 
 exports.LectorSettings = LectorSettings;
 
-},{"../../../src":58,"./conf/modes":6,"jquery":27}],15:[function(require,module,exports){
+},{"../../../src":60,"./conf/modes":9,"jquery":30}],18:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7414,7 +7449,7 @@ class PinkyPromise {
 
 exports.default = PinkyPromise;
 
-},{}],16:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7470,7 +7505,7 @@ class PragmaLector extends _src.Comp {
 
 exports.default = PragmaLector;
 
-},{"../../../src":58}],17:[function(require,module,exports){
+},{"../../../src":60}],20:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7705,7 +7740,7 @@ class PragmaMark extends _src.Comp {
 
 exports.default = PragmaMark;
 
-},{"../../../src":58,"./helpers/airway.js":7,"./pinkyPromise":15,"./pragmaWord":18,"animejs":23,"jquery":27}],18:[function(require,module,exports){
+},{"../../../src":60,"./helpers/airway.js":10,"./pinkyPromise":18,"./pragmaWord":21,"animejs":26,"jquery":30}],21:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7871,7 +7906,7 @@ class PragmaWord extends _src.Comp {
 
 exports.default = PragmaWord;
 
-},{"../../../src":58,"./helpers/pragmaWordHelper.js":10,"./pinkyPromise":15}],19:[function(require,module,exports){
+},{"../../../src":60,"./helpers/pragmaWordHelper.js":13,"./pinkyPromise":18}],22:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7905,7 +7940,7 @@ function timer() {
   return ["timer"];
 }
 
-},{"../../src":58}],20:[function(require,module,exports){
+},{"../../src":60}],23:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7947,7 +7982,7 @@ function todo(paper) {
   return ["todo"];
 }
 
-},{"../../src":58,"mousetrap":52}],21:[function(require,module,exports){
+},{"../../src":60,"mousetrap":55}],24:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8038,7 +8073,7 @@ function trip(paper) {
   return ["trip"];
 }
 
-},{"../../src":58}],22:[function(require,module,exports){
+},{"../../src":60}],25:[function(require,module,exports){
 (function (process){(function (){
 /**
  * @popperjs/core v2.5.4 - MIT License
@@ -9908,7 +9943,7 @@ exports.preventOverflow = preventOverflow$1;
 
 
 }).call(this)}).call(this,require('_process'))
-},{"_process":61}],23:[function(require,module,exports){
+},{"_process":63}],26:[function(require,module,exports){
 /*
  * anime.js v3.2.1
  * (c) 2020 Julian Garnier
@@ -11222,7 +11257,7 @@ anime.random = function (min, max) { return Math.floor(Math.random() * (max - mi
 
 module.exports = anime;
 
-},{}],24:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 /* compromise 13.7.0 MIT */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
@@ -25648,7 +25683,7 @@ module.exports = anime;
 
 })));
 
-},{}],25:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 // https://github.com/substack/deep-freeze/blob/master/index.js
 /** @param {any} obj */
 function deepFreeze(obj) {
@@ -27857,7 +27892,7 @@ var highlight = HLJS({});
 
 module.exports = highlight;
 
-},{}],26:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 const IDENT_RE = '[A-Za-z$_][0-9A-Za-z$_]*';
 const KEYWORDS = [
   "as", // for exports
@@ -28457,7 +28492,7 @@ function javascript(hljs) {
 
 module.exports = javascript;
 
-},{}],27:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v3.5.1
  * https://jquery.com/
@@ -39331,7 +39366,7 @@ if ( typeof noGlobal === "undefined" ) {
 return jQuery;
 } );
 
-},{}],28:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 /*jshint node:true */
 /* globals define */
 /*
@@ -39418,7 +39453,7 @@ if (typeof define === "function" && define.amd) {
 
   })(module);
 }
-},{"./src/index":46}],29:[function(require,module,exports){
+},{"./src/index":49}],32:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -39482,7 +39517,7 @@ Directives.prototype.readIgnored = function(input) {
 
 module.exports.Directives = Directives;
 
-},{}],30:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -39676,7 +39711,7 @@ InputScanner.prototype.lookBack = function(testVal) {
 
 module.exports.InputScanner = InputScanner;
 
-},{}],31:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -39871,7 +39906,7 @@ module.exports.Options = Options;
 module.exports.normalizeOpts = _normalizeOpts;
 module.exports.mergeOpts = _mergeOpts;
 
-},{}],32:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 /*jshint node:true */
 /*
   The MIT License (MIT)
@@ -40292,7 +40327,7 @@ Output.prototype.ensure_empty_line_above = function(starts_with, ends_with) {
 
 module.exports.Output = Output;
 
-},{}],33:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -40388,7 +40423,7 @@ Pattern.prototype._update = function() {};
 
 module.exports.Pattern = Pattern;
 
-},{}],34:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -40581,7 +40616,7 @@ TemplatablePattern.prototype._read_template = function() {
 
 module.exports.TemplatablePattern = TemplatablePattern;
 
-},{"./pattern":33}],35:[function(require,module,exports){
+},{"./pattern":36}],38:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -40637,7 +40672,7 @@ function Token(type, text, newlines, whitespace_before) {
 
 module.exports.Token = Token;
 
-},{}],36:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -40779,7 +40814,7 @@ Tokenizer.prototype._readWhitespace = function() {
 module.exports.Tokenizer = Tokenizer;
 module.exports.TOKEN = TOKEN;
 
-},{"../core/inputscanner":30,"../core/token":35,"../core/tokenstream":37,"./whitespacepattern":38}],37:[function(require,module,exports){
+},{"../core/inputscanner":33,"../core/token":38,"../core/tokenstream":40,"./whitespacepattern":41}],40:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -40859,7 +40894,7 @@ TokenStream.prototype.add = function(token) {
 
 module.exports.TokenStream = TokenStream;
 
-},{}],38:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -40966,7 +41001,7 @@ WhitespacePattern.prototype.__split = function(regexp, input_string) {
 
 module.exports.WhitespacePattern = WhitespacePattern;
 
-},{"../core/pattern":33}],39:[function(require,module,exports){
+},{"../core/pattern":36}],42:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -41449,7 +41484,7 @@ Beautifier.prototype.beautify = function() {
 
 module.exports.Beautifier = Beautifier;
 
-},{"../core/directives":29,"../core/inputscanner":30,"../core/output":32,"./options":41}],40:[function(require,module,exports){
+},{"../core/directives":32,"../core/inputscanner":33,"../core/output":35,"./options":44}],43:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -41493,7 +41528,7 @@ module.exports.defaultOptions = function() {
   return new Options();
 };
 
-},{"./beautifier":39,"./options":41}],41:[function(require,module,exports){
+},{"./beautifier":42,"./options":44}],44:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -41551,7 +41586,7 @@ Options.prototype = new BaseOptions();
 
 module.exports.Options = Options;
 
-},{"../core/options":31}],42:[function(require,module,exports){
+},{"../core/options":34}],45:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -42418,7 +42453,7 @@ Beautifier.prototype._do_optional_end_element = function(parser_token) {
 
 module.exports.Beautifier = Beautifier;
 
-},{"../core/output":32,"../html/options":44,"../html/tokenizer":45}],43:[function(require,module,exports){
+},{"../core/output":35,"../html/options":47,"../html/tokenizer":48}],46:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -42462,7 +42497,7 @@ module.exports.defaultOptions = function() {
   return new Options();
 };
 
-},{"./beautifier":42,"./options":44}],44:[function(require,module,exports){
+},{"./beautifier":45,"./options":47}],47:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -42555,7 +42590,7 @@ Options.prototype = new BaseOptions();
 
 module.exports.Options = Options;
 
-},{"../core/options":31}],45:[function(require,module,exports){
+},{"../core/options":34}],48:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -42889,7 +42924,7 @@ Tokenizer.prototype._read_content_word = function(c) {
 module.exports.Tokenizer = Tokenizer;
 module.exports.TOKEN = TOKEN;
 
-},{"../core/directives":29,"../core/pattern":33,"../core/templatablepattern":34,"../core/tokenizer":36}],46:[function(require,module,exports){
+},{"../core/directives":32,"../core/pattern":36,"../core/templatablepattern":37,"../core/tokenizer":39}],49:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -42935,7 +42970,7 @@ module.exports.js = js_beautify;
 module.exports.css = css_beautify;
 module.exports.html = style_html;
 
-},{"./css/index":40,"./html/index":43,"./javascript/index":49}],47:[function(require,module,exports){
+},{"./css/index":43,"./html/index":46,"./javascript/index":52}],50:[function(require,module,exports){
 /* jshint node: true, curly: false */
 // Parts of this section of code is taken from acorn.
 //
@@ -42994,7 +43029,7 @@ exports.newline = /[\n\r\u2028\u2029]/;
 exports.lineBreak = new RegExp('\r\n|' + exports.newline.source);
 exports.allLineBreaks = new RegExp(exports.lineBreak.source, 'g');
 
-},{}],48:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -44451,7 +44486,7 @@ Beautifier.prototype.handle_eof = function(current_token) {
 
 module.exports.Beautifier = Beautifier;
 
-},{"../core/output":32,"../core/token":35,"./acorn":47,"./options":50,"./tokenizer":51}],49:[function(require,module,exports){
+},{"../core/output":35,"../core/token":38,"./acorn":50,"./options":53,"./tokenizer":54}],52:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -44495,7 +44530,7 @@ module.exports.defaultOptions = function() {
   return new Options();
 };
 
-},{"./beautifier":48,"./options":50}],50:[function(require,module,exports){
+},{"./beautifier":51,"./options":53}],53:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -44590,7 +44625,7 @@ Options.prototype = new BaseOptions();
 
 module.exports.Options = Options;
 
-},{"../core/options":31}],51:[function(require,module,exports){
+},{"../core/options":34}],54:[function(require,module,exports){
 /*jshint node:true */
 /*
 
@@ -45158,7 +45193,7 @@ module.exports.TOKEN = TOKEN;
 module.exports.positionable_operators = positionable_operators.slice();
 module.exports.line_starters = line_starters.slice();
 
-},{"../core/directives":29,"../core/inputscanner":30,"../core/pattern":33,"../core/templatablepattern":34,"../core/tokenizer":36,"./acorn":47}],52:[function(require,module,exports){
+},{"../core/directives":32,"../core/inputscanner":33,"../core/pattern":36,"../core/templatablepattern":37,"../core/tokenizer":39,"./acorn":50}],55:[function(require,module,exports){
 /*global define:false */
 /**
  * Copyright 2012-2017 Craig Campbell
@@ -46218,7 +46253,7 @@ module.exports.line_starters = line_starters.slice();
     }
 }) (typeof window !== 'undefined' ? window : null, typeof  window !== 'undefined' ? document : null);
 
-},{}],53:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 (function (process){(function (){
 /**!
 * tippy.js v6.2.7
@@ -48547,7 +48582,7 @@ exports.sticky = sticky;
 
 
 }).call(this)}).call(this,require('_process'))
-},{"@popperjs/core":22,"_process":61}],54:[function(require,module,exports){
+},{"@popperjs/core":25,"_process":63}],57:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -48613,7 +48648,7 @@ const parse = {
 };
 exports.parse = parse;
 
-},{}],55:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -48653,16 +48688,15 @@ const Monitor = {
       set: (value, master, comp) => {
         if (action) return action(value, comp, master);
       }
-    }).with(`<${tag}>${val}</${tag}>`, key + "-monitor");
+    }).as(`<${tag}>${val}</${tag}>`, key + "-monitor");
   },
   simple: (key, val = 0, tag = "p", action = null) => {
     let actionCb = (value, comp, master) => {
-      comp.find(key + "-monitor").element.text(value);
+      comp.element.text(value);
       if (action) return action(value, comp, master);
     };
 
     let mon = Monitor.custom(key, val, tag, actionCb);
-    mon.addToChain(actionCb);
     return mon;
   }
 };
@@ -48914,30 +48948,7 @@ const Bridge = (stream, keys = [], beam = (object, trigger) => console.table(obj
 
 exports.Bridge = Bridge;
 
-},{"../pragmas/comp":59}],56:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.db = void 0;
-const db = {
-  settings: `<path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/>`,
-  zoomIn: `<path d="M0 0h24v24H0V0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27c1.2-1.4 1.82-3.31 1.48-5.34-.47-2.78-2.79-5-5.59-5.34-4.23-.52-7.78 3.04-7.27 7.27.34 2.8 2.56 5.12 5.34 5.59 2.03.34 3.94-.28 5.34-1.48l.27.28v.79l4.26 4.25c.41.41 1.07.41 1.48 0l.01-.01c.41-.41.41-1.07 0-1.48L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14zm0-7c-.28 0-.5.22-.5.5V9H7.5c-.28 0-.5.22-.5.5s.22.5.5.5H9v1.5c0 .28.22.5.5.5s.5-.22.5-.5V10h1.5c.28 0 .5-.22.5-.5s-.22-.5-.5-.5H10V7.5c0-.28-.22-.5-.5-.5z"/>`,
-  plus: `<path d="M0 0h24v24H0V0z" fill="none"/><path d="M18 13h-5v5c0 .55-.45 1-1 1s-1-.45-1-1v-5H6c-.55 0-1-.45-1-1s.45-1 1-1h5V6c0-.55.45-1 1-1s1 .45 1 1v5h5c.55 0 1 .45 1 1s-.45 1-1 1z"/>`,
-  zoomOut: `<path d="M0 0h24v24H0V0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27c1.2-1.4 1.82-3.31 1.48-5.34-.47-2.78-2.79-5-5.59-5.34-4.23-.52-7.79 3.04-7.27 7.27.34 2.8 2.56 5.12 5.34 5.59 2.03.34 3.94-.28 5.34-1.48l.27.28v.79l4.26 4.25c.41.41 1.07.41 1.48 0l.01-.01c.41-.41.41-1.07 0-1.48L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14zm-2-5h4c.28 0 .5.22.5.5s-.22.5-.5.5h-4c-.28 0-.5-.22-.5-.5s.22-.5.5-.5z"/>`,
-  minus: `<path d="M18 13H6c-.55 0-1-.45-1-1s.45-1 1-1h12c.55 0 1 .45 1 1s-.45 1-1 1z"/>`,
-  home: `<path d="M0 0h24v24H0V0z" fill="none"/><path d="M10 19v-5h4v5c0 .55.45 1 1 1h3c.55 0 1-.45 1-1v-7h1.7c.46 0 .68-.57.33-.87L12.67 3.6c-.38-.34-.96-.34-1.34 0l-8.36 7.53c-.34.3-.13.87.33.87H5v7c0 .55.45 1 1 1h3c.55 0 1-.45 1-1z"/>`,
-  loveFull: `<path d="M0 0h24v24H0V0z" fill="none"/><path d="M13.35 20.13c-.76.69-1.93.69-2.69-.01l-.11-.1C5.3 15.27 1.87 12.16 2 8.28c.06-1.7.93-3.33 2.34-4.29 2.64-1.8 5.9-.96 7.66 1.1 1.76-2.06 5.02-2.91 7.66-1.1 1.41.96 2.28 2.59 2.34 4.29.14 3.88-3.3 6.99-8.55 11.76l-.1.09z"/>`,
-  loveOutline: `<path d="M0 0h24v24H0V0z" fill="none"/><path d="M19.66 3.99c-2.64-1.8-5.9-.96-7.66 1.1-1.76-2.06-5.02-2.91-7.66-1.1-1.4.96-2.28 2.58-2.34 4.29-.14 3.88 3.3 6.99 8.55 11.76l.1.09c.76.69 1.93.69 2.69-.01l.11-.1c5.25-4.76 8.68-7.87 8.55-11.75-.06-1.7-.94-3.32-2.34-4.28zM12.1 18.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"/>`,
-  share: `<path d="M0 0h24v24H0V0z" fill="none"/><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/>`,
-  help: `<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/><rect fill="none" height="24" width="24"/></g><g><path d="M12,2C6.48,2,2,6.48,2,12c0,5.52,4.48,10,10,10s10-4.48,10-10C22,6.48,17.52,2,12,2z M19.46,9.12l-2.78,1.15 c-0.51-1.36-1.58-2.44-2.95-2.94l1.15-2.78C16.98,5.35,18.65,7.02,19.46,9.12z M12,15c-1.66,0-3-1.34-3-3s1.34-3,3-3s3,1.34,3,3 S13.66,15,12,15z M9.13,4.54l1.17,2.78c-1.38,0.5-2.47,1.59-2.98,2.97L4.54,9.13C5.35,7.02,7.02,5.35,9.13,4.54z M4.54,14.87 l2.78-1.15c0.51,1.38,1.59,2.46,2.97,2.96l-1.17,2.78C7.02,18.65,5.35,16.98,4.54,14.87z M14.88,19.46l-1.15-2.78 c1.37-0.51,2.45-1.59,2.95-2.97l2.78,1.17C18.65,16.98,16.98,18.65,14.88,19.46z"/></g></svg>`,
-  play: `<path d="M8 6.82v10.36c0 .79.87 1.27 1.54.84l8.14-5.18c.62-.39.62-1.29 0-1.69L9.54 5.98C8.87 5.55 8 6.03 8 6.82z"/>`,
-  copy: `<path d="M0 0h24v24H0V0z" fill="none"/><path d="M15 1H4c-1.1 0-2 .9-2 2v13c0 .55.45 1 1 1s1-.45 1-1V4c0-.55.45-1 1-1h10c.55 0 1-.45 1-1s-.45-1-1-1zm4 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-1 16H9c-.55 0-1-.45-1-1V8c0-.55.45-1 1-1h9c.55 0 1 .45 1 1v12c0 .55-.45 1-1 1z"/>`
-};
-exports.db = db;
-
-},{}],57:[function(require,module,exports){
+},{"../pragmas/comp":61}],59:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -48945,25 +48956,86 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _icondb = require("./icondb");
+var _jquery = _interopRequireDefault(require("jquery"));
 
-const dontEnvelope = ["help"];
+var _helpers = require("../composers/helpers");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// TODO put these helper functions somewhere else
+function fill(svg, color) {
+  svg.find("path").each((i, path) => {
+    path = (0, _jquery.default)(path);
+    const ff = path.attr("fill");
+
+    if (ff != "none" && ff != "transparent") {
+      path.attr("fill", color);
+    }
+  });
+}
+
+function getObjDiff(og, n) {
+  if (!(typeof og == typeof n === "object")) return n;
+
+  for (const [key, val] of Object.entries(n)) {
+    og[key] = val;
+  }
+
+  return og;
+}
+
+function grabOrThrow(icon, from) {
+  if (!from) return (0, _helpers.throwSoft)(`Icon Database is not defined, while trying to grab [${icon}] from [${from}].`, "fixes", ["Typo in the file name?", "Did you forget to initialize IconBuilder with an icon database?"]);
+  const i = from[icon];
+  if (!i) return (0, _helpers.throwSoft)(`Could not find ${icon}`);
+  return (0, _jquery.default)(i);
+}
 
 class IconBuilder {
-  constructor(defaults = null) {
+  constructor(database, defaults = null) {
+    this.db = database;
     this.default = defaults || {
-      fill: "black"
+      fill: "black",
+      width: "18px",
+      height: "18px",
+      viewBox: "0 0 24 24"
     };
   }
 
+  set default(n) {
+    this.defaultOptions = getObjDiff(this.default, n);
+  }
+
+  get default() {
+    return this.defaultOptions;
+  }
+
+  optionify(options) {
+    if (typeof options === 'object') return getObjDiff(this.default, options);
+    return this.default;
+  }
+
   grab(icon, options) {
-    if (dontEnvelope.includes(icon)) return _icondb.db[icon];
-    return this.buildIcon(_icondb.db[icon], options);
+    options = this.optionify(options);
+    let i = grabOrThrow(icon, this.db);
+
+    for (const [attr, val] of Object.entries(options)) {
+      if (attr == "fill") fill(i, val);
+      i.attr(attr, val);
+    }
+
+    return i;
+  }
+
+  build(icon, options) {
+    if (options && options.skip || dontEnvelope.includes(icon)) return this.db[icon];
+    return this.buildIcon(this.db[icon], options);
   }
 
   buildIcon(icon, options = {}) {
     return `
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${options.fill || this.default.fill || "black"}" width="18px" height="18px">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="${options.viewBox || this.default.viewBox}" fill="${options.fill || this.default.fill}" 
+      width="${options.width || this.default.width}" height="${options.height || this.default.height}" ${options.extra}>
         ${icon}
       </svg>
       `;
@@ -48973,7 +49045,7 @@ class IconBuilder {
 
 exports.default = IconBuilder;
 
-},{"./icondb":56}],58:[function(require,module,exports){
+},{"../composers/helpers":57,"jquery":30}],60:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -49082,7 +49154,7 @@ var _helpers = require("./composers/helpers");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./composers/helpers":54,"./composers/templates.js":55,"./icons/icons":57,"./pragmas/comp.js":59,"./pragmas/pragma.js":60}],59:[function(require,module,exports){
+},{"./composers/helpers":57,"./composers/templates.js":58,"./icons/icons":59,"./pragmas/comp.js":61,"./pragmas/pragma.js":62}],61:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -49177,7 +49249,7 @@ class Comp extends _pragma.default {
   set value(v) {
     let pv = this.proc_value(v);
     this.actualValue = pv[0];
-    if (pv[1]) this.doChain(this.actualValue, this.master); // do the chain if the value is in the range
+    if (pv[1]) this.doChain(this.actualValue, this.master, this); // do the chain if the value is in the range
   }
 
   get value() {
@@ -49518,7 +49590,7 @@ class Comp extends _pragma.default {
 
 exports.default = Comp;
 
-},{"../composers/helpers":54,"../composers/templates":55,"./pragma":60,"jquery":27,"mousetrap":52,"tippy.js":53}],60:[function(require,module,exports){
+},{"../composers/helpers":57,"../composers/templates":58,"./pragma":62,"jquery":30,"mousetrap":55,"tippy.js":56}],62:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -49640,7 +49712,7 @@ class Pragma {
 
 exports.default = Pragma;
 
-},{"../composers/helpers":54,"jquery":27}],61:[function(require,module,exports){
+},{"../composers/helpers":57,"jquery":30}],63:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 

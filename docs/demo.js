@@ -23,6 +23,7 @@ import helloworld from "./demos/helloworld"
 import bigdemo from "./demos/bigdemo"
 import todo from "./demos/todo"
 import { timer, timer2 } from "./demos/timerdemo"
+import illustrate from "./demos/icons"
 import trip from "./demos/trip"
 import lector from './demos/lector'
 
@@ -113,7 +114,9 @@ let todoblock= Block("tododemo", todo, bgblock)
 let timer2block= Block("timerdemo2", timer2, todoblock)
 let timerblock= Block("timerdemo", timer, timer2block)
 let hwblock = Block("helloworld", helloworld, timerblock)
-paper.contain(hwblock)
+
+let iconsblock = Block("icons", illustrate, hwblock)
+paper.contain(iconsblock)
 
 
 // let lectorblock = Block("lector", lector)
