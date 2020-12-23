@@ -82,6 +82,8 @@ class Pragma {
     if (this.element) this.element.css(Object.fromEntries(parse.cssToDict(str)))
     return this
   }
+
+  get _isPragma() { return true }
 }
 
 

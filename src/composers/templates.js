@@ -1,4 +1,5 @@
-import Comp from "../pragmas/comp"
+import { Pragma, Comp }  from "../"
+import { forArg } from "./helpers"
 
 // TODO button action refactor
 const buttonAction = (key, value, icon, action) => {
@@ -191,6 +192,27 @@ const Value = (key, value, icon, elements, type="value") => {
   return new Comp(map(key, type, icon, elements))
 }
 
+// TODO put these somewhere else
+function _pragma(p){
+  return p && typeof p === "object" && p._isPragma
+}
+
+class Pragmatizer{
+  constructor(where){
+    this.where = where
+  }
+  pragmatize(){
+    forArg(arguments, (p) => {
+      p.pragmatize(this.where)
+    })
+  }
+}
+
+const at = (where) => {
+  if (_pragma(where)) return new Pragmatizer(where.element)
+  return new Pragmatizer($(where))
+}
+
 const pragmatize = (comp, where) => {
   comp.pragmatize(where)
   return comp
@@ -256,5 +278,5 @@ const Bridge = (stream, keys=[], beam=((object, trigger) => console.table(object
   return bridgeComp
 }
 
-export { buttonValue, Button, Select, Slider, Variants, Compose, Value, pragmatize, contain, host, Bridge, Monitor}
+export { buttonValue, Button, Select, Slider, Variants, Compose, Value, pragmatize, at, contain, host, Bridge, Monitor}
 

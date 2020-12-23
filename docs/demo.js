@@ -18,6 +18,7 @@ hljs.registerLanguage('javascript', javascript)
 
 
 import { Bridge, Select, Compose, Button, Comp, IconBuilder, Pragma } from "../dist"
+import iconsDB from "./demoIcons.json"
 
 import helloworld from "./demos/helloworld"
 import bigdemo from "./demos/bigdemo"
@@ -30,7 +31,7 @@ import lector from './demos/lector'
 // const beautify = require('js-beautify');
 var beautify = require('js-beautify')
 
-let icons = new IconBuilder()
+let icons = new IconBuilder(iconsDB)
 icons.default.fill = "black"
 let paper = new Comp({
     key: "paper",
