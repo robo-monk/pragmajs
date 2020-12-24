@@ -34,18 +34,24 @@ To create a Pragma, we first need to `Compose` it. In this stage, we'll be creat
 You can always change the appearance of the element or add/remove properties of/to/from a pragma later, but structuraly you should add *most* of these when you compose it.
 
 ```js
-// code exploring .with, .as, .icon, .css, .html.class, .element
+// code exploring .with, .as
 ```
 
 ### Pragmatize
 
-You'll notice that after we compose a Pragma, nothing really happens to front end. Thats because we haven't `pragmatize`d it yet. We need to tell the `Pragma` object where in the DOM it needs to be rendered, and in which fashion.
+You'll notice that after we compose a Pragma we `pragmatize` it to tell the `Pragma` object where in the DOM it needs to be rendered, and in which fashion. We can wait and `pragmatize` the pragma element later on our program as well.
 
 ```js
 
 // code exploring .pragmatize(), at().pragmatize(, , ,), .host, .contain
 ```
 
+### Stylize
+
+Here are some useful functions pragmas have.
+```js
+.css, .listen, .html.class, .element, .illustrate
+```
 
 ## Advanced Concepts
 

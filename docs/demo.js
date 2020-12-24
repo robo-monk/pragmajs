@@ -32,7 +32,7 @@ import lector from './demos/lector'
 var beautify = require('js-beautify')
 
 let icons = new IconBuilder(iconsDB)
-icons.default.fill = "black"
+icons.default.fill = "whitesmoke"
 let paper = new Comp({
     key: "paper",
     element: $("#paper")
