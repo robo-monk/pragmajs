@@ -7,7 +7,7 @@
 
 ## Dead simple, fast UI-composer in JavaScript 
 
-### [Check out Demo](https://robo-monk.github.io/pragmajs)
+[Check out Demo](https://robo-monk.github.io/pragmajs)
 
 <br>
 
@@ -16,19 +16,82 @@
 npm i pragmajs
 ```
 
-# What is PragmaJS?
+# How To
 
-Pragmajs is built in a way where it can use pure javascript (currently it depends on jquery for the simplicity jquery provides, but in a future jquery will not be necessary) to create complicated interactions between DOM elements and virtual-behind the screens JS objects, called **Pragmas**. The key point of this, is that Pragmas can contain Pragmas themselves and have a parent-child relation with them, which creates a funnel of information.
+You can find an interactive version of this tutorial [here](https://robo-monk.github.io/pragmajs)
 
-This means that virtually any problem and design, can be solved and done with Pragma, since its infinitely possible to break the problem down, and handle the smaller problems, by breaking them down even more. Its kind of abstract, but I will get into details in a bit. I first have to introduce the **main** - and **only** "component" (if youre coming from React or other frameworks), **concept** that Pragma has.
 
-A Pragma essentially is a JavaScript object which **represents** a DOM element (like a button) in the canvas. Each Pragma contains a **value**. This value can be any variable type, but it usually is just an integer (cause front end is simple *aham angular*). Every time the value is changed, the Pragma is responsible to run an **Chain of Actions** (ActionChain), which can reflect the change of that value to the Pragma itself (eg. change its DOM element's background color), or other Pragmas and objects (eg. fade them out).
+## Simple Concepts
 
-The premise is, that a Pragma can contain other Pragmas - it can have **children**. I know it sounds funny, and I have some really funny named functions in the code (which i encourage you to read), but its such a powerful concept.
+### What is a Pragma?
 
-It relies on the fact that a Pragma runs its chain of actions every time a children's value is **changed** as well. This means that you can have one singular pragma doing the high-level processing, and some other "smaller" Pragmas holding values and talking to the end user.
+A Pragma is an object, that has certain interesting properties and capabilities which we will explore briefly in this tutorial. Most of the Pragmas we'll be creating will be interconnected with an element in the DOM, but they're NOT the same. A Pragma, hypothetically, can have many different DOMs, and even exist without one.
 
-I find this fascinating, but this is still abstract. It needs another layer of abstraction (pun very much intended) to be ground breaking, so that's why Pragmajs heavily relies on Templates. A **template is** basically **a Map for creating a Pragma**. 
+### Compose
+
+To create a Pragma, we first need to `Compose` it. In this stage, we'll be creating & manipulating the appearance of the element that is going to be connected with the new Pragma, while adding properties and behaviours to the Pragma itself.
+
+You can always change the appearance of the element or add/remove properties of/to/from a pragma later, but structuraly you should add *most* of these when you compose it.
+
+```js
+// code exploring .with, .as, .icon, .css, .html.class, .element
+```
+
+### Pragmatize
+
+You'll notice that after we compose a Pragma, nothing really happens to front end. Thats because we haven't `pragmatize`d it yet. We need to tell the `Pragma` object where in the DOM it needs to be rendered, and in which fashion.
+
+```js
+
+// code exploring .pragmatize(), at().pragmatize(, , ,), .host, .contain
+```
+
+
+## Advanced Concepts
+
+### Introduction to Pragma Values
+
+So far, we've seen how Pragmas connect with elements in the DOM. By default, a Pragma has a singular `value`. Usually this value is primitive (integer, string etc.), but of course it can be anything. Every time, the `value` of the Pragma is changed to something else, a `Chain of Actions` is being run.
+
+### Timer Demo
+```js
+//timer demo without the template	
+```
+
+
+### Introduction to Pragma Relationships
+
+A Pragma can also form relationships with other Pragmas. Inspired by the structure of `HTML`, where you can have a `div` inside a `div`, a Pragma can contain other Pragmas.
+
+```js
+.contain, .host, .add
+```
+
+### Master Pragma
+
+This results in a structure where the top-level Pragma (aka the Pragma that has no *higher* parent) is called the `master`. The `master` Pragma, is a special kind of Pragma, because it will run its own `Chain of Actions` each time *any* of its children (or children of children, children of children of children etc...)  change their value.
+
+```js
+// code showcasing multiple levels of pragma parents and stuff, with contain and host
+```
+
+
+## Templates
+
+Lets take a step back, and revisit our Timer Demo. Essentially the biggest chunck of code is just for changing the text of the DOM element connected with the `timer` pragma, to display the `timer` pragma `value`. If you think about it that is something that is really common, and we use it very often in various elements. Thus, Pragmajs comes with some teplates out of the box that will help you build your project faster and cleaner.
+
+Here's the timer demo with a template:
+
+```js
+//timer demo with a template
+```
+
+Check out the current [template collection]().
+
+
+## Closing Remarks
+
+Although, PragmaJS is still in early stages of development, I think it provides us with a really interesting and beatiful way of creating and thinking about  applications. Its conceptually simple, and is built to be extensible and customisable from the ground up. Structurally we can have one singular pragma doing the high-level processing, and some other "smaller" Pragmas holding values and talking to the end user.
 
 A Menu Template, for example, would create a Pragma that has a value that changes every time a user clicks a different menu choice. You would pass it an array of options, and it would **create the pragma for you**. You don't even need to know how many pragmas it generated, you only user the "**master**" of all the possible sub pragmas, which holds 1 singular value, treating **1 problem**, and contributing towards solving your bigger problem. 
 
@@ -39,5 +102,4 @@ I really came to appreciate how powerful and beautiful this concept is, and made
 I hope **you** build **epic things** with it.
 
 robomonk
-
 
