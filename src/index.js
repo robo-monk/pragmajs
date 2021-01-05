@@ -15,6 +15,9 @@ import IconBuilder from "./icons/icons"
 export { IconBuilder } 
 export { parse } from "./composers/helpers"
 
+import $ from "jquery"
+
+window.jQuery = window.$ = $
 window.Pragma = Pragma
 window.Comp = Pragma
 window.Compose = Compose

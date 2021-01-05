@@ -1,6 +1,6 @@
 {
   "name": "pragmajs",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Simple javascript UI generation",
   "license": "MIT",
   "repository": {
@@ -43,7 +43,8 @@
   "scripts": {
     "build": "webpack",
     "test": "jest",
-    "watch": "watchify docs/demo.js -t babelify -o docs/bundle.js -v"
+    "watch": "watchify docs/demo.js -t babelify -o docs/bundle.js -v",
+    "prepublishOnly": "webpack --mode=production"
   },
   "dependencies": {
     "jquery": "^3.5.1",

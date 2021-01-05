@@ -3,22 +3,20 @@ const TerserPlugin = require("terser-webpack-plugin")
 
 module.exports = {
   mode: "production",
+  target: 'web',
   entry: './src/index.js',
 
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'index.js',
-    library: { 
-      type: "umd",
-      name: "pragmajs"
-    },
+    library: 'pragmajs',
     libraryTarget: 'umd',
     globalObject: 'this',
     umdNamedDefine: true
   },
 
   optimization: {
-    minimize:true,
+    minimize: true,
     minimizer: [new TerserPlugin()]
   },
 
@@ -33,11 +31,7 @@ module.exports = {
       }
     ]
   },
-  externals: {
-    jquery: 'jQuery'
-  },
-
-  devtool: 'source-map'
+  //devtool: 'source-map'
 };
 
 // Exports
