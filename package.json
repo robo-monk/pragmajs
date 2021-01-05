@@ -1,6 +1,6 @@
 {
   "name": "pragmajs",
-  "version": "0.2.6",
+  "version": "0.2.8",
   "description": "Simple javascript UI generation",
   "license": "MIT",
   "repository": {
@@ -8,7 +8,6 @@
     "url": "git://github.com/robo-monk/pragmajs.git"
   },
   "main": "dist/index.js",
-  "types": "/dist/pragmajs.d.ts",
   "files": [
     "dist/"
   ],
@@ -22,22 +21,22 @@
   ],
   "devDependencies": {
     "@babel/cli": "^7.12.1",
-    "@babel/core": "^7.12.3",
+    "@babel/core": "^7.12.10",
     "@babel/node": "^7.12.6",
-    "@babel/preset-env": "^7.12.1",
+    "@babel/preset-env": "^7.12.11",
     "@babel/preset-react": "^7.12.5",
     "@babel/register": "^7.12.1",
     "@types/jquery": "^3.5.4",
     "animejs": "^3.2.1",
     "babel-jest": "^26.6.3",
-    "babel-loader": "^8.2.1",
+    "babel-loader": "^8.2.2",
     "babelify": "^10.0.0",
     "compromise": "^13.7.0",
     "highlight.js": "^10.3.2",
     "jest": "^26.6.3",
     "js-beautify": "^1.13.0",
     "tailwindcss": "^1.9.6",
-    "webpack": "^5.4.0",
+    "webpack": "^5.11.1",
     "webpack-cli": "^4.2.0"
   },
   "scripts": {

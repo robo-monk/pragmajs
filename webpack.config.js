@@ -26,8 +26,14 @@ module.exports = {
       {
         test: /\.jsx$/,
         exclude: /node_modules/,
-        use: ['babel-loader'],
-        type: "javascript/auto"
+        use: {
+          options: {
+            presets: ['@babel/preset-env']
+          },
+          loader: 'babel-loader'
+        },
+        type: "javascript/auto",
+        
       }
     ]
   },

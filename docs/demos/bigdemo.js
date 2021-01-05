@@ -8,7 +8,7 @@ import {
   Button,
   Comp,
   IconBuilder
-} from "../../src"
+} from "../../dist"
 
 // require("../../src/third_party/idle")
 export default function bigdemo(paper, test=(()=>{})) {

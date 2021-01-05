@@ -1,4 +1,4 @@
-import { Compose, Monitor } from "../../src"
+import { Compose, Monitor } from "../../dist"
 
 export function timer2(){
   
