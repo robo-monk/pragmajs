@@ -8,7 +8,9 @@
     "url": "git://github.com/robo-monk/pragmajs.git"
   },
   "source": "src/index.js",
-  "main": "dist/index.js",
+  "main": "dist/pragma.cjs.js",
+  "module": "dist/pragma.esm.js",
+  "browser": "dist/pragma.umd.js",
   "files": [
     "dist/"
   ],
@@ -27,6 +29,8 @@
     "@babel/preset-env": "^7.12.11",
     "@babel/preset-react": "^7.12.5",
     "@babel/register": "^7.12.1",
+    "@rollup/plugin-commonjs": "^17.0.0",
+    "@rollup/plugin-node-resolve": "^11.0.1",
     "@types/jquery": "^3.5.4",
     "animejs": "^3.2.1",
     "babel-jest": "^26.6.3",
@@ -36,13 +40,16 @@
     "highlight.js": "^10.3.2",
     "jest": "^26.6.3",
     "js-beautify": "^1.13.0",
+    "rollup": "^2.36.1",
     "tailwindcss": "^1.9.6",
     "webpack": "^5.11.1",
     "webpack-cli": "^4.2.0"
   },
   "scripts": {
-    "build": "microbundle",
+    "build": "rollup -c",
+    "pretest": "npm run build",
     "test": "jest",
+    "dev": "rollup -c -w",
     "watch": "watchify docs/demo.js -t babelify -o docs/bundle.js -v"
   },
   "dependencies": {
