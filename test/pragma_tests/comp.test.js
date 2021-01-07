@@ -1,6 +1,6 @@
 import { Pragma, Comp } from "../../src"
 
-describe("pragma comp builds correcly", () =>{
+describe.skip("pragma comp builds correcly", () =>{
   let comp
   let obj
 
@@ -87,10 +87,10 @@ describe("pragma comp builds correcly", () =>{
     expect(comp.allChildren.length).toBe(comp.shape.split("\n").length-2)
   })
 })
-describe("generates correct shape", () =>{
+describe.skip("generates correct shape", () =>{
   
 })
-describe("is correctly connected to its children", () => {
+describe.skip("is correctly connected to its children", () => {
   let comp
   let obj
   let subsubelement

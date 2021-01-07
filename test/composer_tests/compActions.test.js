@@ -9,7 +9,7 @@ function expectShape(comp, exp_shape){
   return expect(clean(comp.shape)).toBe(clean(exp_shape)) 
 }
 
-describe("comp can correctly contain another comp", ()=>{
+describe.skip("comp can correctly contain another comp", ()=>{
  
   
   test("simple use case", () => {
@@ -42,7 +42,7 @@ describe("comp can correctly contain another comp", ()=>{
   })
 })
 
-describe("comp can correctly host another comp", ()=>{
+describe.skip("comp can correctly host another comp", ()=>{
  
   
   test("simple use case", () => {

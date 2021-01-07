@@ -1,4 +1,6 @@
-import { Pragma, Comp }  from "../"
+import Pragma from "../pragmas/pragma"
+import Comp from "../pragmas/comp"
+
 import { forArg } from "./helpers"
 
 // TODO button action refactor

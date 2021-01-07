@@ -7,7 +7,7 @@ function bench(cb){
   let performancems = new Date().getTime() - time
   return performancems
 }
-describe("Pragma Composer stress test", () =>{
+describe.skip("Pragma Composer stress test", () =>{
   test("stress test", () => {
     let pf = bench(bigdemo)
     console.log(pf)

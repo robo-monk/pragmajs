@@ -1,12 +1,13 @@
 {
   "name": "pragmajs",
-  "version": "0.2.8",
+  "version": "0.2.12",
   "description": "Simple javascript UI generation",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git://github.com/robo-monk/pragmajs.git"
   },
+  "source": "src/index.js",
   "main": "dist/index.js",
   "files": [
     "dist/"
@@ -40,10 +41,9 @@
     "webpack-cli": "^4.2.0"
   },
   "scripts": {
-    "build": "webpack",
+    "build": "microbundle",
     "test": "jest",
-    "watch": "watchify docs/demo.js -t babelify -o docs/bundle.js -v",
-    "prepublishOnly": "webpack --mode=production"
+    "watch": "watchify docs/demo.js -t babelify -o docs/bundle.js -v"
   },
   "dependencies": {
     "jquery": "^3.5.1",
