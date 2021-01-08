@@ -1,12 +1,12 @@
 import Node from "./node"
 import Element from "./element"
 
-//function ifKeyThenAddToPrototype(dict, key, addition, object){
-  //if (key in dict)
-//}
-  //
-
 const _parseMap = {
+
+  parent: (self, parent) => {
+    self.parent = parent
+  },
+
   value: (self, v) => {
     self.value = v    
   },
@@ -23,8 +23,8 @@ const _parseMap = {
     self.element = new Element(element)
   },
 
-  children: (self, chilren) => {
-    
+  children: (self, children) => {
+    self.build(children)
   },
 
   childTemplate: (self, temp) => {
@@ -50,9 +50,6 @@ function parseMap(map, obj) {
         key = key.toLowerCase()
         if (key.includes("on")){
           let event = key.split("on")[1].trim()
-          console.log(`adding ${event} event listener to ${self}`)
-          console.log(self)
-          console.log(obj.callback(val))
           self.listenTo(event, () => {
             obj.callback(val)
           })
@@ -75,13 +72,25 @@ export default class Pragma extends Node {
 
     this.element = this.element || new Element()
   }
+  set key(n){
+    this.id = n 
+  }
+  get key(){
+    return this.id
+  }
+
+  build(...maps){
+    for (let map of maps){
+      this.add(new Pragma(map, this))
+    }
+    return this
+  }
 
   listenTo(...args){
       return this.element.listenTo(...args)
   }
 
   callback(cb){
-    console.log("callback", cb)
     return cb(this)
   }
 

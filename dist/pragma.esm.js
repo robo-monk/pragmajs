@@ -34,21 +34,49 @@ var index = /*#__PURE__*/Object.freeze({
   generateRandomKey: generateRandomKey
 });
 
+class ActionChain {
+  constructor(){
+    this.actions = new Map();
+  }
+
+  add(cb, key=null){
+    key = key || this.actions.size;
+    this.actions.set(key, cb);
+  }
+
+  exec(...args){
+    for (let [key, cb] of this.actions) {
+      cb(...args);
+    }
+  }
+}
+
 // Its like $("#id") of jquery
 
 function elementFrom(e){
-  if (typeof e === "string") return document.querySelector(e)
+  if (typeof e === "string") return document.body.querySelector(e)
   return e
 }
 
 class Element {
   constructor(e, cb){
-    this.whenDom = whenDOM;
     whenDOM(() => {
       this.element = elementFrom(e);
-      this.__proto__.listenTo = this.element.addEventListener;
+      if (this.whenElementChain) this.whenElementChain.exec(this);
       if (typeof cb === "function") cb(this.element);
     });
+  }
+
+  listenTo(...args){
+    this.whenInDOM(() => {
+      this.element.addEventListener(...args);
+    });
+  }
+
+  whenInDOM(cb){
+    if (this.element) return cb(this)
+    if (!this.whenElementChain) this.whenElementChain = new ActionChain();
+    this.whenElementChain.add(cb);
   }
 }
 
@@ -125,12 +153,12 @@ class Node {
   }
 }
 
-//function ifKeyThenAddToPrototype(dict, key, addition, object){
-  //if (key in dict)
-//}
-  //
-
 const _parseMap = {
+
+  parent: (self, parent) => {
+    self.parent = parent;
+  },
+
   value: (self, v) => {
     self.value = v;    
   },
@@ -147,8 +175,8 @@ const _parseMap = {
     self.element = new Element(element);
   },
 
-  children: (self, chilren) => {
-    
+  children: (self, children) => {
+    self.build(children);
   },
 
   childTemplate: (self, temp) => {
@@ -169,14 +197,14 @@ function parseMap(map, obj) {
 
   // add listener callbacks
   if (obj.element) {
-    obj.element.whenDOM(() => { 
+    obj.element.whenInDOM((self) => { 
       for (let [key, val] of _notParsed) {
         key = key.toLowerCase();
         if (key.includes("on")){
           let event = key.split("on")[1].trim();
-          console.log(`adding ${event} event listener to ${obj.element}`);
-          console.log(obj.element);
-          obj.element.listenTo(event, () => callback(val));
+          self.listenTo(event, () => {
+            obj.callback(val);
+          });
         }
       } 
     });
@@ -194,6 +222,24 @@ class Pragma extends Node {
       this.key = map;
     }
 
+    this.element = this.element || new Element();
+  }
+  set key(n){
+    this.id = n; 
+  }
+  get key(){
+    return this.id
+  }
+
+  build(...maps){
+    for (let map of maps){
+      this.add(new Pragma(map, this));
+    }
+    return this
+  }
+
+  listenTo(...args){
+      return this.element.listenTo(...args)
   }
 
   callback(cb){
@@ -231,4 +277,4 @@ const π = (map, parent) => {
 const _p = π;
 const _e = ε;
 
-export { Element, _e, _p, index as util, ε, π };
+export { Element, Pragma, _e, _p, index as util, ε, π };

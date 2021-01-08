@@ -3,7 +3,7 @@ export * as util from "./core/util/index"
 import Element from "./core/element"
 import Pragma from "./core/pragma"
 
-export { Element } 
+export { Element, Pragma } 
 
 
 // API layer
