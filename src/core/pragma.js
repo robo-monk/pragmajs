@@ -1,5 +1,6 @@
 import Node from "./node"
 import Element from "./element"
+import ActionChain from "./actionChain"
 
 const _parseMap = {
 
@@ -52,7 +53,7 @@ function parseMap(map, obj) {
         if (key.includes("on")){
           let event = key.split("on")[1].trim()
           self.listenTo(event, () => {
-            obj.callback(val)
+            obj.action(val)
           })
         }
       } 
@@ -65,6 +66,8 @@ export default class Pragma extends Node {
 
     super()
 
+    this.actionChain = new ActionChain()
+
     if (typeof map === "object"){
       parseMap(map, this)
     } else {
@@ -73,9 +76,36 @@ export default class Pragma extends Node {
 
     this.element = this.element || new Element()
   }
+
+  set value(n) {
+
+    function _processValue(v) {
+      return v
+    }
+
+    this.v = _processValue(n)
+    this.exec()
+  }
+
+  get value(){
+    return this.v
+  }
+
+  do(cb) { this.actionChain.add(cb); return this }
+
+  exec() { 
+    this.actionChain.exec(this, this.value, ...arguments)
+    return this
+  }
+
+  action(cb){
+    return cb(this)
+  }
+
   set key(n){
     this.id = n 
   }
+
   get key(){
     return this.id
   }
@@ -93,9 +123,7 @@ export default class Pragma extends Node {
       return this.element.listenTo(...args)
   }
 
-  callback(cb){
-    return cb(this)
-  }
+  
 
 }
 

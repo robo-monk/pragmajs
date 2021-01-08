@@ -14,6 +14,19 @@ describe("Pragma can be generated with Map", () => {
   test("Can generate a Pragma with a map", () => {
     expect(p.value).toBe(0) 
     expect(p.id).toBe("jeff") 
-    console.log(p.children)
   })
+})
+
+
+describe("Pragma's action chain works", () => {
+  let p = new Pragma({
+    id: "n",
+    value: 0
+  })
+
+  p.do((self, value, extra) => {
+    console.log(self, value, extra)
+  })
+
+  p.exec('suck me')
 })
