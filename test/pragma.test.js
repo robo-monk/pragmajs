@@ -24,9 +24,44 @@ describe("Pragma's action chain works", () => {
     value: 0
   })
 
-  p.do((self, value, extra) => {
-    console.log(self, value, extra)
+  test("Pragma's action gets triggered when value is changed", () => {
+
+    let haha = 0
+    p.do((self, value, extra) => {
+      haha = value
+    })
+    p.value = 69
+    expect(haha).toBe(69)
   })
 
-  p.exec('suck me')
+  test("Manually execute Pragma's action with extra params", () => {
+    let b = ""
+    p.do((self, value, c) => { b = c })
+    p.exec("piri") 
+    expect(b).toBe("piri")
+  })
+
+  test("All actions are getting called", () => {
+
+    let a, b, c
+
+    p.do((self, value) => {
+      a = 1 
+    }).do((self, value) => {
+      b = 1
+    }).do((self, value) => {
+      c = 1 
+    }).do((self, value) => {
+      self.nice = 42069
+    })
+
+    p.value = "yeehaw"
+
+    expect(a).toBe(1)
+    expect(b).toBe(1)
+    expect(c).toBe(1)
+    expect(p.nice).toBe(42069)
+  })
+
 })
+

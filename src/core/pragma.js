@@ -91,7 +91,6 @@ export default class Pragma extends Node {
     return this.v
   }
 
-  do(cb) { this.actionChain.add(cb); return this }
 
   exec() { 
     this.actionChain.exec(this, this.value, ...arguments)
@@ -117,14 +116,18 @@ export default class Pragma extends Node {
     return this
   }
 
-  build(...maps) { return this.buildAry(maps) }
+  build(...maps) {
+    return this.buildAry(maps)
+  }
 
   listenTo(...args){
       return this.element.listenTo(...args)
   }
 
-  
-
+  do(){
+    this.actionChain.add(...arguments)
+    return this
+  }
 }
 
 /*

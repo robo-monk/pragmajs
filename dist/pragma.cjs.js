@@ -43,9 +43,15 @@ class ActionChain {
     this.actions = new Map();
   }
 
-  add(cb, key=null){
+  addWithKey(cb, key=null){
     key = key || this.actions.size;
     this.actions.set(key, cb);
+  }
+
+  add(...cbs){
+    for (let cb of cbs){
+      this.addWithKey(cb);
+    }
   }
 
   exec(...args){
@@ -246,7 +252,6 @@ class Pragma extends Node {
     return this.v
   }
 
-  do(cb) { this.actionChain.add(cb); return this }
 
   exec() { 
     this.actionChain.exec(this, this.value, ...arguments);
@@ -272,14 +277,18 @@ class Pragma extends Node {
     return this
   }
 
-  build(...maps) { return this.buildAry(maps) }
+  build(...maps) {
+    return this.buildAry(maps)
+  }
 
   listenTo(...args){
       return this.element.listenTo(...args)
   }
 
-  
-
+  do(){
+    this.actionChain.add(...arguments);
+    return this
+  }
 }
 
 /*
