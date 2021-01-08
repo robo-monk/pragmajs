@@ -49,6 +49,7 @@
     "build": "rollup -c",
     "pretest": "npm run build",
     "test": "jest",
+    "test:watch": "jest --watchAll",
     "dev": "rollup -c -w",
     "watch": "watchify docs/demo.js -t babelify -o docs/bundle.js -v"
   },

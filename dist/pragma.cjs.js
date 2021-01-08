@@ -180,6 +180,7 @@ const _parseMap = {
   },
 
   children: (self, children) => {
+    if (children.constructor == Array) return self.buildAry(children)
     self.build(children);
   },
 
@@ -235,12 +236,14 @@ class Pragma extends Node {
     return this.id
   }
 
-  build(...maps){
-    for (let map of maps){
+  buildAry(aryOfMaps){
+    for (let map of aryOfMaps){
       this.add(new Pragma(map, this));
     }
     return this
   }
+
+  build(...maps) { return this.buildAry(maps) }
 
   listenTo(...args){
       return this.element.listenTo(...args)
