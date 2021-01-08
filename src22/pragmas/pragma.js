@@ -10,10 +10,8 @@ class Pragma {
     // this.children = []
     this.childMap = new Map()
     this.setup_listeners(listeners)
-    IntersectionObserver.default = {
-      fill: "shit"
-    }
   }
+
   throw(e, f, ff=[]){
     throwSoft(e, f, ff, this)
   }

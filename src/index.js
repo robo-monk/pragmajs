@@ -1,16 +1,22 @@
-import Pragma from "./pragmas/pragma.js"
-import Comp from "./pragmas/comp.js"
-//export { buttonValue, valueControls, variants, composer, container } from "./composers/templates.js"
-import {  Select, Slider, Button, Variants, Value, 
-          Compose, pragmatize, at, contain, host, 
-          Bridge, Monitor } from "./composers/templates.js"
+export * as util from "./core/util/index"
 
-export  { 
-          Pragma, Comp, Select, Slider, Button, Variants, Value, 
-          Compose, pragmatize, at, contain, host, 
-          Bridge, Monitor
-        }
+import Element from "./core/element"
+import Pragma from "./core/pragma"
 
-import IconBuilder from "./icons/icons"
-export { IconBuilder } 
-export { parse } from "./composers/helpers"
+export { Element } 
+
+
+// API layer
+
+const ε = (f) => {
+  return new Element(f)
+}
+
+const π = (map, parent) => {
+  return new Pragma(map, parent)
+}
+
+const _p = π
+const _e = ε
+
+export { π, ε, _e, _p }
