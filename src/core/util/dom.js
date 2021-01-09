@@ -42,4 +42,34 @@ function parseQuery(selector, defaultTagName = "div") {
   return props
 }
 
-export { whenDOM, parseQuery }
+function addClassAryTo(cary, el){
+  for (let c of cary){
+    el.classList.add(c)
+  }
+}
+
+function selectOrCreateDOM(query){
+  let e = document.querySelector(query)
+  if (e) return e
+  let q = parseQuery(query)
+  let el =  document.createElement(q.tag || "div")
+  el.id = q.id
+  _addClassAry(q.class, el)
+  return el
+}
+
+function elementFrom(e){
+  if (typeof e === "string") return selectOrCreateDOM(e)
+  return e
+}
+
+export { 
+  whenDOM,
+  parseQuery,
+  addClassAryTo,
+  selectOrCreateDOM,
+  elementFrom
+}
+
+
+

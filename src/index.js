@@ -8,8 +8,8 @@ export { Element, Pragma }
 
 // API layer
 
-const ε = (f) => {
-  return new Element(f)
+const ε = function() {
+  return new Element(...arguments)
 }
 
 const π = (map, parent) => {

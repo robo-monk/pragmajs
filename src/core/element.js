@@ -1,24 +1,16 @@
 // Its like $("#id") of jquery
 
-import { whenDOM, parseQuery } from "./util/index"
 import ActionChain from "./actionChain"
-import { throwSoft, util } from "./util/index"
+import { 
+  throwSoft,
+  whenDOM,
+  parseQuery,
+  addClassAryTo,
+  selectOrCreateDOM,
+  elementFrom,
+} from "./util/index"
 
-function _matchAry(query, re){
-  return (query.match(re) || []).length
-}
-
-function selectOrCreateDOM(query){
-  let e = document.querySelector(query)
-  if (e) return e
-  let q = parseQuery(query)
-  return document.createElement(q.tag || "div")
-}
-
-function elementFrom(e){
-  if (typeof e === "string") return selectOrCreateDOM(e)
-  return e
-}
+import { html, css } from "./util/parsers"
 
 function domify(e){
   if (e.isPragmaElement === true) return e.element
@@ -31,9 +23,6 @@ function elementify(e){
   return new Element(e)
 }
 
-function html(str){
-  return str
-}
 
 function _newChain(name, obj){
   let chainName = `${name}Chain`
@@ -76,7 +65,6 @@ export default class Element {
 
   appendTo(where){
     this.onDocLoad(() => {
-      console.log(this.element)
       domify(where).appendChild(this.element)
       this.renderChain.exec(this)
     })
@@ -91,11 +79,14 @@ export default class Element {
   }
 
   html(inner){ 
-    console.log("html", inner)
     this.onRender(() => {
-      console.log("html", inner)
       this.element.innerHTML = html(inner)
     })
+    return this
+  }
+
+  addClass(...classes){
+    addClassAryTo(classes, this)
     return this
   }
 
@@ -105,25 +96,4 @@ export default class Element {
     })
     return this
   }
-
-/*
- *  whenDocLoad(cb){
- *    if (this.element) return cb(this)
- *    if (!this.whenDocLoadChain) this.whenDocLoadChain = new ActionChain()
- *    this.whenDocLoadChain.add(cb)
- *  }
- *
- *
- *  whenInDOM(cb){
- *    if (this.element) return cb(this)
- *    if (!this.whenElementChain) this.whenElementChain = new ActionChain()
- *    this.whenElementChain.add(cb)
- *  }
- */
-
 }
-
-
-
-// Element.prototype.generateKey = () => { btoa(Math.random()).substr(10, 5) }
-//

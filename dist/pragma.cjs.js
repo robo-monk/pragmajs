@@ -57,6 +57,27 @@ function parseQuery(selector, defaultTagName = "div") {
   return props
 }
 
+function addClassAryTo(cary, el){
+  for (let c of cary){
+    el.classList.add(c);
+  }
+}
+
+function selectOrCreateDOM(query){
+  let e = document.querySelector(query);
+  if (e) return e
+  let q = parseQuery(query);
+  let el =  document.createElement(q.tag || "div");
+  el.id = q.id;
+  _addClassAry(q.class, el);
+  return el
+}
+
+function elementFrom(e){
+  if (typeof e === "string") return selectOrCreateDOM(e)
+  return e
+}
+
 function generateRandomKey(){
   return btoa(Math.random()).substr(10, 5)
 }
@@ -64,6 +85,14 @@ function generateRandomKey(){
 String.prototype.capitalize = function() {
   return this.charAt(0).toUpperCase() + this.slice(1)
 };
+
+function html(str){
+  return str
+}
+
+function css(str){
+  return str 
+}
 
 const _deving = process.env.NODE_ENV === 'development';
 
@@ -73,7 +102,12 @@ var index = /*#__PURE__*/Object.freeze({
   throwSoft: throwSoft,
   whenDOM: whenDOM,
   parseQuery: parseQuery,
-  generateRandomKey: generateRandomKey
+  addClassAryTo: addClassAryTo,
+  selectOrCreateDOM: selectOrCreateDOM,
+  elementFrom: elementFrom,
+  generateRandomKey: generateRandomKey,
+  html: html,
+  css: css
 });
 
 class ActionChain {
@@ -101,26 +135,11 @@ class ActionChain {
 
 // Its like $("#id") of jquery
 
-function selectOrCreateDOM(query){
-  let e = document.querySelector(query);
-  if (e) return e
-  let q = parseQuery(query);
-  return document.createElement(q.tag || "div")
-}
-
-function elementFrom(e){
-  if (typeof e === "string") return selectOrCreateDOM(e)
-  return e
-}
-
 function domify(e){
   if (e.isPragmaElement === true) return e.element
   return elementFrom(e)
 }
 
-function html(str){
-  return str
-}
 
 function _newChain(name, obj){
   let chainName = `${name}Chain`;
@@ -163,7 +182,6 @@ class Element {
 
   appendTo(where){
     this.onDocLoad(() => {
-      console.log(this.element);
       domify(where).appendChild(this.element);
       this.renderChain.exec(this);
     });
@@ -178,11 +196,14 @@ class Element {
   }
 
   html(inner){ 
-    console.log("html", inner);
     this.onRender(() => {
-      console.log("html", inner);
       this.element.innerHTML = html(inner);
     });
+    return this
+  }
+
+  addClass(...classes){
+    addClassAryTo(classes, this);
     return this
   }
 
@@ -192,28 +213,7 @@ class Element {
     });
     return this
   }
-
-/*
- *  whenDocLoad(cb){
- *    if (this.element) return cb(this)
- *    if (!this.whenDocLoadChain) this.whenDocLoadChain = new ActionChain()
- *    this.whenDocLoadChain.add(cb)
- *  }
- *
- *
- *  whenInDOM(cb){
- *    if (this.element) return cb(this)
- *    if (!this.whenElementChain) this.whenElementChain = new ActionChain()
- *    this.whenElementChain.add(cb)
- *  }
- */
-
 }
-
-
-
-// Element.prototype.generateKey = () => { btoa(Math.random()).substr(10, 5) }
-//
 
 // recursively connected with other nodes
 class Node {
@@ -432,8 +432,8 @@ class Pragma extends Node {
 
 // API layer
 
-const ε = (f) => {
-  return new Element(f)
+const ε = function() {
+  return new Element(...arguments)
 };
 
 const π = (map, parent) => {
