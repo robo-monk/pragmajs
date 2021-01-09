@@ -63,7 +63,6 @@ function parseMap(map, obj) {
 
 export default class Pragma extends Node {
   constructor(map, parent){
-
     super()
 
     this.actionChain = new ActionChain()
@@ -103,6 +102,7 @@ export default class Pragma extends Node {
 
   set key(n){
     this.id = n 
+    if (this.element) this.element.id = n
   }
 
   get key(){
@@ -129,6 +129,24 @@ export default class Pragma extends Node {
     return this
   }
 }
+
+
+const _adoptElementAttrs = [
+  "listenTo",
+  "html",
+  "css",
+  "append",
+  "appendTo",
+  "addClass"
+]
+
+for (let a of _adoptElementAttrs) {
+ Pragma.prototype[a] = function() {
+    this.element[a](...arguments)
+    return this
+  } 
+}
+
 
 /*
  *pragmaMap = {

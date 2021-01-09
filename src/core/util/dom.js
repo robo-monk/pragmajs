@@ -54,7 +54,7 @@ function selectOrCreateDOM(query){
   let q = parseQuery(query)
   let el =  document.createElement(q.tag || "div")
   el.id = q.id
-  _addClassAry(q.class, el)
+  addClassAryTo(q.class, el)
   return el
 }
 
@@ -70,6 +70,4 @@ export {
   selectOrCreateDOM,
   elementFrom
 }
-
-
 

@@ -71,7 +71,7 @@
     let q = parseQuery(query);
     let el =  document.createElement(q.tag || "div");
     el.id = q.id;
-    _addClassAry(q.class, el);
+    addClassAryTo(q.class, el);
     return el
   }
 
@@ -88,13 +88,59 @@
     return this.charAt(0).toUpperCase() + this.slice(1)
   };
 
-  function html(str){
-    return str
-  }
+  const snake2camel = str => str.replace(/([-_]\w)/g, g => g[1].toUpperCase()); 
 
-  function css(str){
-    return str 
-  }
+  const apply = {
+    html: ((html, dom) => {
+      dom.innerHTML = html; 
+    }),
+
+    pcss: ((pcss, dom) => {
+      for (let [key, value] of parse.cssToDict(pcss)){
+        dom.style[snake2camel(key)] = value; 
+      }
+    })
+  };
+
+  const parse = {
+    cssToDict: ((str) => {
+      // console.log(`parsing pcss`)
+      //console.log(str)
+      str = str.replaceAll("\n", ";").replaceAll(":", " ");
+      let cssDict = new Map();
+      for (let style of str.split(";")) {
+        if (style.replace(/\s/g, "").length < 2) continue
+        style = style.trim().split(" ");
+        let key = style[0];
+        style.shift();
+        cssDict.set(key.trim(), style.join(" ").trim());
+      }
+
+      // check css properties
+      let unsupported = [];
+      for (const [key, value] of cssDict.entries()) {
+        if (!CSS.supports(key, value)) unsupported.push(`${key.trim()}: ${value.trim()}`);
+      }
+
+      if (unsupported.length > 0) {
+        throwSoft(`CSS syntax error`, 'typos', unsupported);
+      }
+      return cssDict
+    }),
+
+    css: ((pcss) => {
+      let css = "";
+      for (let [key, value] of parse.cssToDict(pcss)) {
+        //console.log(key, value)
+        css += `${key}:${value};`;
+      }
+      return css
+    }),
+
+    html: ((html) => {
+      return html
+    })
+  };
 
   const _deving = process.env.NODE_ENV === 'development';
 
@@ -108,8 +154,8 @@
     selectOrCreateDOM: selectOrCreateDOM,
     elementFrom: elementFrom,
     generateRandomKey: generateRandomKey,
-    html: html,
-    css: css
+    parse: parse,
+    apply: apply
   });
 
   class ActionChain {
@@ -136,6 +182,7 @@
   }
 
   // Its like $("#id") of jquery
+
 
   function domify(e){
     if (e.isPragmaElement === true) return e.element
@@ -197,15 +244,26 @@
       return this 
     }
 
+    css(styles){
+      this.onRender(() => {
+        apply.pcss(styles, this.element);
+      });
+    }
+
     html(inner){ 
       this.onRender(() => {
-        this.element.innerHTML = html(inner);
+        apply.html(inner, this.element);
       });
       return this
     }
 
+    id(id){
+      this.element.id = id;
+      return this
+    }
+
     addClass(...classes){
-      addClassAryTo(classes, this);
+      addClassAryTo(classes, this.element);
       return this
     }
 
@@ -218,10 +276,11 @@
   }
 
   // recursively connected with other nodes
-  class Node {
-    constructor() {
-      this.childMap = new Map();
 
+  class Node {
+    constructor(key) {
+      this.childMap = new Map();
+      this.key = key || generateRandomKey();
       // API
       this.containsKey = this.childMap.has;
     }
@@ -349,7 +408,6 @@
 
   class Pragma extends Node {
     constructor(map, parent){
-
       super();
 
       this.actionChain = new ActionChain();
@@ -389,6 +447,7 @@
 
     set key(n){
       this.id = n; 
+      if (this.element) this.element.id = n;
     }
 
     get key(){
@@ -416,6 +475,24 @@
     }
   }
 
+
+  const _adoptElementAttrs = [
+    "listenTo",
+    "html",
+    "css",
+    "append",
+    "appendTo",
+    "addClass"
+  ];
+
+  for (let a of _adoptElementAttrs) {
+   Pragma.prototype[a] = function() {
+      this.element[a](...arguments);
+      return this
+    }; 
+  }
+
+
   /*
    *pragmaMap = {
    *  id: "",
@@ -438,8 +515,11 @@
     return new Element(...arguments)
   };
 
-  const π = (map, parent) => {
-    return new Pragma(map, parent)
+  const π = (query, html) => {
+    let p = new Pragma();
+    p.element = new Element(query, html);
+    p.id = p.element.id;
+    return p
   };
 
   const _p = π;

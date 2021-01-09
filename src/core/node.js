@@ -1,8 +1,10 @@
 // recursively connected with other nodes
-export default class Node {
-  constructor() {
-    this.childMap = new Map()
+import { generateRandomKey } from "./util/index"
 
+export default class Node {
+  constructor(key) {
+    this.childMap = new Map()
+    this.key = key || generateRandomKey()
     // API
     this.containsKey = this.childMap.has
   }

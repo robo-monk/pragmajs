@@ -8,9 +8,9 @@ import {
   addClassAryTo,
   selectOrCreateDOM,
   elementFrom,
+  apply
 } from "./util/index"
 
-import { html, css } from "./util/parsers"
 
 function domify(e){
   if (e.isPragmaElement === true) return e.element
@@ -78,15 +78,26 @@ export default class Element {
     return this 
   }
 
+  css(styles){
+    this.onRender(() => {
+      apply.pcss(styles, this.element)
+    })
+  }
+
   html(inner){ 
     this.onRender(() => {
-      this.element.innerHTML = html(inner)
+      apply.html(inner, this.element)
     })
     return this
   }
 
+  id(id){
+    this.element.id = id
+    return this
+  }
+
   addClass(...classes){
-    addClassAryTo(classes, this)
+    addClassAryTo(classes, this.element)
     return this
   }
 
