@@ -20,9 +20,46 @@ function whenDOM(cb) {
   };
 }
 
+var search = /[#.]/g;
+
+// Create a hast element from a simple CSS selector.
+function parseQuery(selector, defaultTagName = "div") {
+  var value = selector || '';
+  var props = {};
+  var start = 0;
+  let subvalue, previous, match;
+
+  while (start < value.length) {
+    search.lastIndex = start;
+    match = search.exec(value);
+    subvalue = value.slice(start, match ? match.index : value.length);
+    if (subvalue) {
+      if (!previous) {
+        props.tag = subvalue;
+      } else if (previous === '#') {
+        props.id = subvalue;
+      } else if (props.class) {
+        props.class.push(subvalue);
+      } else {
+        props.class = [subvalue];
+      }
+      start += subvalue.length;
+    }
+    if (match) {
+      previous = match[0];
+      start++;
+    }
+  }
+  return props
+}
+
 function generateRandomKey(){
   return btoa(Math.random()).substr(10, 5)
 }
+
+String.prototype.capitalize = function() {
+  return this.charAt(0).toUpperCase() + this.slice(1)
+};
 
 const _deving = process.env.NODE_ENV === 'development';
 
@@ -31,6 +68,7 @@ var index = /*#__PURE__*/Object.freeze({
   _deving: _deving,
   throwSoft: throwSoft,
   whenDOM: whenDOM,
+  parseQuery: parseQuery,
   generateRandomKey: generateRandomKey
 });
 
@@ -59,34 +97,119 @@ class ActionChain {
 
 // Its like $("#id") of jquery
 
+function selectOrCreateDOM(query){
+  let e = document.querySelector(query);
+  if (e) return e
+  let q = parseQuery(query);
+  return document.createElement(q.tag || "div")
+}
+
 function elementFrom(e){
-  if (typeof e === "string") return document.body.querySelector(e)
+  if (typeof e === "string") return selectOrCreateDOM(e)
   return e
 }
 
+function domify(e){
+  if (e.isPragmaElement === true) return e.element
+  return elementFrom(e)
+}
+
+function html(str){
+  return str
+}
+
+function _newChain(name, obj){
+  let chainName = `${name}Chain`;
+  let eventName = `on${name.capitalize()}`;
+  let done = `is${name.capitalize()}ed`;
+
+  obj[chainName] = new ActionChain();
+
+  obj[chainName].add(() => {
+    obj[done] = true;
+  });
+
+  obj[eventName] = function (cb) {
+    if (obj[done]) return cb(obj)
+    obj[chainName].add(cb);
+  };
+}
+
+
 class Element {
-  constructor(e, cb){
-    whenDOM(() => {
-      this.element = elementFrom(e);
-      if (this.whenElementChain) this.whenElementChain.exec(this);
+  constructor(query, innerHTML, cb){
+    this.isPragmaElement = true;
+
+    this.eventChains("docLoad", "render");
+
+    this.onDocLoad(() => {
+      this.element = elementFrom(query);
+      if (typeof innerHTML === "string") this.html(innerHTML);
       if (typeof cb === "function") cb(this.element);
     });
+
+    whenDOM(() => this.docLoadChain.exec(this));
+  }
+
+  eventChains(...chains){
+    for (let chain of chains){
+      _newChain(chain, this); 
+    }
+  }
+
+  appendTo(where){
+    this.onDocLoad(() => {
+      console.log(this.element);
+      domify(where).appendChild(this.element);
+      this.renderChain.exec(this);
+    });
+    return this
+  }
+
+  append(e){
+    this.onRender(() => {
+      this.element.appendChild(domify(e));
+    });
+    return this 
+  }
+
+  html(inner){ 
+    console.log("html", inner);
+    this.onRender(() => {
+      console.log("html", inner);
+      this.element.innerHTML = html(inner);
+    });
+    return this
   }
 
   listenTo(...args){
-    this.whenInDOM(() => {
+    this.onRender(() => {
       this.element.addEventListener(...args);
     });
+    return this
   }
 
-  whenInDOM(cb){
-    if (this.element) return cb(this)
-    if (!this.whenElementChain) this.whenElementChain = new ActionChain();
-    this.whenElementChain.add(cb);
-  }
+/*
+ *  whenDocLoad(cb){
+ *    if (this.element) return cb(this)
+ *    if (!this.whenDocLoadChain) this.whenDocLoadChain = new ActionChain()
+ *    this.whenDocLoadChain.add(cb)
+ *  }
+ *
+ *
+ *  whenInDOM(cb){
+ *    if (this.element) return cb(this)
+ *    if (!this.whenElementChain) this.whenElementChain = new ActionChain()
+ *    this.whenElementChain.add(cb)
+ *  }
+ */
+
 }
 
+
+
 // Element.prototype.generateKey = () => { btoa(Math.random()).substr(10, 5) }
+//
 
 // recursively connected with other nodes
 class Node {

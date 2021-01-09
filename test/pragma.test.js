@@ -1,4 +1,3 @@
-import { TestScheduler } from "jest"
 import { Pragma } from "../dist/pragma.esm"
 
 describe("Pragma can be generated with Map", () => {
