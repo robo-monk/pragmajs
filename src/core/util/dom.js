@@ -1,29 +1,21 @@
-import { throwSoft } from "./log"
+import { throwSoft, log } from "./log"
 
-var turbolinksPresent = false
-var docLoaded = false
-
-document.addEventListener('turbolinks:before-visit', () => {
-  turbolinksPresent = true
-  console.log(":: TURBOLINKS detected")
-  document.addEventListener('turbolinks:load', () => {
-  })
-})
-
-function _docLoaded(){
-  return docLoaded || 
-    document.readyState === 'complete'
-}
+const toHTMLAttr = s => s.replace(/[^a-z0-9]/gi, '-').toLowerCase()
 
 function whenDOM(cb) {
-  if (_docLoaded()) {
-    docLoaded = true
+  // TODO holy shit improve this code im throwing up
+  if (document.readyState === 'complete') {
     return cb()
   }
-
+  document.addEventListener('turbolinks:load', () => {
+    log(":: TURBOLINKS loaded")
+    return cb()
+  })
   document.onreadystatechange = () => {
     return whenDOM(cb)
   }
+
+  
 }
 
 var search = /[#.]/g
@@ -60,7 +52,13 @@ function parseQuery(selector, defaultTagName = "div") {
 }
 
 function addClassAryTo(cary, el){
+  if (!cary || !(cary.constructor === "Array")) return throwSoft(`Could not add class [${cary}] to [${el}]`)
   for (let c of cary){
+    let _subary = c.split(" ")
+    if (_subary.length>1) {
+      addClassAryTo(_subary, el)
+      continue 
+    }
     el.classList.add(c)
   }
 }
@@ -90,6 +88,7 @@ export {
   parseQuery,
   addClassAryTo,
   selectOrCreateDOM,
-  elementFrom
+  elementFrom,
+  toHTMLAttr
 }
 

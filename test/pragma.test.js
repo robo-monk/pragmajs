@@ -71,6 +71,6 @@ describe("Pragmas can contain other pragmas", () => {
     a = new Pragma() 
     b = new Pragma() 
     b.contain(a)
-    console.log(b)
+    // console.log(b)
   })
 })

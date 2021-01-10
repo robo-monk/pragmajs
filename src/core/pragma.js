@@ -1,6 +1,7 @@
 import Node from "./node"
-import Element from "./element"
+import _e from "./element"
 import ActionChain from "./actionChain"
+import { generateRandomKey, toHTMLAttr } from "./util/index"
 
 const _parseMap = {
 
@@ -21,7 +22,7 @@ const _parseMap = {
   },
 
   element: (self, element) => {
-    self.element = new Element(element)
+    self.element = _e(element)
   },
 
   children: (self, children) => {
@@ -73,7 +74,8 @@ export default class Pragma extends Node {
       this.key = map
     }
 
-    this.element = this.element || new Element()
+    this.key = this.key || generateRandomKey()
+    this.element = this.element || _e(`#${this.id}`) 
   }
 
   set value(n) {
@@ -100,13 +102,13 @@ export default class Pragma extends Node {
     return cb(this)
   }
 
-  set key(n){
-    this.id = n 
-    if (this.element) this.element.id = n
+  set id(n) {
+    this.key = n 
+    if (this.element) this.element.id = this.id 
   }
-
-  get key(){
-    return this.id
+    
+  get id() {
+    return toHTMLAttr(this.key)
   }
 
   buildAry(aryOfMaps){
@@ -147,6 +149,7 @@ const _adoptElementAttrs = [
   "html",
   "css",
   "addClass",
+  "setId"
 ]
 
 for (let a of _adoptElementAttrs) {

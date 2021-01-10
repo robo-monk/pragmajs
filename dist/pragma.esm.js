@@ -13,28 +13,22 @@ function log(){
   console.log(...arguments);
 }
 
-var docLoaded = false;
-
-document.addEventListener('turbolinks:before-visit', () => {
-  console.log(":: TURBOLINKS detected");
-  document.addEventListener('turbolinks:load', () => {
-  });
-});
-
-function _docLoaded(){
-  return docLoaded || 
-    document.readyState === 'complete'
-}
+const toHTMLAttr = s => s.replace(/[^a-z0-9]/gi, '-').toLowerCase();
 
 function whenDOM(cb) {
-  if (_docLoaded()) {
-    docLoaded = true;
+  // TODO holy shit improve this code im throwing up
+  if (document.readyState === 'complete') {
     return cb()
   }
-
+  document.addEventListener('turbolinks:load', () => {
+    log(":: TURBOLINKS loaded");
+    return cb()
+  });
   document.onreadystatechange = () => {
     return whenDOM(cb)
   };
+
+  
 }
 
 var search = /[#.]/g;
@@ -71,7 +65,13 @@ function parseQuery(selector, defaultTagName = "div") {
 }
 
 function addClassAryTo(cary, el){
+  if (!cary || !(cary.constructor === "Array")) return throwSoft$1(`Could not add class [${cary}] to [${el}]`)
   for (let c of cary){
+    let _subary = c.split(" ");
+    if (_subary.length>1) {
+      addClassAryTo(_subary, el);
+      continue 
+    }
     el.classList.add(c);
   }
 }
@@ -98,6 +98,20 @@ function elementFrom(e){
 
 function generateRandomKey(){
   return btoa(Math.random()).substr(10, 5)
+}
+
+function objDiff(obj, edit, recursive=false){
+  // TODO add recursive feature
+  for (let [key, value] of Object.entries(edit)){
+    // console.log(key)
+    obj[key] = value;
+  }
+
+  return obj
+}
+
+function _extend(e, proto){
+  Object.setPrototypeOf(e, objDiff(Object.getPrototypeOf(e), proto));
 }
 
 String.prototype.capitalize = function() {
@@ -168,7 +182,10 @@ var index = /*#__PURE__*/Object.freeze({
   addClassAryTo: addClassAryTo,
   selectOrCreateDOM: selectOrCreateDOM,
   elementFrom: elementFrom,
+  toHTMLAttr: toHTMLAttr,
   generateRandomKey: generateRandomKey,
+  objDiff: objDiff,
+  _extend: _extend,
   parse: parse,
   apply: apply
 });
@@ -201,7 +218,7 @@ class ActionChain {
 
 function domify(e){
   if (e == null || e == undefined) return throwSoft$1(`Could not find a DOM element for ${e}`)
-  console.log(e.element);
+  // console.log(e.element)
   if (e.element) return domify(e.element)
   let a = elementFrom(e);
   return a
@@ -226,87 +243,173 @@ function _newChain(name, obj){
 }
 
 
-class Element {
-  constructor(query, innerHTML, cb){
+//export default class Element {
+  //constructor(query, innerHTML, cb){
+    //this.isPragmaElement = true
+
+    //this.eventChains("docLoad", "render")
+
+    //this.onDocLoad(() => {
+      //this.element = elementFrom(query)
+      //if (this.element instanceof HTMLElement) this._render()
+      //if (typeof innerHTML === "string") this.html(innerHTML)
+      //if (typeof cb === "function") cb(this.element)
+    //})
+
+    //whenDOM(() => this.docLoadChain.exec(this))
+  //}
+
+  //set element(n){
+    //this.nodeElement = n 
+  //}
+
+  //get element(){
+    //return this.nodeElement 
+  //}
+
+  //eventChains(...chains){
+    //for (let chain of chains){
+      //_newChain(chain, this) 
+    //}
+  //}
+  
+  //_render(){
+    //this.renderChain.exec(this)
+  //}
+
+  //appendTo(where){
+    //this.onDocLoad(() => {
+      //domify(where).appendChild(this.element)
+      //this._render()
+    //})
+    //return this
+  //}
+
+  //append(e){
+    //this.onRender(() => {
+      //let d = domify(e)
+      //console.log(d)
+      //this.element.appendChild(d)
+    //})
+    //return this 
+  //}
+
+  //css(styles){
+    //this.onRender(() => {
+      //apply.pcss(styles, this.element)
+    //})
+  //}
+
+  //html(inner){ 
+    //this.onRender(() => {
+      //apply.html(inner, this.element)
+    //})
+    //return this
+  //}
+
+  //id(id){
+    //this.element.id = id
+    //return this
+  //}
+
+  //addClass(...classes){
+    //addClassAryTo(classes, this.element)
+    //return this
+  //}
+
+  //listenTo(...args){
+    //this.onRender(() => {
+      //this.element.addEventListener(...args)
+    //})
+    //return this
+  //}
+//}
+
+function _e(query, innerHTML){
+  //whenDOM(function() {
+    let element = elementFrom(query);
+
+    if (element instanceof HTMLElement){
+      element.init();
+      element._render();
+    }
+
+    if (typeof innerHTML === "string") element.html(innerHTML);
+    //if (typeof cb === "function") cb(element)
+    return element
+  //})
+}
+
+const elementProto = { 
+  init: function(){
     this.isPragmaElement = true;
-
     this.eventChains("docLoad", "render");
-
-    this.onDocLoad(() => {
-      this.element = elementFrom(query);
-      if (this.element instanceof HTMLElement) this._render();
-      if (typeof innerHTML === "string") this.html(innerHTML);
-      if (typeof cb === "function") cb(this.element);
-    });
-
     whenDOM(() => this.docLoadChain.exec(this));
-  }
-
-  set element(n){
-    this.nodeElement = n; 
-  }
-
-  get element(){
-    return this.nodeElement 
-  }
-
-  eventChains(...chains){
+  },
+  
+  eventChains: function(...chains){
     for (let chain of chains){
       _newChain(chain, this); 
     }
-  }
+  },
   
-  _render(){
+  _render: function(){
     this.renderChain.exec(this);
-  }
+  },
 
-  appendTo(where){
+  appendTo: function(where){
     this.onDocLoad(() => {
-      domify(where).appendChild(this.element);
+      domify(where).appendChild(this);
       this._render();
     });
     return this
-  }
+  },
 
-  append(e){
+  append: function(e){
     this.onRender(() => {
       let d = domify(e);
-      console.log(d);
-      this.element.appendChild(d);
+      this.appendChild(d);
     });
     return this 
-  }
+  },
 
-  css(styles){
+  css: function(styles){
     this.onRender(() => {
-      apply.pcss(styles, this.element);
-    });
-  }
-
-  html(inner){ 
-    this.onRender(() => {
-      apply.html(inner, this.element);
+      apply.pcss(styles, this);
     });
     return this
-  }
+  },
 
-  id(id){
-    this.element.id = id;
-    return this
-  }
-
-  addClass(...classes){
-    addClassAryTo(classes, this.element);
-    return this
-  }
-
-  listenTo(...args){
+  html: function(inner){ 
     this.onRender(() => {
-      this.element.addEventListener(...args);
+      apply.html(inner, this);
+    });
+    return this
+  },
+
+  setId: function(id){
+    this.id = id;
+    return this
+  },
+
+  addClass: function(...classes){
+    addClassAryTo(classes, this);
+    return this
+  },
+
+  listenTo: function(...args){
+    this.onRender(() => {
+      this.addEventListener(...args);
     });
     return this
   }
+};
+
+
+for (let [key, val] of Object.entries(elementProto)){
+  HTMLElement.prototype[key] = val;
 }
+//_extend(HTMLElement, elementProto)
 
 // recursively connected with other nodes
 
@@ -399,7 +502,7 @@ const _parseMap = {
   },
 
   element: (self, element) => {
-    self.element = new Element(element);
+    self.element = _e(element);
   },
 
   children: (self, children) => {
@@ -451,7 +554,8 @@ class Pragma extends Node {
       this.key = map;
     }
 
-    this.element = this.element || new Element();
+    this.key = this.key || generateRandomKey();
+    this.element = this.element || _e(`#${this.id}`); 
   }
 
   set value(n) {
@@ -478,13 +582,13 @@ class Pragma extends Node {
     return cb(this)
   }
 
-  set key(n){
-    this.id = n; 
-    if (this.element) this.element.id = n;
+  set id(n) {
+    this.key = n; 
+    if (this.element) this.element.id = this.id; 
   }
-
-  get key(){
-    return this.id
+    
+  get id() {
+    return toHTMLAttr(this.key)
   }
 
   buildAry(aryOfMaps){
@@ -525,6 +629,7 @@ const _adoptElementAttrs = [
   "html",
   "css",
   "addClass",
+  "setId"
 ];
 
 for (let a of _adoptElementAttrs) {
@@ -553,18 +658,17 @@ for (let a of _adoptElementAttrs) {
 
 // API layer
 
-const ε = function() {
-  return new Element(...arguments)
-};
+//const ε = function() {
+  //return new Element(...arguments)
+//}
 
 const π = (query, html) => {
   let p = new Pragma();
-  p.element = new Element(query, html);
+  p.element = _e(query, html);
   p.id = p.element.id;
   return p
 };
 
 const _p = π;
-const _e = ε;
 
-export { Element, Pragma, _e, _p, index as util, ε, π };
+export { Pragma, _e, _p, index as util, π };

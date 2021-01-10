@@ -8,13 +8,14 @@ import {
   addClassAryTo,
   selectOrCreateDOM,
   elementFrom,
-  apply
+  apply,
+  _extend
 } from "./util/index"
 
 
 function domify(e){
   if (e == null || e == undefined) return throwSoft(`Could not find a DOM element for ${e}`)
-  console.log(e.element)
+  // console.log(e.element)
   if (e.element) return domify(e.element)
   let a = elementFrom(e)
   return a
@@ -45,84 +46,172 @@ function _newChain(name, obj){
 }
 
 
-export default class Element {
-  constructor(query, innerHTML, cb){
+//export default class Element {
+  //constructor(query, innerHTML, cb){
+    //this.isPragmaElement = true
+
+    //this.eventChains("docLoad", "render")
+
+    //this.onDocLoad(() => {
+      //this.element = elementFrom(query)
+      //if (this.element instanceof HTMLElement) this._render()
+      //if (typeof innerHTML === "string") this.html(innerHTML)
+      //if (typeof cb === "function") cb(this.element)
+    //})
+
+    //whenDOM(() => this.docLoadChain.exec(this))
+  //}
+
+  //set element(n){
+    //this.nodeElement = n 
+  //}
+
+  //get element(){
+    //return this.nodeElement 
+  //}
+
+  //eventChains(...chains){
+    //for (let chain of chains){
+      //_newChain(chain, this) 
+    //}
+  //}
+  
+  //_render(){
+    //this.renderChain.exec(this)
+  //}
+
+  //appendTo(where){
+    //this.onDocLoad(() => {
+      //domify(where).appendChild(this.element)
+      //this._render()
+    //})
+    //return this
+  //}
+
+  //append(e){
+    //this.onRender(() => {
+      //let d = domify(e)
+      //console.log(d)
+      //this.element.appendChild(d)
+    //})
+    //return this 
+  //}
+
+  //css(styles){
+    //this.onRender(() => {
+      //apply.pcss(styles, this.element)
+    //})
+  //}
+
+  //html(inner){ 
+    //this.onRender(() => {
+      //apply.html(inner, this.element)
+    //})
+    //return this
+  //}
+
+  //id(id){
+    //this.element.id = id
+    //return this
+  //}
+
+  //addClass(...classes){
+    //addClassAryTo(classes, this.element)
+    //return this
+  //}
+
+  //listenTo(...args){
+    //this.onRender(() => {
+      //this.element.addEventListener(...args)
+    //})
+    //return this
+  //}
+//}
+
+export default function _e(query, innerHTML){
+  //whenDOM(function() {
+    let element = elementFrom(query)
+
+    if (element instanceof HTMLElement){
+      element.init()
+      element._render()
+    }
+
+    if (typeof innerHTML === "string") element.html(innerHTML)
+    //if (typeof cb === "function") cb(element)
+    return element
+  //})
+}
+
+const elementProto = { 
+  init: function(){
     this.isPragmaElement = true
-
     this.eventChains("docLoad", "render")
-
-    this.onDocLoad(() => {
-      this.element = elementFrom(query)
-      if (this.element instanceof HTMLElement) this._render()
-      if (typeof innerHTML === "string") this.html(innerHTML)
-      if (typeof cb === "function") cb(this.element)
-    })
-
     whenDOM(() => this.docLoadChain.exec(this))
-  }
-
-  set element(n){
-    this.nodeElement = n 
-  }
-
-  get element(){
-    return this.nodeElement 
-  }
-
-  eventChains(...chains){
+  },
+  
+  eventChains: function(...chains){
     for (let chain of chains){
       _newChain(chain, this) 
     }
-  }
+  },
   
-  _render(){
+  _render: function(){
     this.renderChain.exec(this)
-  }
+  },
 
-  appendTo(where){
+  appendTo: function(where){
     this.onDocLoad(() => {
-      domify(where).appendChild(this.element)
+      domify(where).appendChild(this)
       this._render()
     })
     return this
-  }
+  },
 
-  append(e){
+  append: function(e){
     this.onRender(() => {
       let d = domify(e)
-      console.log(d)
-      this.element.appendChild(d)
+      this.appendChild(d)
     })
     return this 
-  }
+  },
 
-  css(styles){
+  css: function(styles){
     this.onRender(() => {
-      apply.pcss(styles, this.element)
-    })
-  }
-
-  html(inner){ 
-    this.onRender(() => {
-      apply.html(inner, this.element)
+      apply.pcss(styles, this)
     })
     return this
-  }
+  },
 
-  id(id){
-    this.element.id = id
-    return this
-  }
-
-  addClass(...classes){
-    addClassAryTo(classes, this.element)
-    return this
-  }
-
-  listenTo(...args){
+  html: function(inner){ 
     this.onRender(() => {
-      this.element.addEventListener(...args)
+      apply.html(inner, this)
+    })
+    return this
+  },
+
+  setId: function(id){
+    this.id = id
+    return this
+  },
+
+  addClass: function(...classes){
+    addClassAryTo(classes, this)
+    return this
+  },
+
+  listenTo: function(...args){
+    this.onRender(() => {
+      this.addEventListener(...args)
     })
     return this
   }
 }
+
+
+for (let [key, val] of Object.entries(elementProto)){
+  HTMLElement.prototype[key] = val
+}
+//_extend(HTMLElement, elementProto)
+
+
