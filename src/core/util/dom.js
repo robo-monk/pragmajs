@@ -1,11 +1,28 @@
-function whenDOM(cb) {
+import { throwSoft } from "./log"
 
-  if (document.readyState === 'complete') {
+var turbolinksPresent = false
+var docLoaded = false
+
+document.addEventListener('turbolinks:before-visit', () => {
+  turbolinksPresent = true
+  console.log(":: TURBOLINKS detected")
+  document.addEventListener('turbolinks:load', () => {
+  })
+})
+
+function _docLoaded(){
+  return docLoaded || 
+    document.readyState === 'complete'
+}
+
+function whenDOM(cb) {
+  if (_docLoaded()) {
+    docLoaded = true
     return cb()
   }
 
   document.onreadystatechange = () => {
-    return whenDOM(cb)    
+    return whenDOM(cb)
   }
 }
 
@@ -59,8 +76,13 @@ function selectOrCreateDOM(query){
 }
 
 function elementFrom(e){
-  if (typeof e === "string") return selectOrCreateDOM(e)
-  return e
+  if (e instanceof HTMLElement) return e
+
+  if (typeof e === "string"){
+    return selectOrCreateDOM(e)
+  }
+
+  return throwSoft(`Could not find/create element from [${e}]`)
 }
 
 export { 

@@ -128,6 +128,17 @@ export default class Pragma extends Node {
     this.actionChain.add(...arguments)
     return this
   }
+
+  contain(...childs){
+    for (let child of childs) {
+      super.add(child)
+      if (child.isRendered){
+        throwSoft(`[${child}] is already appended`)
+      }else{
+        this.element.append(child)
+      }
+    }
+  }
 }
 
 
@@ -135,9 +146,7 @@ const _adoptElementAttrs = [
   "listenTo",
   "html",
   "css",
-  "append",
-  "appendTo",
-  "addClass"
+  "addClass",
 ]
 
 for (let a of _adoptElementAttrs) {

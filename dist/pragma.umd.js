@@ -4,9 +4,8 @@
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.pragma = {}));
 }(this, (function (exports) { 'use strict';
 
-  function throwSoft (desc, potential=null, fixes=['rerun the code 10 times'], trigger=null, force=false) {
-    if (_deving && !force) return null
-    
+  function throwSoft$1 (desc, potential=null, fixes=['rerun the code 10 times'], trigger=null, force=false) {
+    if (!_deving && !force) return null
     console.error(`%c 🧯 pragma.js  %c \n
       encountered a soft error 🔫 %c \n
       \n${trigger ? `Triggered by: [${trigger.key} ${trigger}]` :``}
@@ -15,14 +14,32 @@
       `, "font-size:15px", "font-size: 12px;", "color:whitesmoke", "color:white");
   }
 
-  function whenDOM(cb) {
+  function log(){
+    if (!_deving && !force) return null
+    console.log(...arguments);
+  }
 
-    if (document.readyState === 'complete') {
+  var docLoaded = false;
+
+  document.addEventListener('turbolinks:before-visit', () => {
+    console.log(":: TURBOLINKS detected");
+    document.addEventListener('turbolinks:load', () => {
+    });
+  });
+
+  function _docLoaded(){
+    return docLoaded || 
+      document.readyState === 'complete'
+  }
+
+  function whenDOM(cb) {
+    if (_docLoaded()) {
+      docLoaded = true;
       return cb()
     }
 
     document.onreadystatechange = () => {
-      return whenDOM(cb)    
+      return whenDOM(cb)
     };
   }
 
@@ -76,8 +93,13 @@
   }
 
   function elementFrom(e){
-    if (typeof e === "string") return selectOrCreateDOM(e)
-    return e
+    if (e instanceof HTMLElement) return e
+
+    if (typeof e === "string"){
+      return selectOrCreateDOM(e)
+    }
+
+    return throwSoft$1(`Could not find/create element from [${e}]`)
   }
 
   function generateRandomKey(){
@@ -104,8 +126,6 @@
 
   const parse = {
     cssToDict: ((str) => {
-      // console.log(`parsing pcss`)
-      //console.log(str)
       str = str.replaceAll("\n", ";").replaceAll(":", " ");
       let cssDict = new Map();
       for (let style of str.split(";")) {
@@ -123,7 +143,7 @@
       }
 
       if (unsupported.length > 0) {
-        throwSoft(`CSS syntax error`, 'typos', unsupported);
+        throwSoft$1(`CSS syntax error`, 'typos', unsupported);
       }
       return cssDict
     }),
@@ -147,7 +167,8 @@
   var index = /*#__PURE__*/Object.freeze({
     __proto__: null,
     _deving: _deving,
-    throwSoft: throwSoft,
+    throwSoft: throwSoft$1,
+    log: log,
     whenDOM: whenDOM,
     parseQuery: parseQuery,
     addClassAryTo: addClassAryTo,
@@ -185,8 +206,11 @@
 
 
   function domify(e){
-    if (e.isPragmaElement === true) return e.element
-    return elementFrom(e)
+    if (e == null || e == undefined) return throwSoft$1(`Could not find a DOM element for ${e}`)
+    console.log(e.element);
+    if (e.element) return domify(e.element)
+    let a = elementFrom(e);
+    return a
   }
 
 
@@ -216,6 +240,7 @@
 
       this.onDocLoad(() => {
         this.element = elementFrom(query);
+        if (this.element instanceof HTMLElement) this._render();
         if (typeof innerHTML === "string") this.html(innerHTML);
         if (typeof cb === "function") cb(this.element);
       });
@@ -223,23 +248,37 @@
       whenDOM(() => this.docLoadChain.exec(this));
     }
 
+    set element(n){
+      this.nodeElement = n; 
+    }
+
+    get element(){
+      return this.nodeElement 
+    }
+
     eventChains(...chains){
       for (let chain of chains){
         _newChain(chain, this); 
       }
     }
+    
+    _render(){
+      this.renderChain.exec(this);
+    }
 
     appendTo(where){
       this.onDocLoad(() => {
         domify(where).appendChild(this.element);
-        this.renderChain.exec(this);
+        this._render();
       });
       return this
     }
 
     append(e){
       this.onRender(() => {
-        this.element.appendChild(domify(e));
+        let d = domify(e);
+        console.log(d);
+        this.element.appendChild(d);
       });
       return this 
     }
@@ -473,6 +512,17 @@
       this.actionChain.add(...arguments);
       return this
     }
+
+    contain(...childs){
+      for (let child of childs) {
+        super.add(child);
+        if (child.isRendered){
+          throwSoft(`[${child}] is already appended`);
+        }else {
+          this.element.append(child);
+        }
+      }
+    }
   }
 
 
@@ -480,9 +530,7 @@
     "listenTo",
     "html",
     "css",
-    "append",
-    "appendTo",
-    "addClass"
+    "addClass",
   ];
 
   for (let a of _adoptElementAttrs) {

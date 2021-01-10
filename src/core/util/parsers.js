@@ -1,4 +1,4 @@
-import { throwSoft } from "./throw"
+import { throwSoft } from "./log"
 
 const snake2camel = str => str.replace(/([-_]\w)/g, g => g[1].toUpperCase()) 
 
@@ -16,8 +16,6 @@ const apply = {
 
 const parse = {
   cssToDict: ((str) => {
-    // console.log(`parsing pcss`)
-    //console.log(str)
     str = str.replaceAll("\n", ";").replaceAll(":", " ")
     let cssDict = new Map()
     for (let style of str.split(";")) {

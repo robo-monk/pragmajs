@@ -64,3 +64,13 @@ describe("Pragma's action chain works", () => {
 
 })
 
+
+describe("Pragmas can contain other pragmas", () => {
+  test("Simple .contain", () => {
+    var a, b, c, d, e
+    a = new Pragma() 
+    b = new Pragma() 
+    b.contain(a)
+    console.log(b)
+  })
+})
