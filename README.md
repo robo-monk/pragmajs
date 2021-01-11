@@ -12,8 +12,16 @@
 <br>
 
 # Installation
+
+### npm
 ```bash
 npm i pragmajs
+```
+
+### Yarn
+
+```bash
+yarn add pragmajs
 ```
 
 # How To
