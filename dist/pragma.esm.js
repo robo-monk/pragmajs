@@ -13,22 +13,32 @@ function log(){
   console.log(...arguments);
 }
 
+function suc(){
+  console.log(`%c 🌴 [pragma] \n
+      `, "font-size:12px; color:#86D787;", ...arguments, "\n");
+}
+
 const toHTMLAttr = s => s.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+
+if (!window.pragma) window.pragma = {};
 
 function whenDOM(cb) {
   // TODO holy shit improve this code im throwing up
   if (document.readyState === 'complete') {
     return cb()
   }
-  document.addEventListener('turbolinks:load', () => {
-    log(":: TURBOLINKS loaded");
-    return cb()
-  });
+
+  if (!window.pragma.listeningToTurbolinks){
+    window.pragma.listeningToTurbolinks = true;
+    document.addEventListener('turbolinks:load', () => {
+      suc("🚀 TURBOLINKS loaded");
+      return cb()
+    });  
+  }
+  
   document.onreadystatechange = () => {
     return whenDOM(cb)
   };
-
-  
 }
 
 var search = /[#.]/g;
@@ -65,7 +75,7 @@ function parseQuery(selector, defaultTagName = "div") {
 }
 
 function addClassAryTo(cary, el){
-  if (!cary || !(cary.constructor === "Array")) return throwSoft$1(`Could not add class [${cary}] to [${el}]`)
+  if (!(Array.isArray(cary))) return throwSoft$1(`Could not add class [${cary}] to [${el}]`)
   for (let c of cary){
     let _subary = c.split(" ");
     if (_subary.length>1) {
@@ -80,9 +90,11 @@ function selectOrCreateDOM(query){
   let e = document.querySelector(query);
   if (e) return e
   let q = parseQuery(query);
+
   let el =  document.createElement(q.tag || "div");
-  el.id = q.id;
-  addClassAryTo(q.class, el);
+  if (q.id) el.id = q.id;
+  if (q.class) addClassAryTo(q.class, el);
+
   return el
 }
 
@@ -177,6 +189,7 @@ var index = /*#__PURE__*/Object.freeze({
   _deving: _deving,
   throwSoft: throwSoft$1,
   log: log,
+  suc: suc,
   whenDOM: whenDOM,
   parseQuery: parseQuery,
   addClassAryTo: addClassAryTo,

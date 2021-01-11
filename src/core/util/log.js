@@ -14,3 +14,8 @@ export function log(){
   if (!_deving && !force) return null
   console.log(...arguments)
 }
+
+export function suc(){
+  console.log(`%c 🌴 [pragma] \n
+      `, "font-size:12px; color:#86D787;", ...arguments, "\n")
+}
