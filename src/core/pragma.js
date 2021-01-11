@@ -94,12 +94,8 @@ export default class Pragma extends Node {
 
 
   exec() { 
-    this.actionChain.exec(this, this.value, ...arguments)
+    this.actionChain.execAs(this, ...arguments)
     return this
-  }
-
-  action(cb){
-    return cb(this)
   }
 
   set id(n) {

@@ -14,9 +14,21 @@ export default class ActionChain {
     }
   }
 
-  exec(...args){
-    for (let [key, cb] of this.actions) {
-      cb(...args)
+  forAction(cb){
+    for (let [key, action] of this.actions) {
+      cb(key, action)
     }
+  }
+
+  exec(...args){
+    this.forAction(function(key, act) {
+      act(...args)
+    })
+  }
+
+  execAs(self, ...args){
+    this.forAction(function(key, act) {
+      act.bind(self)(...args)
+    })
   }
 }

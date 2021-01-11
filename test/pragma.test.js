@@ -26,16 +26,17 @@ describe("Pragma's action chain works", () => {
   test("Pragma's action gets triggered when value is changed", () => {
 
     let haha = 0
-    p.do((self, value, extra) => {
-      haha = value
+    p.do(function() {
+      haha = this.value
     })
+
     p.value = 69
     expect(haha).toBe(69)
   })
 
   test("Manually execute Pragma's action with extra params", () => {
     let b = ""
-    p.do((self, value, c) => { b = c })
+    p.do((arg) => {b = arg })
     p.exec("piri") 
     expect(b).toBe("piri")
   })
@@ -50,8 +51,8 @@ describe("Pragma's action chain works", () => {
       b = 1
     }).do((self, value) => {
       c = 1 
-    }).do((self, value) => {
-      self.nice = 42069
+    }).do(function() {
+      this.nice = 42069
     })
 
     p.value = "yeehaw"

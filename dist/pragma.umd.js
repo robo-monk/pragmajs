@@ -225,10 +225,22 @@
       }
     }
 
-    exec(...args){
-      for (let [key, cb] of this.actions) {
-        cb(...args);
+    forAction(cb){
+      for (let [key, action] of this.actions) {
+        cb(key, action);
       }
+    }
+
+    exec(...args){
+      this.forAction(function(key, act) {
+        act(...args);
+      });
+    }
+
+    execAs(self, ...args){
+      this.forAction(function(key, act) {
+        act.bind(self)(...args);
+      });
     }
   }
 
@@ -593,12 +605,8 @@
 
 
     exec() { 
-      this.actionChain.exec(this, this.value, ...arguments);
+      this.actionChain.execAs(this, ...arguments);
       return this
-    }
-
-    action(cb){
-      return cb(this)
     }
 
     set id(n) {
