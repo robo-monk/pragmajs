@@ -1,3 +1,38 @@
+class ActionChain {
+  constructor(){
+    this.actions = new Map();
+  }
+
+  addWithKey(cb, key=null){
+    key = key || this.actions.size;
+    this.actions.set(key, cb);
+  }
+
+  add(...cbs){
+    for (let cb of cbs){
+      this.addWithKey(cb);
+    }
+  }
+
+  forAction(cb){
+    for (let [key, action] of this.actions) {
+      cb(key, action);
+    }
+  }
+
+  exec(...args){
+    this.forAction(function(key, act) {
+      act(...args);
+    });
+  }
+
+  execAs(self, ...args){
+    this.forAction(function(key, act) {
+      act.bind(self)(...args);
+    });
+  }
+}
+
 function throwSoft$1 (desc, potential=null, fixes=['rerun the code 10 times'], trigger=null, force=false) {
   if (!_deving && !force) return null
   console.error(`%c 🧯 pragma.js  %c \n
@@ -18,28 +53,74 @@ function suc(){
       `, "font-size:12px; color:#86D787;", ...arguments, "\n");
 }
 
+function generateRandomKey(){
+  return btoa(Math.random()).substr(10, 5)
+}
+
+function objDiff(obj, edit, recursive=false){
+  // TODO add recursive feature
+  for (let [key, value] of Object.entries(edit)){
+    // console.log(key)
+    obj[key] = value;
+  }
+
+  return obj
+}
+
+function _extend(e, proto){
+  Object.setPrototypeOf(e, objDiff(Object.getPrototypeOf(e), proto));
+}
+
+String.prototype.capitalize = function() {
+  return this.charAt(0).toUpperCase() + this.slice(1)
+};
+
+ 
+function _newChain(name, obj){
+  let chainName = `${name}Chain`;
+  let eventName = `on${name.capitalize()}`;
+  let done = `is${name.capitalize()}ed`;
+
+  obj[chainName] = new ActionChain();
+
+  obj[chainName].add(() => {
+    obj[done] = true;
+  });
+
+  obj[eventName] = function (cb) {
+    console.log(obj[done], eventName);
+    if (obj[done]) return cb(obj)
+    obj[chainName].add(cb);
+  };
+} 
+
+function createEventChains(obj, ...chains){
+  for (let chain of chains){
+      _newChain(chain, obj); 
+  }
+}
+
 const toHTMLAttr = s => s.replace(/[^a-z0-9]/gi, '-').toLowerCase();
 
 if (!window.pragma) window.pragma = {};
 
-function whenDOM(cb) {
-  // TODO holy shit improve this code im throwing up
-  if (document.readyState === 'complete') {
-    return cb()
-  }
+createEventChains(window.pragma, "docLoad");
+const whenDOM = window.pragma.onDocLoad;
 
-  if (!window.pragma.listeningToTurbolinks){
-    window.pragma.listeningToTurbolinks = true;
-    document.addEventListener('turbolinks:load', () => {
-      suc("🚀 TURBOLINKS loaded");
-      return cb()
-    });  
-  }
-  
-  document.onreadystatechange = () => {
-    return whenDOM(cb)
-  };
+function _docLoad(){
+  if (window.pragma.isDocLoaded) return
+
+  suc("📰 document is loaded.");
+  window.pragma.docLoadChain.exec();
 }
+document.addEventListener('readystatechange', () => {
+  if (document.readyState === "complete") _docLoad(); 
+});
+
+document.addEventListener('turbolinks:load', () => {
+  suc("🚀 TURBOLINKS loaded");
+  _docLoad(); 
+});
 
 var search = /[#.]/g;
 
@@ -107,28 +188,6 @@ function elementFrom(e){
 
   return throwSoft$1(`Could not find/create element from [${e}]`)
 }
-
-function generateRandomKey(){
-  return btoa(Math.random()).substr(10, 5)
-}
-
-function objDiff(obj, edit, recursive=false){
-  // TODO add recursive feature
-  for (let [key, value] of Object.entries(edit)){
-    // console.log(key)
-    obj[key] = value;
-  }
-
-  return obj
-}
-
-function _extend(e, proto){
-  Object.setPrototypeOf(e, objDiff(Object.getPrototypeOf(e), proto));
-}
-
-String.prototype.capitalize = function() {
-  return this.charAt(0).toUpperCase() + this.slice(1)
-};
 
 const snake2camel = str => str.replace(/([-_]\w)/g, g => g[1].toUpperCase()); 
 
@@ -199,44 +258,10 @@ var index = /*#__PURE__*/Object.freeze({
   generateRandomKey: generateRandomKey,
   objDiff: objDiff,
   _extend: _extend,
+  createEventChains: createEventChains,
   parse: parse,
   apply: apply
 });
-
-class ActionChain {
-  constructor(){
-    this.actions = new Map();
-  }
-
-  addWithKey(cb, key=null){
-    key = key || this.actions.size;
-    this.actions.set(key, cb);
-  }
-
-  add(...cbs){
-    for (let cb of cbs){
-      this.addWithKey(cb);
-    }
-  }
-
-  forAction(cb){
-    for (let [key, action] of this.actions) {
-      cb(key, action);
-    }
-  }
-
-  exec(...args){
-    this.forAction(function(key, act) {
-      act(...args);
-    });
-  }
-
-  execAs(self, ...args){
-    this.forAction(function(key, act) {
-      act.bind(self)(...args);
-    });
-  }
-}
 
 // Its like $("#id") of jquery
 
@@ -250,105 +275,6 @@ function domify(e){
 }
 
 
-function _newChain(name, obj){
-  let chainName = `${name}Chain`;
-  let eventName = `on${name.capitalize()}`;
-  let done = `is${name.capitalize()}ed`;
-
-  obj[chainName] = new ActionChain();
-
-  obj[chainName].add(() => {
-    obj[done] = true;
-  });
-
-  obj[eventName] = function (cb) {
-    if (obj[done]) return cb(obj)
-    obj[chainName].add(cb);
-  };
-}
-
-
-//export default class Element {
-  //constructor(query, innerHTML, cb){
-    //this.isPragmaElement = true
-
-    //this.eventChains("docLoad", "render")
-
-    //this.onDocLoad(() => {
-      //this.element = elementFrom(query)
-      //if (this.element instanceof HTMLElement) this._render()
-      //if (typeof innerHTML === "string") this.html(innerHTML)
-      //if (typeof cb === "function") cb(this.element)
-    //})
-
-    //whenDOM(() => this.docLoadChain.exec(this))
-  //}
-
-  //set element(n){
-    //this.nodeElement = n 
-  //}
-
-  //get element(){
-    //return this.nodeElement 
-  //}
-
-  //eventChains(...chains){
-    //for (let chain of chains){
-      //_newChain(chain, this) 
-    //}
-  //}
-  
-  //_render(){
-    //this.renderChain.exec(this)
-  //}
-
-  //appendTo(where){
-    //this.onDocLoad(() => {
-      //domify(where).appendChild(this.element)
-      //this._render()
-    //})
-    //return this
-  //}
-
-  //append(e){
-    //this.onRender(() => {
-      //let d = domify(e)
-      //console.log(d)
-      //this.element.appendChild(d)
-    //})
-    //return this 
-  //}
-
-  //css(styles){
-    //this.onRender(() => {
-      //apply.pcss(styles, this.element)
-    //})
-  //}
-
-  //html(inner){ 
-    //this.onRender(() => {
-      //apply.html(inner, this.element)
-    //})
-    //return this
-  //}
-
-  //id(id){
-    //this.element.id = id
-    //return this
-  //}
-
-  //addClass(...classes){
-    //addClassAryTo(classes, this.element)
-    //return this
-  //}
-
-  //listenTo(...args){
-    //this.onRender(() => {
-      //this.element.addEventListener(...args)
-    //})
-    //return this
-  //}
-//}
 
 function _e(query, innerHTML){
   //whenDOM(function() {
@@ -368,22 +294,18 @@ function _e(query, innerHTML){
 const elementProto = { 
   init: function(){
     this.isPragmaElement = true;
-    this.eventChains("docLoad", "render");
+    //this.eventChains("docLoad", "render")
+    createEventChains(this, "docLoad", "render");
     whenDOM(() => this.docLoadChain.exec(this));
   },
-  
-  eventChains: function(...chains){
-    for (let chain of chains){
-      _newChain(chain, this); 
-    }
-  },
-  
+
   _render: function(){
     this.renderChain.exec(this);
   },
 
   appendTo: function(where){
     this.onDocLoad(() => {
+      console.log("appending", this, to, domify(where));
       domify(where).appendChild(this);
       this._render();
     });
@@ -527,7 +449,8 @@ const _parseMap = {
   },
 
   element: (self, element) => {
-    self.element = _e(element);
+    if (!(element instanceof HTMLElement)) return throwSoft(`Could not add ${element} as the element of [${self}]`)
+    self.element = element;
   },
 
   children: (self, children) => {
@@ -583,6 +506,7 @@ class Pragma extends Node {
     this.element = this.element || _e(`#${this.id}`); 
   }
 
+
   set value(n) {
 
     function _processValue(v) {
@@ -597,6 +521,7 @@ class Pragma extends Node {
     return this.v
   }
 
+  setValue(n){ this.value = n; return this }
 
   exec() { 
     this.actionChain.execAs(this, ...arguments);
@@ -623,12 +548,30 @@ class Pragma extends Node {
     return this.buildAry(maps)
   }
 
-  listenTo(...args){
-      return this.element.listenTo(...args)
+  // FOR HTML DOM
+  as(query=null, innerHTML=""){
+    query = query || `div#${this.id}.pragma`;
+    this.element = _e(query, innerHTML);
+    return this
   }
 
+  // FOR TEMPLATES
+  from(pragma){
+    
+  }
+
+  // ADD SCRIPT TO RUN WHEN VALUE CHANGES
   do(){
     this.actionChain.add(...arguments);
+    return this
+  }
+
+
+  // RUN SCRIPTS WITH THIS SCOPE
+  run(...scripts){
+    for (let script of scripts){
+      script.bind(this)();
+    }
     return this
   }
 
@@ -641,6 +584,18 @@ class Pragma extends Node {
         this.element.append(child);
       }
     }
+    return this
+  }
+
+  pragmatize(){
+    this.element.appendTo(this.parent.element);
+    return this
+  }
+
+  pragmatizeAt(query){
+    console.log("pragmatizing", this.element, "to", query);
+    this.element.appendTo(query);
+    return this 
   }
 }
 
@@ -677,6 +632,43 @@ for (let a of _adoptElementAttrs) {
  *}
  */
 
+const Monitor = new Pragma().as(null, "0"); 
+  
+    
+
+  //custom: ((key, val=0, tag, action) => {
+    //return new Comp({
+      //key: key,
+      //value: val,
+      //set: ((value, master, comp) => { 
+        //if(action) return action(value, comp, master)
+      //})
+    //}).as(`<${tag}>${val}</${tag}>`, key+"-monitor")
+  //}),
+
+  //simple: ((key, val=0, tag="p", action=null) => {
+    //let actionCb = (value, comp, master) => {
+      //comp.element.text(value)
+      //if (action) return action(value, comp, master)
+    //}
+    //let mon =  Monitor.custom(key, val, tag, actionCb) 
+    //return mon
+  //}),  
+
+  //custom: (id, val, tag, action) => {
+    //let map = {
+      //id: id,
+      //value: value,
+      //element: _e(tag)
+    //}
+    //_p()
+  //}
+
+var index$1 = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  Monitor: Monitor
+});
+
 // API layer
 
 //const ε = function() {
@@ -692,4 +684,4 @@ const π = (query, html) => {
 
 const _p = π;
 
-export { Pragma, _e, _p, index as util, π };
+export { Pragma, _e, _p, index$1 as tpl, index as util, π };

@@ -1,27 +1,27 @@
 import { throwSoft, log, suc } from "./log"
+import { createEventChains } from "./utilities"
 
 const toHTMLAttr = s => s.replace(/[^a-z0-9]/gi, '-').toLowerCase()
 
 if (!window.pragma) window.pragma = {}
 
-function whenDOM(cb) {
-  // TODO holy shit improve this code im throwing up
-  if (document.readyState === 'complete') {
-    return cb()
-  }
+createEventChains(window.pragma, "docLoad")
+const whenDOM = window.pragma.onDocLoad
 
-  if (!window.pragma.listeningToTurbolinks){
-    window.pragma.listeningToTurbolinks = true
-    document.addEventListener('turbolinks:load', () => {
-      suc("🚀 TURBOLINKS loaded")
-      return cb()
-    })  
-  }
-  
-  document.onreadystatechange = () => {
-    return whenDOM(cb)
-  }
+function _docLoad(){
+  if (window.pragma.isDocLoaded) return
+
+  suc("📰 document is loaded.")
+  window.pragma.docLoadChain.exec()
 }
+document.addEventListener('readystatechange', () => {
+  if (document.readyState === "complete") _docLoad() 
+})
+
+document.addEventListener('turbolinks:load', () => {
+  suc("🚀 TURBOLINKS loaded")
+  _docLoad() 
+})
 
 var search = /[#.]/g
 

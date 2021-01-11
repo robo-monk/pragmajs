@@ -1,10 +1,6 @@
-export * as util from "./core/util/index"
-
 import _e from "./core/element"
 import Pragma from "./core/pragma"
-
 export { _e, Pragma } 
-
 
 // API layer
 
@@ -23,3 +19,8 @@ const _p = π
 //const _e = ε
 
 export { π, _p }
+
+export * as util from "./core/util/index"
+export * as tpl from "./templates/index"
+
+

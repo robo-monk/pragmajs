@@ -22,7 +22,8 @@ const _parseMap = {
   },
 
   element: (self, element) => {
-    self.element = _e(element)
+    if (!(element instanceof HTMLElement)) return throwSoft(`Could not add ${element} as the element of [${self}]`)
+    self.element = element
   },
 
   children: (self, children) => {
@@ -78,6 +79,7 @@ export default class Pragma extends Node {
     this.element = this.element || _e(`#${this.id}`) 
   }
 
+
   set value(n) {
 
     function _processValue(v) {
@@ -92,6 +94,7 @@ export default class Pragma extends Node {
     return this.v
   }
 
+  setValue(n){ this.value = n; return this }
 
   exec() { 
     this.actionChain.execAs(this, ...arguments)
@@ -118,12 +121,30 @@ export default class Pragma extends Node {
     return this.buildAry(maps)
   }
 
-  listenTo(...args){
-      return this.element.listenTo(...args)
+  // FOR HTML DOM
+  as(query=null, innerHTML=""){
+    query = query || `div#${this.id}.pragma`
+    this.element = _e(query, innerHTML)
+    return this
   }
 
+  // FOR TEMPLATES
+  from(pragma){
+    
+  }
+
+  // ADD SCRIPT TO RUN WHEN VALUE CHANGES
   do(){
     this.actionChain.add(...arguments)
+    return this
+  }
+
+
+  // RUN SCRIPTS WITH THIS SCOPE
+  run(...scripts){
+    for (let script of scripts){
+      script.bind(this)()
+    }
     return this
   }
 
@@ -136,6 +157,18 @@ export default class Pragma extends Node {
         this.element.append(child)
       }
     }
+    return this
+  }
+
+  pragmatize(){
+    this.element.appendTo(this.parent.element)
+    return this
+  }
+
+  pragmatizeAt(query){
+    console.log("pragmatizing", this.element, "to", query)
+    this.element.appendTo(query)
+    return this 
   }
 }
 
