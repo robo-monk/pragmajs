@@ -59,7 +59,6 @@ const elementProto = {
 
   appendTo: function(where){
     this.onDocLoad(() => {
-      console.log("appending", this, to, domify(where))
       domify(where).appendChild(this)
       this._render()
     })

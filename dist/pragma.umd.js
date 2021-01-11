@@ -1,1 +1,678 @@
-!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports):"function"==typeof define&&define.amd?define(["exports"],t):t((e="undefined"!=typeof globalThis?globalThis:e||self).pragma={})}(this,(function(e){"use strict";class t{constructor(){this.actions=new Map}addWithKey(e,t=null){t=t||this.actions.size,this.actions.set(t,e)}add(...e){for(let t of e)this.addWithKey(t)}forAction(e){for(let[t,n]of this.actions)e(t,n)}exec(...e){this.forAction((function(t,n){n(...e)}))}execAs(e,...t){this.forAction((function(n,i){i.bind(e)(...t)}))}}function n(e,t=null,n=["rerun the code 10 times"],i=null,r=!1){if(!w&&!r)return null;console.error(`%c 🧯 pragma.js  %c \n\n      encountered a soft error 🔫 %c \n\n      \n${i?`Triggered by: [${i.key} ${i}]`:""}\n      \n${e} %c\n\n      \n${null!=t?`Potential ${t}: \n\t${n.join("\n\t")}`:""}\n      `,"font-size:15px","font-size: 12px;","color:whitesmoke","color:white")}function i(){console.log("%c 🌴 [pragma] \n\n      ","font-size:12px; color:#86D787;",...arguments,"\n")}function r(){return btoa(Math.random()).substr(10,5)}function s(e,t,n=!1){for(let[n,i]of Object.entries(t))e[n]=i;return e}function o(e,n){let i=`${e}Chain`,r=`on${e.capitalize()}`,s=`is${e.capitalize()}ed`;n[i]=new t,n[i].add((()=>{n[s]=!0})),n[r]=function(e){if(console.log(n[s],r),n[s])return e(n);n[i].add(e)}}function l(e,...t){for(let n of t)o(n,e)}String.prototype.capitalize=function(){return this.charAt(0).toUpperCase()+this.slice(1)};const a=e=>e.replace(/[^a-z0-9]/gi,"-").toLowerCase();window.pragma||(window.pragma={}),l(window.pragma,"docLoad");const h=window.pragma.onDocLoad;function c(){window.pragma.isDocLoaded||(i("📰 document is loaded."),window.pragma.docLoadChain.exec())}document.addEventListener("readystatechange",(()=>{"complete"===document.readyState&&c()})),document.addEventListener("turbolinks:load",(()=>{i("🚀 TURBOLINKS loaded"),c()}));var d=/[#.]/g;function u(e,t="div"){var n=e||"",i={},r=0;let s,o,l;for(;r<n.length;)d.lastIndex=r,l=d.exec(n),s=n.slice(r,l?l.index:n.length),s&&(o?"#"===o?i.id=s:i.class?i.class.push(s):i.class=[s]:i.tag=s,r+=s.length),l&&(o=l[0],r++);return i}function f(e,t){if(!Array.isArray(e))return n(`Could not add class [${e}] to [${t}]`);for(let n of e){let e=n.split(" ");e.length>1?f(e,t):t.classList.add(n)}}function p(e){let t=document.querySelector(e);if(t)return t;let n=u(e),i=document.createElement(n.tag||"div");return n.id&&(i.id=n.id),n.class&&f(n.class,i),i}function m(e){return e instanceof HTMLElement?e:"string"==typeof e?p(e):n(`Could not find/create element from [${e}]`)}const g={html:(e,t)=>{t.innerHTML=e},pcss:(e,t)=>{for(let[i,r]of y.cssToDict(e))t.style[(n=i,n.replace(/([-_]\w)/g,(e=>e[1].toUpperCase())))]=r;var n}},y={cssToDict:e=>{e=e.replaceAll("\n",";").replaceAll(":"," ");let t=new Map;for(let n of e.split(";")){if(n.replace(/\s/g,"").length<2)continue;n=n.trim().split(" ");let e=n[0];n.shift(),t.set(e.trim(),n.join(" ").trim())}let i=[];for(const[e,n]of t.entries())CSS.supports(e,n)||i.push(`${e.trim()}: ${n.trim()}`);return i.length>0&&n("CSS syntax error","typos",i),t},css:e=>{let t="";for(let[n,i]of y.cssToDict(e))t+=`${n}:${i};`;return t},html:e=>e},w="development"===process.env.NODE_ENV;var C=Object.freeze({__proto__:null,_deving:w,throwSoft:n,log:function(){if(!w&&!force)return null;console.log(...arguments)},suc:i,whenDOM:h,parseQuery:u,addClassAryTo:f,selectOrCreateDOM:p,elementFrom:m,toHTMLAttr:a,generateRandomKey:r,objDiff:s,_extend:function(e,t){Object.setPrototypeOf(e,s(Object.getPrototypeOf(e),t))},createEventChains:l,parse:y,apply:g});function M(e){if(null==e||null==e)return n(`Could not find a DOM element for ${e}`);if(e.element)return M(e.element);return m(e)}function $(e,t){let n=m(e);return n instanceof HTMLElement&&(n.init(),n._render()),"string"==typeof t&&n.html(t),n}const b={init:function(){this.isPragmaElement=!0,l(this,"docLoad","render"),h((()=>this.docLoadChain.exec(this)))},_render:function(){this.renderChain.exec(this)},appendTo:function(e){return this.onDocLoad((()=>{console.log("appending",this,to,M(e)),M(e).appendChild(this),this._render()})),this},append:function(e){return this.onRender((()=>{let t=M(e);this.appendChild(t)})),this},css:function(e){return this.onRender((()=>{g.pcss(e,this)})),this},html:function(e){return this.onRender((()=>{g.html(e,this)})),this},setId:function(e){return this.id=e,this},addClass:function(...e){return f(e,this),this},listenTo:function(...e){return this.onRender((()=>{this.addEventListener(...e)})),this}};for(let[e,t]of Object.entries(b))HTMLElement.prototype[e]=t;const v={parent:(e,t)=>{e.parent=t},value:(e,t)=>{e.value=t},id:(e,t)=>{e.id=t},class:(e,t)=>{e._class=t},element:(e,t)=>{if(!(t instanceof HTMLElement))return throwSoft(`Could not add ${t} as the element of [${e}]`);e.element=t},children:(e,t)=>{if(t.constructor==Array)return e.buildAry(t);e.build(t)},childTemplate:(e,t)=>{}};class x extends class{constructor(e){this.childMap=new Map,this.key=e||r(),this.containsKey=this.childMap.has}get kidsum(){return this.childMap.size}get hasKids(){return this.kidsum>0}get shape(){return this.shapePrefix()}get master(){return null==this.parent||null==this.parent.parent?this.parent:this.parent.master}get children(){return Array.from(this.childMap.values())}get depthKey(){return this.parent?this.parent.depthKey+"<~<"+this.key:this.key}get allChildren(){if(!this.hasKids)return null;let e=this.children;for(let t of e){let n=t.allChildren;n&&(e=e.concat(n))}return e}find(e){if(this.childMap.has(e))return this.childMap.get(e);for(let[t,n]of this.childMap){let t=n.find(e);if(t)return t}}add(e){if(this.childMap.has(e.key))return e.key=e.key+"~",this.add(e);e.parent=this,this.childMap.set(e.key,e)}shapePrefix(e=""){let t=`${e}| ${this.type} - ${this.key} \n`;if(this.hasKids){e+="| ";for(let n of this.children)t+=n.shapePrefix(e)}return t}}{constructor(e,n){super(),this.actionChain=new t,"object"==typeof e?function(e,t){let n=new Map;for(let[i,r]of Object.entries(e))v.hasOwnProperty(i)?v[i](t,r):n.set(i,r);t.element&&t.element.whenInDOM((e=>{for(let[i,r]of n)if(i=i.toLowerCase(),i.includes("on")){let n=i.split("on")[1].trim();e.listenTo(n,(()=>{t.action(r)}))}}))}(e,this):this.key=e,this.key=this.key||r(),this.element=this.element||$(`#${this.id}`)}set value(e){this.v=e,this.exec()}get value(){return this.v}setValue(e){return this.value=e,this}exec(){return this.actionChain.execAs(this,...arguments),this}set id(e){this.key=e,this.element&&(this.element.id=this.id)}get id(){return a(this.key)}buildAry(e){for(let t of e)this.add(new x(t,this));return this}build(...e){return this.buildAry(e)}as(e=null,t=""){return e=e||`div#${this.id}.pragma`,this.element=$(e,t),this}from(e){}do(){return this.actionChain.add(...arguments),this}run(...e){for(let t of e)t.bind(this)();return this}contain(...e){for(let t of e)super.add(t),t.isRendered?throwSoft(`[${t}] is already appended`):this.element.append(t);return this}pragmatize(){return this.element.appendTo(this.parent.element),this}pragmatizeAt(e){return console.log("pragmatizing",this.element,"to",e),this.element.appendTo(e),this}}const T=["listenTo","html","css","addClass","setId"];for(let e of T)x.prototype[e]=function(){return this.element[e](...arguments),this};const L=(new x).as(null,"0");var _=Object.freeze({__proto__:null,Monitor:L});const k=(e,t)=>{let n=new x;return n.element=$(e,t),n.id=n.element.id,n},A=k;e.Pragma=x,e._e=$,e._p=A,e.tpl=_,e.util=C,e.π=k,Object.defineProperty(e,"__esModule",{value:!0})}));
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+  typeof define === 'function' && define.amd ? define(['exports'], factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.pragma = {}));
+}(this, (function (exports) { 'use strict';
+
+  class ActionChain {
+    constructor(){
+      this.actions = new Map();
+    }
+
+    addWithKey(cb, key=null){
+      key = key || this.actions.size;
+      this.actions.set(key, cb);
+    }
+
+    add(...cbs){
+      for (let cb of cbs){
+        this.addWithKey(cb);
+      }
+    }
+
+    forAction(cb){
+      for (let [key, action] of this.actions) {
+        cb(key, action);
+      }
+    }
+
+    exec(...args){
+      this.forAction(function(key, act) {
+        act(...args);
+      });
+    }
+
+    execAs(self, ...args){
+      this.forAction(function(key, act) {
+        act.bind(self)(...args);
+      });
+    }
+  }
+
+  function throwSoft$1 (desc, potential=null, fixes=['rerun the code 10 times'], trigger=null, force=false) {
+    if (!_deving && !force) return null
+    console.error(`%c 🧯 pragma.js  %c \n
+      encountered a soft error 🔫 %c \n
+      \n${trigger ? `Triggered by: [${trigger.key} ${trigger}]` :``}
+      \n${desc} %c\n
+      \n${ potential!=null ? `Potential ${potential}: \n\t${fixes.join("\n\t")}` : '' }
+      `, "font-size:15px", "font-size: 12px;", "color:whitesmoke", "color:white");
+  }
+
+  function log(){
+    if (!_deving && !force) return null
+    console.log(...arguments);
+  }
+
+  function suc(){
+    console.log(`%c 🌴 [pragma] \n
+      `, "font-size:12px; color:#86D787;", ...arguments, "\n");
+  }
+
+  function generateRandomKey(){
+    return btoa(Math.random()).substr(10, 5)
+  }
+
+  function objDiff(obj, edit, recursive=false){
+    // TODO add recursive feature
+    for (let [key, value] of Object.entries(edit)){
+      // console.log(key)
+      obj[key] = value;
+    }
+
+    return obj
+  }
+
+  function _extend(e, proto){
+    Object.setPrototypeOf(e, objDiff(Object.getPrototypeOf(e), proto));
+  }
+
+  String.prototype.capitalize = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1)
+  };
+
+   
+  function _newChain(name, obj){
+    let chainName = `${name}Chain`;
+    let eventName = `on${name.capitalize()}`;
+    let done = `is${name.capitalize()}ed`;
+
+    obj[chainName] = new ActionChain();
+
+    obj[chainName].add(() => {
+      obj[done] = true;
+    });
+
+    obj[eventName] = function (cb) {
+      console.log(obj[done], eventName);
+      if (obj[done]) return cb(obj)
+      obj[chainName].add(cb);
+    };
+  } 
+
+  function createEventChains(obj, ...chains){
+    for (let chain of chains){
+        _newChain(chain, obj); 
+    }
+  }
+
+  const toHTMLAttr = s => s.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+
+  if (!window.pragma) window.pragma = {};
+
+  createEventChains(window.pragma, "docLoad");
+  const whenDOM = window.pragma.onDocLoad;
+
+  function _docLoad(){
+    if (window.pragma.isDocLoaded) return
+
+    suc("📰 document is loaded.");
+    window.pragma.docLoadChain.exec();
+  }
+  document.addEventListener('readystatechange', () => {
+    if (document.readyState === "complete") _docLoad(); 
+  });
+
+  document.addEventListener('turbolinks:load', () => {
+    suc("🚀 TURBOLINKS loaded");
+    _docLoad(); 
+  });
+
+  var search = /[#.]/g;
+
+  // Create a hast element from a simple CSS selector.
+  function parseQuery(selector, defaultTagName = "div") {
+    var value = selector || '';
+    var props = {};
+    var start = 0;
+    let subvalue, previous, match;
+
+    while (start < value.length) {
+      search.lastIndex = start;
+      match = search.exec(value);
+      subvalue = value.slice(start, match ? match.index : value.length);
+      if (subvalue) {
+        if (!previous) {
+          props.tag = subvalue;
+        } else if (previous === '#') {
+          props.id = subvalue;
+        } else if (props.class) {
+          props.class.push(subvalue);
+        } else {
+          props.class = [subvalue];
+        }
+        start += subvalue.length;
+      }
+      if (match) {
+        previous = match[0];
+        start++;
+      }
+    }
+    return props
+  }
+
+  function addClassAryTo(cary, el){
+    if (!(Array.isArray(cary))) return throwSoft$1(`Could not add class [${cary}] to [${el}]`)
+    for (let c of cary){
+      let _subary = c.split(" ");
+      if (_subary.length>1) {
+        addClassAryTo(_subary, el);
+        continue 
+      }
+      el.classList.add(c);
+    }
+  }
+
+  function selectOrCreateDOM(query){
+    let e = document.querySelector(query);
+    if (e) return e
+    let q = parseQuery(query);
+
+    let el =  document.createElement(q.tag || "div");
+    if (q.id) el.id = q.id;
+    if (q.class) addClassAryTo(q.class, el);
+
+    return el
+  }
+
+  function elementFrom(e){
+    if (e instanceof HTMLElement) return e
+
+    if (typeof e === "string"){
+      return selectOrCreateDOM(e)
+    }
+
+    return throwSoft$1(`Could not find/create element from [${e}]`)
+  }
+
+  const snake2camel = str => str.replace(/([-_]\w)/g, g => g[1].toUpperCase()); 
+
+  const apply = {
+    html: ((html, dom) => {
+      dom.innerHTML = html; 
+    }),
+
+    pcss: ((pcss, dom) => {
+      for (let [key, value] of parse.cssToDict(pcss)){
+        dom.style[snake2camel(key)] = value; 
+      }
+    })
+  };
+
+  const parse = {
+    cssToDict: ((str) => {
+      str = str.replaceAll("\n", ";").replaceAll(":", " ");
+      let cssDict = new Map();
+      for (let style of str.split(";")) {
+        if (style.replace(/\s/g, "").length < 2) continue
+        style = style.trim().split(" ");
+        let key = style[0];
+        style.shift();
+        cssDict.set(key.trim(), style.join(" ").trim());
+      }
+
+      // check css properties
+      let unsupported = [];
+      for (const [key, value] of cssDict.entries()) {
+        if (!CSS.supports(key, value)) unsupported.push(`${key.trim()}: ${value.trim()}`);
+      }
+
+      if (unsupported.length > 0) {
+        throwSoft$1(`CSS syntax error`, 'typos', unsupported);
+      }
+      return cssDict
+    }),
+
+    css: ((pcss) => {
+      let css = "";
+      for (let [key, value] of parse.cssToDict(pcss)) {
+        //console.log(key, value)
+        css += `${key}:${value};`;
+      }
+      return css
+    }),
+
+    html: ((html) => {
+      return html
+    })
+  };
+
+  const _deving = process.env.NODE_ENV === 'development';
+
+  var index = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    _deving: _deving,
+    throwSoft: throwSoft$1,
+    log: log,
+    suc: suc,
+    whenDOM: whenDOM,
+    parseQuery: parseQuery,
+    addClassAryTo: addClassAryTo,
+    selectOrCreateDOM: selectOrCreateDOM,
+    elementFrom: elementFrom,
+    toHTMLAttr: toHTMLAttr,
+    generateRandomKey: generateRandomKey,
+    objDiff: objDiff,
+    _extend: _extend,
+    createEventChains: createEventChains,
+    parse: parse,
+    apply: apply
+  });
+
+  // Its like $("#id") of jquery
+
+
+  function domify(e){
+    if (e == null || e == undefined) return throwSoft$1(`Could not find a DOM element for ${e}`)
+    // console.log(e.element)
+    if (e.element) return domify(e.element)
+    let a = elementFrom(e);
+    return a
+  }
+
+
+
+  function _e(query, innerHTML){
+    //whenDOM(function() {
+      let element = elementFrom(query);
+
+      if (element instanceof HTMLElement){
+        element.init();
+        element._render();
+      }
+
+      if (typeof innerHTML === "string") element.html(innerHTML);
+      //if (typeof cb === "function") cb(element)
+      return element
+    //})
+  }
+
+  const elementProto = { 
+    init: function(){
+      this.isPragmaElement = true;
+      //this.eventChains("docLoad", "render")
+      createEventChains(this, "docLoad", "render");
+      whenDOM(() => this.docLoadChain.exec(this));
+    },
+
+    _render: function(){
+      this.renderChain.exec(this);
+    },
+
+    appendTo: function(where){
+      this.onDocLoad(() => {
+        domify(where).appendChild(this);
+        this._render();
+      });
+      return this
+    },
+
+    append: function(e){
+      this.onRender(() => {
+        let d = domify(e);
+        this.appendChild(d);
+      });
+      return this 
+    },
+
+    css: function(styles){
+      this.onRender(() => {
+        apply.pcss(styles, this);
+      });
+      return this
+    },
+
+    html: function(inner){ 
+      this.onRender(() => {
+        apply.html(inner, this);
+      });
+      return this
+    },
+
+    setId: function(id){
+      this.id = id;
+      return this
+    },
+
+    addClass: function(...classes){
+      addClassAryTo(classes, this);
+      return this
+    },
+
+    listenTo: function(...args){
+      this.onRender(() => {
+        this.addEventListener(...args);
+      });
+      return this
+    }
+  };
+
+
+  for (let [key, val] of Object.entries(elementProto)){
+    HTMLElement.prototype[key] = val;
+  }
+  //_extend(HTMLElement, elementProto)
+
+  // recursively connected with other nodes
+
+  class Node {
+    constructor(key) {
+      this.childMap = new Map();
+      this.key = key || generateRandomKey();
+      // API
+      this.containsKey = this.childMap.has;
+    }
+
+    get kidsum() { return this.childMap.size }
+    get hasKids() { return this.kidsum > 0 }
+    get shape() { return this.shapePrefix() }
+
+    get master() {
+      if (this.parent == null || this.parent.parent == null) return this.parent
+      return this.parent.master
+    }
+
+    get children() {
+      return Array.from(this.childMap.values())
+    }
+
+    get depthKey() {
+      if (this.parent) {
+        return this.parent.depthKey + "<~<" + this.key
+      }
+      return this.key
+    }
+
+    get allChildren() {
+      if (!this.hasKids) return null
+      let childs = this.children;
+      for (let child of childs) {
+        let descs = child.allChildren;
+        if (descs) childs = childs.concat(descs);
+      }
+      return childs
+    }
+
+    find(key) {
+      // recursively find a key
+      // return false
+      if (this.childMap.has(key)) return this.childMap.get(key)
+      for (let [k, value] of this.childMap) {
+        let vv = value.find(key);
+        if (vv) return vv
+      }
+    }
+
+    add(spragma) {
+      if (this.childMap.has(spragma.key)) {
+        spragma.key = spragma.key + "~";
+        return this.add(spragma)
+      }
+      spragma.parent = this;
+      this.childMap.set(spragma.key, spragma);
+      // this.children.push(spragma)
+    }
+
+    shapePrefix(prefix = "") {
+      let shape = `${prefix}| ${this.type} - ${this.key} \n`;
+      if (this.hasKids) {
+        prefix += "| ";
+        for (let child of this.children) {
+          shape += child.shapePrefix(prefix);
+        }
+      }
+      return shape
+    }
+  }
+
+  const _parseMap = {
+
+    parent: (self, parent) => {
+      self.parent = parent;
+    },
+
+    value: (self, v) => {
+      self.value = v;    
+    },
+
+    id: (self, id) => {
+      self.id = id;
+    },
+
+    class: (self, className) => {
+      self._class = className;
+    },
+
+    element: (self, element) => {
+      if (!(element instanceof HTMLElement)) return throwSoft(`Could not add ${element} as the element of [${self}]`)
+      self.element = element;
+    },
+
+    children: (self, children) => {
+      if (children.constructor == Array) return self.buildAry(children)
+      self.build(children);
+    },
+
+    childTemplate: (self, temp) => {
+      
+    }
+  };
+
+  function parseMap(map, obj) {
+    let _notParsed = new Map();
+
+    for (let [key, val] of Object.entries(map)){
+      if (_parseMap.hasOwnProperty(key)){
+        _parseMap[key](obj, val);
+        continue
+      }
+      _notParsed.set(key, val);
+    }
+
+    // add listener callbacks
+    if (obj.element) {
+      obj.element.whenInDOM((self) => { 
+        for (let [key, val] of _notParsed) {
+          key = key.toLowerCase();
+          if (key.includes("on")){
+            let event = key.split("on")[1].trim();
+            self.listenTo(event, () => {
+              obj.action(val);
+            });
+          }
+        } 
+      });
+    }
+  }
+
+  class Pragma extends Node {
+    constructor(map, parent){
+      super();
+
+      this.actionChain = new ActionChain();
+
+      if (typeof map === "object"){
+        parseMap(map, this);
+      } else {
+        this.key = map;
+      }
+
+      this.key = this.key || generateRandomKey();
+      this.element = this.element || _e(`#${this.id}`); 
+    }
+
+
+    set value(n) {
+
+      function _processValue(v) {
+        return v
+      }
+
+      this.v = _processValue(n);
+      this.exec();
+    }
+
+    get value(){
+      return this.v
+    }
+
+    setValue(n){ this.value = n; return this }
+
+    exec() { 
+      this.actionChain.execAs(this, ...arguments);
+      return this
+    }
+
+    set id(n) {
+      this.key = n; 
+      if (this.element) this.element.id = this.id; 
+    }
+      
+    get id() {
+      return toHTMLAttr(this.key)
+    }
+
+    buildAry(aryOfMaps){
+      for (let map of aryOfMaps){
+        this.add(new Pragma(map, this));
+      }
+      return this
+    }
+
+    build(...maps) {
+      return this.buildAry(maps)
+    }
+
+    // FOR HTML DOM
+    as(query=null, innerHTML=""){
+      query = query || `div#${this.id}.pragma`;
+      this.element = _e(query, innerHTML);
+      return this
+    }
+
+    // FOR TEMPLATES
+    from(pragma){
+      
+    }
+
+    // ADD SCRIPT TO RUN WHEN VALUE CHANGES
+    do(){
+      this.actionChain.add(...arguments);
+      return this
+    }
+
+
+    // RUN SCRIPTS WITH THIS SCOPE
+    run(...scripts){
+      for (let script of scripts){
+        script.bind(this)();
+      }
+      return this
+    }
+
+    contain(...childs){
+      for (let child of childs) {
+        super.add(child);
+        if (child.isRendered){
+          throwSoft(`[${child}] is already appended`);
+        }else {
+          this.element.append(child);
+        }
+      }
+      return this
+    }
+
+    pragmatize(){
+      this.element.appendTo(this.parent.element);
+      return this
+    }
+
+    pragmatizeAt(query){
+      console.log("pragmatizing", this.element, "to", query);
+      this.element.appendTo(query);
+      return this 
+    }
+  }
+
+
+  const _adoptElementAttrs = [
+    "listenTo",
+    "html",
+    "css",
+    "addClass",
+    "setId"
+  ];
+
+  for (let a of _adoptElementAttrs) {
+   Pragma.prototype[a] = function() {
+      this.element[a](...arguments);
+      return this
+    }; 
+  }
+
+
+  /*
+   *pragmaMap = {
+   *  id: "",
+   *  class: "",
+   *  value: 0,
+   *  elements: [],
+   *  element: "" / dom,
+   *  onSet: () => {
+   *
+   *  },
+   *  onClick: () => {
+   *
+   *  }
+   *}
+   */
+
+  const Monitor = new Pragma()
+                          .as(null, "0")
+                          .run(function() {
+                            this.monitorTpl = (v) => v;
+                          })
+                          .do(function() {
+                            this.html(this.monitorTpl(this.value));
+                          });
+
+  var index$1 = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    Monitor: Monitor
+  });
+
+  // API layer
+
+  //const ε = function() {
+    //return new Element(...arguments)
+  //}
+
+  const π = (query, html) => {
+    let p = new Pragma();
+    p.element = _e(query, html);
+    p.id = p.element.id;
+    return p
+  };
+
+  const _p = π;
+
+  exports.Pragma = Pragma;
+  exports._e = _e;
+  exports._p = _p;
+  exports.tpl = index$1;
+  exports.util = index;
+  exports.π = π;
+
+  Object.defineProperty(exports, '__esModule', { value: true });
+
+})));
