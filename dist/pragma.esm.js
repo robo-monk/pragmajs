@@ -88,7 +88,6 @@ function _newChain(name, obj){
   });
 
   obj[eventName] = function (cb) {
-    console.log(obj[done], eventName);
     if (obj[done]) return cb(obj)
     obj[chainName].add(cb);
   };
@@ -547,6 +546,18 @@ class Pragma extends Node {
     return this.buildAry(maps)
   }
 
+  on(event){
+    var self = this;
+    return {
+      do: function(cb){
+        self.element.listenTo(event, () => {
+          self.run(cb);
+        });
+        return self
+      }
+    }
+  }
+
   // FOR HTML DOM
   as(query=null, innerHTML=""){
     query = query || `div#${this.id}.pragma`;
@@ -600,7 +611,6 @@ class Pragma extends Node {
 
 
 const _adoptElementAttrs = [
-  "listenTo",
   "html",
   "css",
   "addClass",
@@ -631,7 +641,7 @@ for (let a of _adoptElementAttrs) {
  *}
  */
 
-const Monitor = new Pragma()
+const monitor = new Pragma()
                         .as(null, "0")
                         .run(function() {
                           this.monitorTpl = (v) => v;
@@ -640,9 +650,19 @@ const Monitor = new Pragma()
                           this.html(this.monitorTpl(this.value));
                         });
 
+const button = new Pragma()
+                        .as(null, "0")
+                        .run(function() {
+                          this.buttonTpl = (v) => v;
+                        })
+                        .do(function() {
+                          this.html(this.monitorTpl(this.value));
+                        });
+
 var index$1 = /*#__PURE__*/Object.freeze({
   __proto__: null,
-  Monitor: Monitor
+  monitor: monitor,
+  button: button
 });
 
 // API layer

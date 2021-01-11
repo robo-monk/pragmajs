@@ -121,6 +121,18 @@ export default class Pragma extends Node {
     return this.buildAry(maps)
   }
 
+  on(event){
+    var self = this
+    return {
+      do: function(cb){
+        self.element.listenTo(event, () => {
+          self.run(cb)
+        })
+        return self
+      }
+    }
+  }
+
   // FOR HTML DOM
   as(query=null, innerHTML=""){
     query = query || `div#${this.id}.pragma`
@@ -174,7 +186,6 @@ export default class Pragma extends Node {
 
 
 const _adoptElementAttrs = [
-  "listenTo",
   "html",
   "css",
   "addClass",

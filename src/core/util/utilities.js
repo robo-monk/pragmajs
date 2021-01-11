@@ -35,7 +35,6 @@ function _newChain(name, obj){
   })
 
   obj[eventName] = function (cb) {
-    console.log(obj[done], eventName)
     if (obj[done]) return cb(obj)
     obj[chainName].add(cb)
   }
