@@ -1,10 +1,8 @@
 import { Pragma } from "../index"
 
 export const button = new Pragma()
-                        .as(null, "0")
-                        .run(function() {
-                          this.buttonTpl = (v) => v
-                        })
-                        .do(function() {
-                          this.html(this.monitorTpl(this.value))
-                        })
+                        .as(null, "")
+                        .on("click").do(function() {
+                            console.log("clicked button")
+                          })
+

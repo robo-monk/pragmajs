@@ -322,6 +322,7 @@ export default class Comp extends Pragma {
     }
     return cb
   }
+  // @pragma-mousetrap extension
   bind(keys, cb, event){
     cb = this.proc_bind_cb(cb)
     Mousetrap.bind(keys, () => { return cb(this) }, event)

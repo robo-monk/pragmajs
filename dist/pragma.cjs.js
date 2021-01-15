@@ -105,16 +105,16 @@ function createEventChains(obj, ...chains){
 
 const toHTMLAttr = s => s.replace(/[^a-z0-9]/gi, '-').toLowerCase();
 
-if (!window.pragma) window.pragma = {};
+if (!globalThis.pragma) globalThis.pragma = {};
 
-createEventChains(window.pragma, "docLoad");
-const whenDOM = window.pragma.onDocLoad;
+createEventChains(globalThis.pragma, "docLoad");
+const whenDOM = globalThis.pragma.onDocLoad;
 
 function _docLoad(){
-  if (window.pragma.isDocLoaded) return
+  if (globalThis.pragma.isDocLoaded) return
 
   suc("📰 document is loaded.");
-  window.pragma.docLoadChain.exec();
+  globalThis.pragma.docLoadChain.exec();
 }
 document.addEventListener('readystatechange', () => {
   if (document.readyState === "complete") _docLoad(); 
@@ -244,7 +244,7 @@ const parse = {
   })
 };
 
-const _deving = process.env.NODE_ENV === 'development';
+const _deving = typeof process !== "undefined" && process.env && process.env.NODE_ENV === 'development';
 
 var index = /*#__PURE__*/Object.freeze({
   __proto__: null,
@@ -655,13 +655,10 @@ const monitor = new Pragma()
                         });
 
 const button = new Pragma()
-                        .as(null, "0")
-                        .run(function() {
-                          this.buttonTpl = (v) => v;
-                        })
-                        .do(function() {
-                          this.html(this.monitorTpl(this.value));
-                        });
+                        .as(null, "")
+                        .on("click").do(function() {
+                            console.log("clicked button");
+                          });
 
 var index$1 = /*#__PURE__*/Object.freeze({
   __proto__: null,
