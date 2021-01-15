@@ -1,7 +1,7 @@
 import { _deving } from "./index"
 
 export function throwSoft (desc, potential=null, fixes=['rerun the code 10 times'], trigger=null, force=false) {
-  if (!_deving && !force) return null
+  if (!_deving() && !force) return null
   console.error(`%c 🧯 pragma.js  %c \n
       encountered a soft error 🔫 %c \n
       \n${trigger ? `Triggered by: [${trigger.key} ${trigger}]` :``}
@@ -11,11 +11,12 @@ export function throwSoft (desc, potential=null, fixes=['rerun the code 10 times
 }
 
 export function log(){
-  if (!_deving && !force) return null
+  if (!_deving()) return null
   console.log(...arguments)
 }
 
 export function suc(){
+  if (!_deving()) return null
   console.log(`%c 🌴 [pragma] \n
       `, "font-size:12px; color:#86D787;", ...arguments, "\n")
 }

@@ -10,11 +10,10 @@ describe("can parse [ div#id.class ] queries", () => {
   })
 
   test("query 2", () => {
-    let d =  parseQuery("#YEEET.class.KROQ")
-    expect(d.tag).toBe(undefined)
+    let d =  parseQuery("#YEEET.class.KROQ", "FUCK")
+    expect(d.tag).toBe("FUCK") // default tag option works
     expect(d.id).toBe("YEEET")
     expect(d.class.length).toBe(2)
     expect(d.class[1]).toBe("KROQ")
   })
 })
-

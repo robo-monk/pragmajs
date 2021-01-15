@@ -32,7 +32,7 @@ function elementify(e){
 
 export default function _e(query, innerHTML){
   //whenDOM(function() {
-    let element = elementFrom(query)
+    let element = domify(query)
 
     if (element instanceof HTMLElement){
       element.init()

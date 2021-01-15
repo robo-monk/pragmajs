@@ -3,16 +3,15 @@ import { createEventChains } from "./utilities"
 
 const toHTMLAttr = s => s.replace(/[^a-z0-9]/gi, '-').toLowerCase()
 
-if (!globalThis.pragma) globalThis.pragma = {}
-
-createEventChains(globalThis.pragma, "docLoad")
-const whenDOM = globalThis.pragma.onDocLoad
+if (!globalThis.pragmaSpace) globalThis.pragmaSpace = {} // initialize Pragma Space # TODO put this somewhere else
+createEventChains(globalThis.pragmaSpace, "docLoad")
+const whenDOM = globalThis.pragmaSpace.onDocLoad
 
 function _docLoad(){
-  if (globalThis.pragma.isDocLoaded) return
+  if (globalThis.pragmaSpace.isDocLoaded) return
 
   suc("📰 document is loaded.")
-  globalThis.pragma.docLoadChain.exec()
+  globalThis.pragmaSpace.docLoadChain.exec()
 }
 document.addEventListener('readystatechange', () => {
   if (document.readyState === "complete") _docLoad() 
@@ -28,7 +27,9 @@ var search = /[#.]/g
 // Create a hast element from a simple CSS selector.
 function parseQuery(selector, defaultTagName = "div") {
   var value = selector || ''
-  var props = {}
+  var props = {
+    tag: defaultTagName
+  }
   var start = 0
   let subvalue, previous, match
 
@@ -84,6 +85,7 @@ function elementFrom(e){
   if (e instanceof HTMLElement) return e
 
   if (typeof e === "string"){
+    log(e)
     return selectOrCreateDOM(e)
   }
 

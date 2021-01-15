@@ -34,7 +34,7 @@ class ActionChain {
 }
 
 function throwSoft$1 (desc, potential=null, fixes=['rerun the code 10 times'], trigger=null, force=false) {
-  if (!_deving && !force) return null
+  if (!_deving() && !force) return null
   console.error(`%c 🧯 pragma.js  %c \n
       encountered a soft error 🔫 %c \n
       \n${trigger ? `Triggered by: [${trigger.key} ${trigger}]` :``}
@@ -44,11 +44,12 @@ function throwSoft$1 (desc, potential=null, fixes=['rerun the code 10 times'], t
 }
 
 function log(){
-  if (!_deving && !force) return null
+  if (!_deving()) return null
   console.log(...arguments);
 }
 
 function suc(){
+  if (!_deving()) return null
   console.log(`%c 🌴 [pragma] \n
       `, "font-size:12px; color:#86D787;", ...arguments, "\n");
 }
@@ -60,7 +61,6 @@ function generateRandomKey(){
 function objDiff(obj, edit, recursive=false){
   // TODO add recursive feature
   for (let [key, value] of Object.entries(edit)){
-    // console.log(key)
     obj[key] = value;
   }
 
@@ -101,16 +101,15 @@ function createEventChains(obj, ...chains){
 
 const toHTMLAttr = s => s.replace(/[^a-z0-9]/gi, '-').toLowerCase();
 
-if (!globalThis.pragma) globalThis.pragma = {};
-
-createEventChains(globalThis.pragma, "docLoad");
-const whenDOM = globalThis.pragma.onDocLoad;
+if (!globalThis.pragmaSpace) globalThis.pragmaSpace = {}; // initialize Pragma Space # TODO put this somewhere else
+createEventChains(globalThis.pragmaSpace, "docLoad");
+const whenDOM = globalThis.pragmaSpace.onDocLoad;
 
 function _docLoad(){
-  if (globalThis.pragma.isDocLoaded) return
+  if (globalThis.pragmaSpace.isDocLoaded) return
 
   suc("📰 document is loaded.");
-  globalThis.pragma.docLoadChain.exec();
+  globalThis.pragmaSpace.docLoadChain.exec();
 }
 document.addEventListener('readystatechange', () => {
   if (document.readyState === "complete") _docLoad(); 
@@ -126,7 +125,9 @@ var search = /[#.]/g;
 // Create a hast element from a simple CSS selector.
 function parseQuery(selector, defaultTagName = "div") {
   var value = selector || '';
-  var props = {};
+  var props = {
+    tag: defaultTagName
+  };
   var start = 0;
   let subvalue, previous, match;
 
@@ -182,6 +183,7 @@ function elementFrom(e){
   if (e instanceof HTMLElement) return e
 
   if (typeof e === "string"){
+    log(e);
     return selectOrCreateDOM(e)
   }
 
@@ -240,7 +242,13 @@ const parse = {
   })
 };
 
-const _deving = typeof process !== "undefined" && process.env && process.env.NODE_ENV === 'development';
+if (!globalThis.pragmaSpace) globalThis.pragmaSpace = {}; // initialize Pragma Space # TODO put this somewhere else
+globalThis.pragmaSpace.dev =  globalThis.pragmaSpace.dev
+    || (typeof process !== "undefined" && process.env && process.env.NODE_ENV === 'development');
+    
+function _deving(){
+  return globalThis.pragmaSpace.dev
+}
 
 var index = /*#__PURE__*/Object.freeze({
   __proto__: null,
@@ -277,7 +285,7 @@ function domify(e){
 
 function _e(query, innerHTML){
   //whenDOM(function() {
-    let element = elementFrom(query);
+    let element = domify(query);
 
     if (element instanceof HTMLElement){
       element.init();
@@ -501,7 +509,7 @@ class Pragma extends Node {
     }
 
     this.key = this.key || generateRandomKey();
-    this.element = this.element || _e(`#${this.id}`); 
+    if (!this.element) this.as();
   }
 
 
@@ -561,13 +569,22 @@ class Pragma extends Node {
   // FOR HTML DOM
   as(query=null, innerHTML=""){
     query = query || `div#${this.id}.pragma`;
+    console.log("this as", query);
     this.element = _e(query, innerHTML);
     return this
   }
 
   // FOR TEMPLATES
+  get export(){ return this.exports }
+  set export(n){ this.exports = n;}
+
   from(pragma){
-    
+    if (pragma.export){
+      for (let attr of pragma.export){
+        this[attr] = pragma[attr];
+      }
+    }
+    return this
   }
 
   // ADD SCRIPT TO RUN WHEN VALUE CHANGES
@@ -603,7 +620,7 @@ class Pragma extends Node {
   }
 
   pragmatizeAt(query){
-    console.log("pragmatizing", this.element, "to", query);
+    // console.log("pragmatizing", this.element, "to", query)
     this.element.appendTo(query);
     return this 
   }
@@ -656,10 +673,49 @@ const button = new Pragma()
                             console.log("clicked button");
                           });
 
+// 
+// var icons = {
+//   _create: function() {
+//     v = "ha"
+//     return v
+//   }
+//   settings: `<path>0.3, 4943</path>`
+// }
+
+const create = {
+  fromObject: function(obj){
+    log(`Creating template object from obj: [${obj}]`);
+    if (obj._blueprint){
+      delete obj._blueprint;
+    }
+
+    let tpl = new Map();
+    for (let [key, _partial] of obj){
+      tpl.set(key, _create(_partial));
+    }
+
+    return tpl
+  },
+  //fromFile: function(fn){
+    //log(`Creating template object from file: [${fn}]`)
+    //return this.fromObject(file)
+  //},
+  from: function(n){
+    /*
+     * creates template object from a JSON file or object
+     */
+    //if (typeof n === 'string') return this.fromFile(n)
+    if (typeof n === 'object') return this.fromObject(n)
+
+    throwSoft$1(`Could not create a template object from argument [${n}])`);
+  }
+};
+
 var index$1 = /*#__PURE__*/Object.freeze({
   __proto__: null,
   monitor: monitor,
-  button: button
+  button: button,
+  create: create
 });
 
 // API layer
@@ -668,13 +724,20 @@ var index$1 = /*#__PURE__*/Object.freeze({
   //return new Element(...arguments)
 //}
 
-const π = (query, html) => {
-  let p = new Pragma();
-  p.element = _e(query, html);
-  p.id = p.element.id;
-  return p
-};
-
+const π = (query, opt) => new Pragma(query, opt);
 const _p = π;
 
-export { Pragma, _e, _p, index$1 as tpl, index as util, π };
+
+const exported = [ '_e', '_p', 'Pragma', 'util', 'tpl' ];
+
+function globalify(options){
+  if (typeof pragma !== "undefined" && pragma.__esModule){
+    for (let func of exported){
+      globalThis[func] = pragma[func];
+    }
+  }else {
+    console.error("Could not globalify [pragma]");
+  }
+}
+
+export { Pragma, _e, _p, globalify, index$1 as tpl, index as util, π };

@@ -76,7 +76,7 @@ export default class Pragma extends Node {
     }
 
     this.key = this.key || generateRandomKey()
-    this.element = this.element || _e(`#${this.id}`) 
+    if (!this.element) this.as()
   }
 
 
@@ -136,13 +136,22 @@ export default class Pragma extends Node {
   // FOR HTML DOM
   as(query=null, innerHTML=""){
     query = query || `div#${this.id}.pragma`
+    console.log("this as", query)
     this.element = _e(query, innerHTML)
     return this
   }
 
   // FOR TEMPLATES
+  get export(){ return this.exports }
+  set export(n){ this.exports = n}
+
   from(pragma){
-    
+    if (pragma.export){
+      for (let attr of pragma.export){
+        this[attr] = pragma[attr]
+      }
+    }
+    return this
   }
 
   // ADD SCRIPT TO RUN WHEN VALUE CHANGES
@@ -178,7 +187,7 @@ export default class Pragma extends Node {
   }
 
   pragmatizeAt(query){
-    console.log("pragmatizing", this.element, "to", query)
+    // console.log("pragmatizing", this.element, "to", query)
     this.element.appendTo(query)
     return this 
   }

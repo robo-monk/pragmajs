@@ -7,7 +7,6 @@ function generateRandomKey(){
 function objDiff(obj, edit, recursive=false){
   // TODO add recursive feature
   for (let [key, value] of Object.entries(edit)){
-    // console.log(key)
     obj[key] = value
   }
 

@@ -5,7 +5,7 @@
 
 <br>
 
-## Dead simple, fast UI-composer in JavaScript 
+## Dead simple, fast UI-composer in JavaScript
 
 [Check out Demo](https://robo-monk.github.io/pragmajs)
 
@@ -49,7 +49,7 @@ You'll notice that after we compose a Pragma we `pragmatize` it to tell the `Pra
 ### Stylize
 
 Here are some useful functions pragmas have.
-```js
+```JavaScript
 .css, .listen, .html.class, .element, .illustrate
 ```
 
@@ -61,7 +61,7 @@ So far, we've seen how Pragmas connect with elements in the DOM. By default, a P
 
 ### Timer Demo
 ```js
-//timer demo without the template	
+//timer demo without the template
 ```
 
 
@@ -99,7 +99,7 @@ Check out the current [template collection]().
 
 Although, PragmaJS is still in early stages of development, I think it provides us with a really interesting and beatiful way of creating and thinking about  applications. Its conceptually simple, and is built to be extensible and customisable from the ground up. Structurally we can have one singular pragma doing the high-level processing, and some other "smaller" Pragmas holding values and talking to the end user.
 
-A Menu Template, for example, would create a Pragma that has a value that changes every time a user clicks a different menu choice. You would pass it an array of options, and it would **create the pragma for you**. You don't even need to know how many pragmas it generated, you only user the "**master**" of all the possible sub pragmas, which holds 1 singular value, treating **1 problem**, and contributing towards solving your bigger problem. 
+A Menu Template, for example, would create a Pragma that has a value that changes every time a user clicks a different menu choice. You would pass it an array of options, and it would **create the pragma for you**. You don't even need to know how many pragmas it generated, you only user the "**master**" of all the possible sub pragmas, which holds 1 singular value, treating **1 problem**, and contributing towards solving your bigger problem.
 
 Which itself at the end has 1 singular variable if any, but treats 1 problem. The end user doesn't care how many sub problems you had as dev to solve. You don't care how many sub sub problems a template has to solve to solve your sub problem, which in our case was a menu to edit some settings for your quantum cloud computing graph. Because you still can't center a div and CSS still is a pain in the ass.
 
@@ -108,4 +108,3 @@ I really came to appreciate how powerful and beautiful this concept is, and made
 I hope **you** build **epic things** with it.
 
 robomonk
-
