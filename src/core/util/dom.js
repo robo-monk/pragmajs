@@ -14,12 +14,12 @@ function _docLoad(){
   globalThis.pragmaSpace.docLoadChain.exec()
 }
 document.addEventListener('readystatechange', () => {
-  if (document.readyState === "complete") _docLoad() 
+  if (document.readyState === "complete") _docLoad()
 })
 
 document.addEventListener('turbolinks:load', () => {
   suc("🚀 TURBOLINKS loaded")
-  _docLoad() 
+  _docLoad()
 })
 
 var search = /[#.]/g
@@ -63,7 +63,7 @@ function addClassAryTo(cary, el){
     let _subary = c.split(" ")
     if (_subary.length>1) {
       addClassAryTo(_subary, el)
-      continue 
+      continue
     }
     el.classList.add(c)
   }
@@ -81,23 +81,28 @@ function selectOrCreateDOM(query){
   return el
 }
 
+function fragmentFromString(strHTML) {
+    return document.createRange().createContextualFragment(strHTML);
+}
+
 function elementFrom(e){
   if (e instanceof HTMLElement) return e
 
   if (typeof e === "string"){
     log(e)
+    if (e[0] === "<") return fragmentFromString(e)
     return selectOrCreateDOM(e)
   }
 
   return throwSoft(`Could not find/create element from [${e}]`)
 }
 
-export { 
+export {
   whenDOM,
   parseQuery,
   addClassAryTo,
   selectOrCreateDOM,
   elementFrom,
-  toHTMLAttr
+  toHTMLAttr,
+  fragmentFromString
 }
-

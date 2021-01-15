@@ -1,7 +1,7 @@
 import Node from "./node"
 import _e from "./element"
 import ActionChain from "./actionChain"
-import { generateRandomKey, toHTMLAttr } from "./util/index"
+import { generateRandomKey, toHTMLAttr, log } from "./util/index"
 
 const _parseMap = {
 
@@ -10,7 +10,7 @@ const _parseMap = {
   },
 
   value: (self, v) => {
-    self.value = v    
+    self.value = v
   },
 
   id: (self, id) => {
@@ -32,7 +32,7 @@ const _parseMap = {
   },
 
   childTemplate: (self, temp) => {
-    
+
   }
 }
 
@@ -49,7 +49,7 @@ function parseMap(map, obj) {
 
   // add listener callbacks
   if (obj.element) {
-    obj.element.whenInDOM((self) => { 
+    obj.element.whenInDOM((self) => {
       for (let [key, val] of _notParsed) {
         key = key.toLowerCase()
         if (key.includes("on")){
@@ -58,7 +58,7 @@ function parseMap(map, obj) {
             obj.action(val)
           })
         }
-      } 
+      }
     })
   }
 }
@@ -80,6 +80,14 @@ export default class Pragma extends Node {
   }
 
 
+  get element(){ return this.elementDOM }
+  set element(n) {
+    // TODO check if element is of type elememtn blah blha
+    log(">> SETTING THIS DOM ELEMENT", n, this.id)
+    n.id = this.id
+    this.elementDOM = n
+  }
+
   set value(n) {
 
     function _processValue(v) {
@@ -96,16 +104,16 @@ export default class Pragma extends Node {
 
   setValue(n){ this.value = n; return this }
 
-  exec() { 
+  exec() {
     this.actionChain.execAs(this, ...arguments)
     return this
   }
 
   set id(n) {
-    this.key = n 
-    if (this.element) this.element.id = this.id 
+    this.key = n
+    if (this.element) this.element.id = this.id
   }
-    
+
   get id() {
     return toHTMLAttr(this.key)
   }
@@ -136,7 +144,7 @@ export default class Pragma extends Node {
   // FOR HTML DOM
   as(query=null, innerHTML=""){
     query = query || `div#${this.id}.pragma`
-    console.log("this as", query)
+    log("this as", query)
     this.element = _e(query, innerHTML)
     return this
   }
@@ -189,7 +197,7 @@ export default class Pragma extends Node {
   pragmatizeAt(query){
     // console.log("pragmatizing", this.element, "to", query)
     this.element.appendTo(query)
-    return this 
+    return this
   }
 }
 
@@ -205,7 +213,7 @@ for (let a of _adoptElementAttrs) {
  Pragma.prototype[a] = function() {
     this.element[a](...arguments)
     return this
-  } 
+  }
 }
 
 

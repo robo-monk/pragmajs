@@ -1,7 +1,7 @@
 // Its like $("#id") of jquery
 
 import ActionChain from "./actionChain"
-import { 
+import {
   throwSoft,
   whenDOM,
   parseQuery,
@@ -16,7 +16,6 @@ import {
 
 function domify(e){
   if (e == null || e == undefined) return throwSoft(`Could not find a DOM element for ${e}`)
-  // console.log(e.element)
   if (e.element) return domify(e.element)
   let a = elementFrom(e)
   return a
@@ -24,17 +23,24 @@ function domify(e){
 
 function elementify(e){
   if (e == null) return document.body
-  if (e.isPragmaElement === true) return e 
+  if (e.isPragmaElement === true) return e
   return new Element(e)
 }
 
-
+function convertShadowToLight(e){
+  var l = document.createElement('template')
+  l.appendChild(e.cloneNode(true))
+  return l.firstChild
+}
 
 export default function _e(query, innerHTML){
-  //whenDOM(function() {
     let element = domify(query)
 
-    if (element instanceof HTMLElement){
+    if (element.constructor === DocumentFragment){
+      element = convertShadowToLight(element)
+    }
+
+    if (element instanceof Element){
       element.init()
       element._render()
     }
@@ -45,7 +51,7 @@ export default function _e(query, innerHTML){
   //})
 }
 
-const elementProto = { 
+const elementProto = {
   init: function(){
     this.isPragmaElement = true
     //this.eventChains("docLoad", "render")
@@ -70,7 +76,7 @@ const elementProto = {
       let d = domify(e)
       this.appendChild(d)
     })
-    return this 
+    return this
   },
 
   css: function(styles){
@@ -80,7 +86,7 @@ const elementProto = {
     return this
   },
 
-  html: function(inner){ 
+  html: function(inner){
     this.onRender(() => {
       apply.html(inner, this)
     })
@@ -105,10 +111,6 @@ const elementProto = {
   }
 }
 
-
 for (let [key, val] of Object.entries(elementProto)){
-  HTMLElement.prototype[key] = val
+  Element.prototype[key] = val
 }
-//_extend(HTMLElement, elementProto)
-
-

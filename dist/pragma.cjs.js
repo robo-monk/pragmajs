@@ -116,12 +116,12 @@ function _docLoad(){
   globalThis.pragmaSpace.docLoadChain.exec();
 }
 document.addEventListener('readystatechange', () => {
-  if (document.readyState === "complete") _docLoad(); 
+  if (document.readyState === "complete") _docLoad();
 });
 
 document.addEventListener('turbolinks:load', () => {
   suc("🚀 TURBOLINKS loaded");
-  _docLoad(); 
+  _docLoad();
 });
 
 var search = /[#.]/g;
@@ -165,7 +165,7 @@ function addClassAryTo(cary, el){
     let _subary = c.split(" ");
     if (_subary.length>1) {
       addClassAryTo(_subary, el);
-      continue 
+      continue
     }
     el.classList.add(c);
   }
@@ -183,11 +183,16 @@ function selectOrCreateDOM(query){
   return el
 }
 
+function fragmentFromString(strHTML) {
+    return document.createRange().createContextualFragment(strHTML);
+}
+
 function elementFrom(e){
   if (e instanceof HTMLElement) return e
 
   if (typeof e === "string"){
     log(e);
+    if (e[0] === "<") return fragmentFromString(e)
     return selectOrCreateDOM(e)
   }
 
@@ -266,6 +271,7 @@ var index = /*#__PURE__*/Object.freeze({
   selectOrCreateDOM: selectOrCreateDOM,
   elementFrom: elementFrom,
   toHTMLAttr: toHTMLAttr,
+  fragmentFromString: fragmentFromString,
   generateRandomKey: generateRandomKey,
   objDiff: objDiff,
   _extend: _extend,
@@ -279,19 +285,25 @@ var index = /*#__PURE__*/Object.freeze({
 
 function domify(e){
   if (e == null || e == undefined) return throwSoft$1(`Could not find a DOM element for ${e}`)
-  // console.log(e.element)
   if (e.element) return domify(e.element)
   let a = elementFrom(e);
   return a
 }
 
+function convertShadowToLight(e){
+  var l = document.createElement('template');
+  l.appendChild(e.cloneNode(true));
+  return l.firstChild
+}
 
-
-function _e(query, innerHTML){
-  //whenDOM(function() {
+function _e$1(query, innerHTML){
     let element = domify(query);
 
-    if (element instanceof HTMLElement){
+    if (element.constructor === DocumentFragment){
+      element = convertShadowToLight(element);
+    }
+
+    if (element instanceof Element){
       element.init();
       element._render();
     }
@@ -302,7 +314,7 @@ function _e(query, innerHTML){
   //})
 }
 
-const elementProto = { 
+const elementProto = {
   init: function(){
     this.isPragmaElement = true;
     //this.eventChains("docLoad", "render")
@@ -327,7 +339,7 @@ const elementProto = {
       let d = domify(e);
       this.appendChild(d);
     });
-    return this 
+    return this
   },
 
   css: function(styles){
@@ -337,7 +349,7 @@ const elementProto = {
     return this
   },
 
-  html: function(inner){ 
+  html: function(inner){
     this.onRender(() => {
       apply.html(inner, this);
     });
@@ -362,11 +374,9 @@ const elementProto = {
   }
 };
 
-
 for (let [key, val] of Object.entries(elementProto)){
-  HTMLElement.prototype[key] = val;
+  Element.prototype[key] = val;
 }
-//_extend(HTMLElement, elementProto)
 
 // recursively connected with other nodes
 
@@ -447,7 +457,7 @@ const _parseMap = {
   },
 
   value: (self, v) => {
-    self.value = v;    
+    self.value = v;
   },
 
   id: (self, id) => {
@@ -469,7 +479,7 @@ const _parseMap = {
   },
 
   childTemplate: (self, temp) => {
-    
+
   }
 };
 
@@ -486,7 +496,7 @@ function parseMap(map, obj) {
 
   // add listener callbacks
   if (obj.element) {
-    obj.element.whenInDOM((self) => { 
+    obj.element.whenInDOM((self) => {
       for (let [key, val] of _notParsed) {
         key = key.toLowerCase();
         if (key.includes("on")){
@@ -495,7 +505,7 @@ function parseMap(map, obj) {
             obj.action(val);
           });
         }
-      } 
+      }
     });
   }
 }
@@ -517,6 +527,14 @@ class Pragma extends Node {
   }
 
 
+  get element(){ return this.elementDOM }
+  set element(n) {
+    // TODO check if element is of type elememtn blah blha
+    log(">> SETTING THIS DOM ELEMENT", n, this.id);
+    n.id = this.id;
+    this.elementDOM = n;
+  }
+
   set value(n) {
 
     function _processValue(v) {
@@ -533,16 +551,16 @@ class Pragma extends Node {
 
   setValue(n){ this.value = n; return this }
 
-  exec() { 
+  exec() {
     this.actionChain.execAs(this, ...arguments);
     return this
   }
 
   set id(n) {
-    this.key = n; 
-    if (this.element) this.element.id = this.id; 
+    this.key = n;
+    if (this.element) this.element.id = this.id;
   }
-    
+
   get id() {
     return toHTMLAttr(this.key)
   }
@@ -573,8 +591,8 @@ class Pragma extends Node {
   // FOR HTML DOM
   as(query=null, innerHTML=""){
     query = query || `div#${this.id}.pragma`;
-    console.log("this as", query);
-    this.element = _e(query, innerHTML);
+    log("this as", query);
+    this.element = _e$1(query, innerHTML);
     return this
   }
 
@@ -626,7 +644,7 @@ class Pragma extends Node {
   pragmatizeAt(query){
     // console.log("pragmatizing", this.element, "to", query)
     this.element.appendTo(query);
-    return this 
+    return this
   }
 }
 
@@ -642,7 +660,7 @@ for (let a of _adoptElementAttrs) {
  Pragma.prototype[a] = function() {
     this.element[a](...arguments);
     return this
-  }; 
+  };
 }
 
 
@@ -677,7 +695,7 @@ const button = new Pragma()
                             console.log("clicked button");
                           });
 
-// 
+//
 // var icons = {
 //   _create: function() {
 //     v = "ha"
@@ -688,38 +706,67 @@ const button = new Pragma()
 
 const create = {
   fromObject: function(obj){
-    log(`Creating template object from obj: [${obj}]`);
-    if (obj._blueprint){
-      delete obj._blueprint;
-    }
+    log(`Creating template object from obj: [${JSON.stringify(obj)}]`);
 
-    let tpl = new Map();
-    for (let [key, _partial] of obj){
-      tpl.set(key, _create(_partial));
+    // if (obj._blueprint){
+    //   delete obj._blueprint
+    // }
+
+    const _create = obj._create || function(partial){
+      return partial
+    };
+
+    if (obj._create) delete obj._create;
+
+    let tpl = {};
+    for (let [key, _partial] of Object.entries(obj)){
+      // tpl[key] = _create(_partial)
+      Object.defineProperty(tpl, key, {
+        get: function() {
+          return _create(_partial, ...arguments)
+        }
+      });
     }
 
     return tpl
   },
-  //fromFile: function(fn){
-    //log(`Creating template object from file: [${fn}]`)
-    //return this.fromObject(file)
-  //},
-  from: function(n){
+  from: function(n, _create){
     /*
      * creates template object from a JSON file or object
      */
     //if (typeof n === 'string') return this.fromFile(n)
-    if (typeof n === 'object') return this.fromObject(n)
+    if (typeof n === 'object'){
+      if (typeof _create === "function")
+        n['_create'] = _create;
+
+      return this.fromObject(n)
+    }
 
     throwSoft$1(`Could not create a template object from argument [${n}])`);
   }
 };
 
+function icons(iconSet){
+  return create.from(iconSet,
+    _iconSVG => _p().run(
+      function(){
+        this.element = _e(_iconSVG);
+        this.export = ['element'];
+    })
+  )
+}
+
+function icon(){
+
+}
+
 var index$1 = /*#__PURE__*/Object.freeze({
   __proto__: null,
   monitor: monitor,
   button: button,
-  create: create
+  create: create,
+  icons: icons,
+  icon: icon
 });
 
 // API layer
@@ -745,7 +792,7 @@ function globalify(options){
 }
 
 exports.Pragma = Pragma;
-exports._e = _e;
+exports._e = _e$1;
 exports._p = _p;
 exports.globalify = globalify;
 exports.tpl = index$1;
