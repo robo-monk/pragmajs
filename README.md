@@ -1,5 +1,6 @@
-![npm-size](https://img.shields.io/npm/v/pragmajs?style=for-the-badge)
-![npm-size](https://img.shields.io/bundlephobia/minzip/pragmajs?style=for-the-badge)
+![npm-size](https://img.shields.io/npm/v/pragmajs)
+![npm-size](https://img.shields.io/bundlephobia/minzip/pragmajs)
+[![Known Vulnerabilities](https://snyk.io/test/npm/pragmajs/0.3.0/badge.svg)](https://snyk.io/test/npm/pragmajs/0.3.0)
 
 [<img width=250px src="docs/logos/pragmajs.svg">](https://robo-monk.github.io/pragmajs)
 
@@ -12,8 +13,16 @@
 <br>
 
 # Installation
+
+### npm
 ```bash
 npm i pragmajs
+```
+
+### Yarn
+
+```bash
+yarn add pragmajs
 ```
 
 # How To
