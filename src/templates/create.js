@@ -1,14 +1,5 @@
 import { util, _p } from "../index"
 
-//
-// var icons = {
-//   _create: function() {
-//     v = "ha"
-//     return v
-//   }
-//   settings: `<path>0.3, 4943</path>`
-// }
-
 export const create = {
   fromObject: function(obj){
     util.log(`Creating template object from obj: [${JSON.stringify(obj)}]`)
@@ -23,12 +14,20 @@ export const create = {
 
     if (obj._create) delete obj._create
 
-    let tpl = {}
+    let tpl = {
+      defaults: {},
+      isPragmaTemplate: true
+    }
+
+    tpl.setDefaults = function(obj){
+      this.defaults = util.objDiff(this.defaults, obj)
+      return this
+    }
+
     for (let [key, _partial] of Object.entries(obj)){
-      // tpl[key] = _create(_partial)
       Object.defineProperty(tpl, key, {
         get: function() {
-          return _create(_partial, ...arguments)
+          return _create(_partial, tpl, ...arguments)
         }
       })
     }

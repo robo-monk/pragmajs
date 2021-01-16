@@ -72,7 +72,6 @@
 
     return obj
   }
-
   function _extend(e, proto){
     Object.setPrototypeOf(e, objDiff(Object.getPrototypeOf(e), proto));
   }
@@ -81,7 +80,6 @@
     return this.charAt(0).toUpperCase() + this.slice(1)
   };
 
-   
   function _newChain(name, obj){
     let chainName = `${name}Chain`;
     let eventName = `on${name.capitalize()}`;
@@ -97,11 +95,11 @@
       if (obj[done]) return cb(obj)
       obj[chainName].add(cb);
     };
-  } 
+  }
 
   function createEventChains(obj, ...chains){
     for (let chain of chains){
-        _newChain(chain, obj); 
+        _newChain(chain, obj);
     }
   }
 
@@ -190,7 +188,7 @@
   }
 
   function elementFrom(e){
-    if (e instanceof HTMLElement) return e
+    if (e instanceof Element) return e
 
     if (typeof e === "string"){
       log(e);
@@ -199,6 +197,17 @@
     }
 
     return throwSoft$1(`Could not find/create element from [${e}]`)
+  }
+
+  function fillSVG(svg, color){
+    console.log(color);
+    console.log(_e$1(svg).findAll("path"));
+    _e$1(svg).findAll("path").forEach(path => {
+      const ff = path.attr("fill");
+      if (ff!="none" && ff!="transparent"){
+        path.attr("fill", color);
+      }
+    });
   }
 
   const snake2camel = str => str.replace(/([-_]\w)/g, g => g[1].toUpperCase()); 
@@ -256,7 +265,7 @@
   if (!globalThis.pragmaSpace) globalThis.pragmaSpace = {}; // initialize Pragma Space # TODO put this somewhere else
   globalThis.pragmaSpace.dev =  globalThis.pragmaSpace.dev
       || (typeof process !== "undefined" && process.env && process.env.NODE_ENV === 'development');
-      
+
   function _deving(){
     return globalThis.pragmaSpace.dev
   }
@@ -274,6 +283,7 @@
     elementFrom: elementFrom,
     toHTMLAttr: toHTMLAttr,
     fragmentFromString: fragmentFromString,
+    fillSVG: fillSVG,
     generateRandomKey: generateRandomKey,
     objDiff: objDiff,
     _extend: _extend,
@@ -291,6 +301,12 @@
     let a = elementFrom(e);
     return a
   }
+
+  // function elementify(e){
+  //   if (e == null) return document.body
+  //   if (e.isPragmaElement === true) return e
+  //   return new Element(e)
+  // }
 
   function convertShadowToLight(e){
     var l = document.createElement('template');
@@ -373,6 +389,29 @@
         this.addEventListener(...args);
       });
       return this
+    },
+
+    attr: function(a, val=undefined){
+      if (typeof a === 'string'){
+        if (val === undefined) return this.getAttribute(a)
+        const key = a;
+        a = {};
+        a[key] = val;
+      }
+
+      for (let [attr, val] of Object.entries(a)){
+        this.setAttribute(attr, val);
+      }
+
+      return this
+    },
+
+    find: function(){
+      return this.querySelector(...arguments)
+    },
+
+    findAll: function(){
+      return this.querySelectorAll(...arguments)
     }
   };
 
@@ -471,7 +510,7 @@
     },
 
     element: (self, element) => {
-      if (!(element instanceof HTMLElement)) return throwSoft(`Could not add ${element} as the element of [${self}]`)
+      if (!(element instanceof Element)) return throwSoft(`Could not add ${element} as the element of [${self}]`)
       self.element = element;
     },
 
@@ -532,7 +571,7 @@
     get element(){ return this.elementDOM }
     set element(n) {
       // TODO check if element is of type elememtn blah blha
-      log(">> SETTING THIS DOM ELEMENT", n, this.id);
+      // log(">> SETTING THIS DOM ELEMENT", n, this.id)
       n.id = this.id;
       this.elementDOM = n;
     }
@@ -697,15 +736,6 @@
                               console.log("clicked button");
                             });
 
-  //
-  // var icons = {
-  //   _create: function() {
-  //     v = "ha"
-  //     return v
-  //   }
-  //   settings: `<path>0.3, 4943</path>`
-  // }
-
   const create = {
     fromObject: function(obj){
       log(`Creating template object from obj: [${JSON.stringify(obj)}]`);
@@ -720,12 +750,20 @@
 
       if (obj._create) delete obj._create;
 
-      let tpl = {};
+      let tpl = {
+        defaults: {},
+        isPragmaTemplate: true
+      };
+
+      tpl.setDefaults = function(obj){
+        this.defaults = objDiff(this.defaults, obj);
+        return this
+      };
+
       for (let [key, _partial] of Object.entries(obj)){
-        // tpl[key] = _create(_partial)
         Object.defineProperty(tpl, key, {
           get: function() {
-            return _create(_partial, ...arguments)
+            return _create(_partial, tpl, ...arguments)
           }
         });
       }
@@ -748,11 +786,19 @@
     }
   };
 
+  function applyDefaults(el, d){
+    if (d.fill){
+      fillSVG(el, d.fill);
+      delete d.fill;
+    }
+    return el.attr(d)
+  }
+
   function icons(iconSet){
     return create.from(iconSet,
-      _iconSVG => _p().run(
+      (_iconSVG, tpl) => _p().run(
         function(){
-          this.element = _e(_iconSVG);
+          this.element = applyDefaults(_e(_iconSVG), tpl.defaults);
           this.export = ['element'];
       })
     )

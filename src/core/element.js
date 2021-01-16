@@ -21,11 +21,11 @@ function domify(e){
   return a
 }
 
-function elementify(e){
-  if (e == null) return document.body
-  if (e.isPragmaElement === true) return e
-  return new Element(e)
-}
+// function elementify(e){
+//   if (e == null) return document.body
+//   if (e.isPragmaElement === true) return e
+//   return new Element(e)
+// }
 
 function convertShadowToLight(e){
   var l = document.createElement('template')
@@ -108,6 +108,29 @@ const elementProto = {
       this.addEventListener(...args)
     })
     return this
+  },
+
+  attr: function(a, val=undefined){
+    if (typeof a === 'string'){
+      if (val === undefined) return this.getAttribute(a)
+      const key = a
+      a = {}
+      a[key] = val
+    }
+
+    for (let [attr, val] of Object.entries(a)){
+      this.setAttribute(attr, val)
+    }
+
+    return this
+  },
+
+  find: function(){
+    return this.querySelector(...arguments)
+  },
+
+  findAll: function(){
+    return this.querySelectorAll(...arguments)
   }
 }
 

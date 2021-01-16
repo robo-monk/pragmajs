@@ -5,15 +5,19 @@ pragmaSpace.dev = true
 
 
 _p('test')
-.html("hahah this is the shit")
-.pragmatizeAt("p")
+  .html("hahah this is the shit")
+  .pragmatizeAt("p")
 
 // const icons = tpl.create.from(uiIcons)
-const icons = tpl.icons(uiIcons)
+const icons = tpl.icons(uiIcons).setDefaults({
+  fill: 'whitesmoke'
+})
+
 let iconGate = _p("gate").from(icons.gate)
 iconGate.pragmatizeAt("p")
 
 console.log(icons)
+console.log(icons.defaults)
 // _e(icons.gate).appendTo("p")
 console.log()
 //let ppp = _p('meow')

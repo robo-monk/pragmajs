@@ -1,5 +1,6 @@
 import { throwSoft, log, suc } from "./log"
 import { createEventChains } from "./utilities"
+import { _e } from "../element"
 
 const toHTMLAttr = s => s.replace(/[^a-z0-9]/gi, '-').toLowerCase()
 
@@ -86,7 +87,7 @@ function fragmentFromString(strHTML) {
 }
 
 function elementFrom(e){
-  if (e instanceof HTMLElement) return e
+  if (e instanceof Element) return e
 
   if (typeof e === "string"){
     log(e)
@@ -97,6 +98,17 @@ function elementFrom(e){
   return throwSoft(`Could not find/create element from [${e}]`)
 }
 
+function fillSVG(svg, color){
+  console.log(color)
+  console.log(_e(svg).findAll("path"))
+  _e(svg).findAll("path").forEach(path => {
+    const ff = path.attr("fill")
+    if (ff!="none" && ff!="transparent"){
+      path.attr("fill", color)
+    }
+  })
+}
+
 export {
   whenDOM,
   parseQuery,
@@ -104,5 +116,6 @@ export {
   selectOrCreateDOM,
   elementFrom,
   toHTMLAttr,
-  fragmentFromString
+  fragmentFromString,
+  fillSVG
 }

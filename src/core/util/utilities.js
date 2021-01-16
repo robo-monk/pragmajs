@@ -13,6 +13,13 @@ function objDiff(obj, edit, recursive=false){
   return obj
 }
 
+function addProperties(obj){
+  for (let [attr, val] of obj){
+    obj[attr] = val
+  }
+  return obj
+
+}
 function _extend(e, proto){
   Object.setPrototypeOf(e, objDiff(Object.getPrototypeOf(e), proto))
 }
@@ -21,7 +28,6 @@ String.prototype.capitalize = function() {
   return this.charAt(0).toUpperCase() + this.slice(1)
 }
 
- 
 function _newChain(name, obj){
   let chainName = `${name}Chain`
   let eventName = `on${name.capitalize()}`
@@ -37,18 +43,17 @@ function _newChain(name, obj){
     if (obj[done]) return cb(obj)
     obj[chainName].add(cb)
   }
-} 
+}
 
 function createEventChains(obj, ...chains){
   for (let chain of chains){
-      _newChain(chain, obj) 
+      _newChain(chain, obj)
   }
 }
-  
+
 export {
   generateRandomKey,
   objDiff,
   _extend,
   createEventChains
 }
-

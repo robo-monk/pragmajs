@@ -8,7 +8,6 @@ describe("can parse [ div#id.class ] queries", () => {
     expect(d.class.length).toBe(1)
     expect(d.class[0]).toBe("class")
   })
-
   test("query 2", () => {
     let d =  parseQuery("#YEEET.class.KROQ", "FUCK")
     expect(d.tag).toBe("FUCK") // default tag option works

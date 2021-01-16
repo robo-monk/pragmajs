@@ -22,7 +22,7 @@ const _parseMap = {
   },
 
   element: (self, element) => {
-    if (!(element instanceof HTMLElement)) return throwSoft(`Could not add ${element} as the element of [${self}]`)
+    if (!(element instanceof Element)) return throwSoft(`Could not add ${element} as the element of [${self}]`)
     self.element = element
   },
 
@@ -83,7 +83,7 @@ export default class Pragma extends Node {
   get element(){ return this.elementDOM }
   set element(n) {
     // TODO check if element is of type elememtn blah blha
-    log(">> SETTING THIS DOM ELEMENT", n, this.id)
+    // log(">> SETTING THIS DOM ELEMENT", n, this.id)
     n.id = this.id
     this.elementDOM = n
   }
