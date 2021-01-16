@@ -1,6 +1,6 @@
 import { throwSoft, log, suc } from "./log"
 import { createEventChains } from "./utilities"
-import { _e } from "../element"
+import _e from "../element"
 
 const toHTMLAttr = s => s.replace(/[^a-z0-9]/gi, '-').toLowerCase()
 
