@@ -129,11 +129,46 @@ const elementProto = {
     return this.querySelector(...arguments)
   },
 
-  findAll: function(){
-    return this.querySelectorAll(...arguments)
+  findAll: function(query){
+    return this.querySelectorAll(query)
+  },
+
+  offset: function offset(){
+    return typeof this.getBoundingClientRect === "function" ?
+            this.getBoundingClientRect() : {}
+  },
+
+  x: function(relative_width){
+    return this.left + this.width/2 - relative_width/2
   }
+}
+
+const elementGetters = {
+  top:  function(){
+    return this.offset().top
+  },
+  left: function(){
+    return this.offset().left
+  },
+  width: function(){
+    return this.offset().width
+  },
+  height: function(){
+    return this.offset().height
+  },
+  text: function(){
+    return this.textContent
+  },
 }
 
 for (let [key, val] of Object.entries(elementProto)){
   Element.prototype[key] = val
 }
+
+for (let [key, val] of Object.entries(elementGetters)){
+  Object.defineProperty(Element.prototype, key, {
+    get: val
+  })
+}
+
+// extend element instead of this weird ass thing

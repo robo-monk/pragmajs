@@ -2,7 +2,7 @@ import { throwSoft, log, suc } from "./log"
 import { createEventChains } from "./utilities"
 import _e from "../element"
 
-const toHTMLAttr = s => s.replace(/[^a-z0-9]/gi, '-').toLowerCase()
+const toHTMLAttr = s => s.toString().replace(/[^a-z0-9]/gi, '-').toLowerCase()
 
 if (!globalThis.pragmaSpace) globalThis.pragmaSpace = {} // initialize Pragma Space # TODO put this somewhere else
 createEventChains(globalThis.pragmaSpace, "docLoad")
@@ -71,8 +71,11 @@ function addClassAryTo(cary, el){
 }
 
 function selectOrCreateDOM(query){
-  let e = document.querySelector(query)
-  if (e) return e
+  try {
+    let e = document.querySelector(query)
+    if (e) return e
+  } catch (e) {}
+  
   let q = parseQuery(query)
 
   let el =  document.createElement(q.tag || "div")
@@ -88,9 +91,7 @@ function fragmentFromString(strHTML) {
 
 function elementFrom(e){
   if (e instanceof Element) return e
-
   if (typeof e === "string"){
-    log(e)
     if (e[0] === "<") return fragmentFromString(e)
     return selectOrCreateDOM(e)
   }

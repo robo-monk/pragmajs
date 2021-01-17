@@ -41,7 +41,7 @@ export default class PragmaMark extends Comp {
   }
 
   set last_marked(n){
-    this.value = n  
+    this.value = n
   }
   get last_marked(){
     return this.value
@@ -55,7 +55,7 @@ export default class PragmaMark extends Comp {
   get settings() { return this.parent.settings }
 
   set color(hex) {
-    return 
+    return
     this.settings.set({ "color": this.colors[index] })
     this.element.css({ "background": this.colors[index] })
   }
@@ -73,11 +73,11 @@ export default class PragmaMark extends Comp {
 
   get wpm() { return this.settings.get("wpm") || 260 }
   set wpm(n) { this.settings.set({ "wpm": n }) }
-    
+
   pause() {
     return new Promise((resolve, reject) => {
       if (this.pausing) return reject("already pausing")
-      
+
       this.pausing = true
 
       if (this.currentlyMarking && this.current_anime && this.last_marked) {
@@ -134,12 +134,13 @@ export default class PragmaMark extends Comp {
         ease: ease
       }, time, () => {
         //console.log(`FROM MARK -> marked ${word.text()}`)
-        this.last_marked = word 
+        this.last_marked = word
         word.parent.value = word.index
       })
   }
 
   guide(word) {
+    console.log(word)
     if (!(word instanceof Pragma)) return new Promise((resolve, reject) => { console.warn("cannot guide thru"); reject("error") })
     return new PinkyPromise((resolve, reject) => {
       let first_ease = word.isFirstInLine ? "easeInOutExpo" : "linear"
@@ -160,17 +161,17 @@ export default class PragmaMark extends Comp {
     })
   }
 
-  calcDuration(word, dw=1){ 
+  calcDuration(word, dw=1){
 
     /*  @dw - either 1 or 2
       * 1. yee|t th|e green fox
       * 2. yeet |the| green fox
       * 1. yeet th|e gr|een fox
-      * 
+      *
       * The marking of "the"(and every word) happens in 2 instances. First mark
       * will transition from "yeet" (1) and then in will mark "the", and immedietly afterwards
       * it will transition from "the" to "green" (1) etc...
-      * 
+      *
       * */
 
     if (!word instanceof Pragma) return this.throw(`Could not calculate marking duration for [${word}] since it does not appear to be a Pragma Object`)

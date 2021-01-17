@@ -97,7 +97,7 @@ function createEventChains(obj, ...chains){
   }
 }
 
-const toHTMLAttr = s => s.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+const toHTMLAttr = s => s.toString().replace(/[^a-z0-9]/gi, '-').toLowerCase();
 
 if (!globalThis.pragmaSpace) globalThis.pragmaSpace = {}; // initialize Pragma Space # TODO put this somewhere else
 createEventChains(globalThis.pragmaSpace, "docLoad");
@@ -166,8 +166,11 @@ function addClassAryTo(cary, el){
 }
 
 function selectOrCreateDOM(query){
-  let e = document.querySelector(query);
-  if (e) return e
+  try {
+    let e = document.querySelector(query);
+    if (e) return e
+  } catch (e) {}
+  
   let q = parseQuery(query);
 
   let el =  document.createElement(q.tag || "div");
@@ -183,9 +186,7 @@ function fragmentFromString(strHTML) {
 
 function elementFrom(e){
   if (e instanceof Element) return e
-
   if (typeof e === "string"){
-    log(e);
     if (e[0] === "<") return fragmentFromString(e)
     return selectOrCreateDOM(e)
   }
@@ -404,21 +405,56 @@ const elementProto = {
     return this.querySelector(...arguments)
   },
 
-  findAll: function(){
-    return this.querySelectorAll(...arguments)
+  findAll: function(query){
+    return this.querySelectorAll(query)
+  },
+
+  offset: function offset(){
+    return typeof this.getBoundingClientRect === "function" ?
+            this.getBoundingClientRect() : {}
+  },
+
+  x: function(relative_width){
+    return this.left + this.width/2 - relative_width/2
   }
+};
+
+const elementGetters = {
+  top:  function(){
+    return this.offset().top
+  },
+  left: function(){
+    return this.offset().left
+  },
+  width: function(){
+    return this.offset().width
+  },
+  height: function(){
+    return this.offset().height
+  },
+  text: function(){
+    return this.textContent
+  },
 };
 
 for (let [key, val] of Object.entries(elementProto)){
   Element.prototype[key] = val;
 }
 
+for (let [key, val] of Object.entries(elementGetters)){
+  Object.defineProperty(Element.prototype, key, {
+    get: val
+  });
+}
+
+// extend element instead of this weird ass thing
+
 // recursively connected with other nodes
 
 class Node {
   constructor(key) {
     this.childMap = new Map();
-    this.key = key || generateRandomKey();
+    this.key = typeof key === 'string' ? key : generateRandomKey();
     // API
     this.containsKey = this.childMap.has;
   }
@@ -454,8 +490,11 @@ class Node {
   }
 
   find(key) {
+    key = key.toString();
     // recursively find a key
     // return false
+    // console.log('trying to find', key)
+    // console.log(this.childMap)
     if (this.childMap.has(key)) return this.childMap.get(key)
     for (let [k, value] of this.childMap) {
       let vv = value.find(key);
@@ -463,13 +502,13 @@ class Node {
     }
   }
 
-  add(spragma) {
-    if (this.childMap.has(spragma.key)) {
-      spragma.key = spragma.key + "~";
-      return this.add(spragma)
+  add(node) {
+    if (this.childMap.has(node.key)) {
+      node.key = node.key + "~";
+      return this.add(node)
     }
-    spragma.parent = this;
-    this.childMap.set(spragma.key, spragma);
+    node.parent = this;
+    this.childMap.set(node.key, node);
     // this.children.push(spragma)
   }
 
@@ -556,17 +595,22 @@ class Pragma extends Node {
     } else {
       this.key = map;
     }
+    // this.key = typeof key === 'string' ? key : generateRandomKey()
 
-    this.key = this.key || generateRandomKey();
     if (!this.element) this.as();
   }
 
 
+  get _e(){ return this.element }
   get element(){ return this.elementDOM }
   set element(n) {
     // TODO check if element is of type elememtn blah blha
     // log(">> SETTING THIS DOM ELEMENT", n, this.id)
-    n.id = this.id;
+    if (n.id){
+      this.id = n.id;
+    } else {
+      n.id = this.id;
+    }
     this.elementDOM = n;
   }
 
@@ -590,6 +634,11 @@ class Pragma extends Node {
     this.actionChain.execAs(this, ...arguments);
     return this
   }
+
+  set key(key){
+    this._KEY = key == null ? generateRandomKey() : key;
+  }
+  get key() { return this._KEY }
 
   set id(n) {
     this.key = n;
@@ -623,8 +672,9 @@ class Pragma extends Node {
     }
   }
 
+
   // FOR HTML DOM
-  as(query=null, innerHTML=""){
+  as(query=null, innerHTML){
     query = query || `div#${this.id}.pragma`;
     log("this as", query);
     this.element = _e$1(query, innerHTML);
@@ -672,7 +722,7 @@ class Pragma extends Node {
   }
 
   pragmatize(){
-    this.element.appendTo(this.parent.element);
+    this.element.appendTo(this.parent ? this.parent.element || "body" : "body");
     return this
   }
 
@@ -681,24 +731,48 @@ class Pragma extends Node {
     this.element.appendTo(query);
     return this
   }
+
+  addListeners(listeners){
+    for (let [ev, action] of Object.entries(listeners)){
+      this.on(ev).do(action);
+    }
+    return this
+  }
 }
 
 
-const _adoptElementAttrs = [
+const _hostElementAttrs = [
   "html",
   "css",
   "addClass",
-  "setId"
+  "setId",
 ];
 
-for (let a of _adoptElementAttrs) {
+for (let a of _hostElementAttrs) {
  Pragma.prototype[a] = function() {
     this.element[a](...arguments);
     return this
   };
 }
 
+const _adoptGetters = [
+  // html things
+  // "text",
+  "offset", "text",
+  'top', 'left', 'width', 'height', 'x'
+];
 
+for (let a of _adoptGetters) {
+  Object.defineProperty(Pragma.prototype, a, {
+    get: function() {
+      return this.element[a]
+    }
+  });
+}
+
+ // Pragma.prototype[a] = function() {
+ //    this.element[a](...arguments)
+ //  }
 /*
  *pragmaMap = {
  *  id: "",

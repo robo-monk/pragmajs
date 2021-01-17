@@ -11,8 +11,8 @@ describe("Pragma can be generated with Map", () => {
   })
 
   test("Can generate a Pragma with a map", () => {
-    expect(p.value).toBe(0) 
-    expect(p.id).toBe("jeff") 
+    expect(p.value).toBe(0)
+    expect(p.id).toBe("jeff")
   })
 })
 
@@ -37,7 +37,7 @@ describe("Pragma's action chain works", () => {
   test("Manually execute Pragma's action with extra params", () => {
     let b = ""
     p.do((arg) => {b = arg })
-    p.exec("piri") 
+    p.exec("piri")
     expect(b).toBe("piri")
   })
 
@@ -46,11 +46,11 @@ describe("Pragma's action chain works", () => {
     let a, b, c
 
     p.do((self, value) => {
-      a = 1 
+      a = 1
     }).do((self, value) => {
       b = 1
     }).do((self, value) => {
-      c = 1 
+      c = 1
     }).do(function() {
       this.nice = 42069
     })
@@ -69,8 +69,8 @@ describe("Pragma's action chain works", () => {
 describe("Pragmas can contain other pragmas", () => {
   test("Simple .contain", () => {
     var a, b, c, d, e
-    a = new Pragma() 
-    b = new Pragma() 
+    a = new Pragma()
+    b = new Pragma()
     b.contain(a)
     // console.log(b)
   })

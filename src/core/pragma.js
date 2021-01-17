@@ -74,17 +74,22 @@ export default class Pragma extends Node {
     } else {
       this.key = map
     }
+    // this.key = typeof key === 'string' ? key : generateRandomKey()
 
-    this.key = this.key || generateRandomKey()
     if (!this.element) this.as()
   }
 
 
+  get _e(){ return this.element }
   get element(){ return this.elementDOM }
   set element(n) {
     // TODO check if element is of type elememtn blah blha
     // log(">> SETTING THIS DOM ELEMENT", n, this.id)
-    n.id = this.id
+    if (n.id){
+      this.id = n.id
+    } else {
+      n.id = this.id
+    }
     this.elementDOM = n
   }
 
@@ -108,6 +113,11 @@ export default class Pragma extends Node {
     this.actionChain.execAs(this, ...arguments)
     return this
   }
+
+  set key(key){
+    this._KEY = key == null ? generateRandomKey() : key
+  }
+  get key() { return this._KEY }
 
   set id(n) {
     this.key = n
@@ -141,8 +151,9 @@ export default class Pragma extends Node {
     }
   }
 
+
   // FOR HTML DOM
-  as(query=null, innerHTML=""){
+  as(query=null, innerHTML){
     query = query || `div#${this.id}.pragma`
     log("this as", query)
     this.element = _e(query, innerHTML)
@@ -190,7 +201,7 @@ export default class Pragma extends Node {
   }
 
   pragmatize(){
-    this.element.appendTo(this.parent.element)
+    this.element.appendTo(this.parent ? this.parent.element || "body" : "body")
     return this
   }
 
@@ -199,24 +210,48 @@ export default class Pragma extends Node {
     this.element.appendTo(query)
     return this
   }
+
+  addListeners(listeners){
+    for (let [ev, action] of Object.entries(listeners)){
+      this.on(ev).do(action)
+    }
+    return this
+  }
 }
 
 
-const _adoptElementAttrs = [
+const _hostElementAttrs = [
   "html",
   "css",
   "addClass",
-  "setId"
+  "setId",
 ]
 
-for (let a of _adoptElementAttrs) {
+for (let a of _hostElementAttrs) {
  Pragma.prototype[a] = function() {
     this.element[a](...arguments)
     return this
   }
 }
 
+const _adoptGetters = [
+  // html things
+  // "text",
+  "offset", "text",
+  'top', 'left', 'width', 'height', 'x'
+]
 
+for (let a of _adoptGetters) {
+  Object.defineProperty(Pragma.prototype, a, {
+    get: function() {
+      return this.element[a]
+    }
+  })
+}
+
+ // Pragma.prototype[a] = function() {
+ //    this.element[a](...arguments)
+ //  }
 /*
  *pragmaMap = {
  *  id: "",

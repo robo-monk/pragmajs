@@ -4,7 +4,7 @@ import { generateRandomKey } from "./util/index"
 export default class Node {
   constructor(key) {
     this.childMap = new Map()
-    this.key = key || generateRandomKey()
+    this.key = typeof key === 'string' ? key : generateRandomKey()
     // API
     this.containsKey = this.childMap.has
   }
@@ -40,8 +40,11 @@ export default class Node {
   }
 
   find(key) {
+    key = key.toString()
     // recursively find a key
     // return false
+    // console.log('trying to find', key)
+    // console.log(this.childMap)
     if (this.childMap.has(key)) return this.childMap.get(key)
     for (let [k, value] of this.childMap) {
       let vv = value.find(key)
@@ -49,13 +52,13 @@ export default class Node {
     }
   }
 
-  add(spragma) {
-    if (this.childMap.has(spragma.key)) {
-      spragma.key = spragma.key + "~"
-      return this.add(spragma)
+  add(node) {
+    if (this.childMap.has(node.key)) {
+      node.key = node.key + "~"
+      return this.add(node)
     }
-    spragma.parent = this
-    this.childMap.set(spragma.key, spragma)
+    node.parent = this
+    this.childMap.set(node.key, node)
     // this.children.push(spragma)
   }
 
