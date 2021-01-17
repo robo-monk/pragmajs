@@ -1,22 +1,20 @@
-import { Pragma } from "../index"
+import { Pragma, util } from "../index"
+import { create } from "./create"
 
 export const monitor = new Pragma()
-                        .run(function() {
-                          this.setMonitorTemplate = function(f){
-                            this._monitorTemplate = f
-                            return this
-                          }
-
-                          this.setMonitorTemplate(v => v)
-                        })
+                        .from(create.template.config({
+                          name: 'monitor',
+                          defaultSet: v => v
+                        }))
                         .do(function() {
                           this.html(this._monitorTemplate(this.value))
                         })
                         .run(function() {
-                          this.export = [
+                          console.log('monitor', this)
+                          this.export(
                             'element',
-                            'setMonitorTemplate',
-                            '_monitorTemplate',
+                            // 'setMonitorTemplate',
+                            // '_monitorTemplate',
                             'actionChain'
-                          ]
+                          )
                         })

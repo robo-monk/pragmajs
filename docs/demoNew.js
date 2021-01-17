@@ -28,10 +28,13 @@ setInterval(() => {
   monitor.value += 1
 }, 1000)
 
-let slider = _p("slider").
-            from(tpl.slider).
-            pragmatizeAt("#paper")
-
+let slider = _p("slider")
+            .from(tpl.slider)
+            .setSliderTemplate({
+              min: 0,
+              max: 10
+            })
+            .pragmatizeAt("#paper")
 // _e(icons.gate).appendTo("p")
 //let ppp = _p('meow')
 //ppp.kaka = "haha"

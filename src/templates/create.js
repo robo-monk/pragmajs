@@ -1,6 +1,36 @@
-import { util, _p } from "../index"
+import { Pragma, util, _p } from "../index"
 
 export const create = {
+  template: new Pragma()
+                .run(function() {
+                    this.config = function(conf) {
+                      let setTemplateName =`set${conf.name.capitalize()}Template`
+                      let templateName =`_${conf.name}Template`
+
+                      this[setTemplateName] = function(f){
+                        this[templateName] = f
+                        return this
+                      }
+
+                      if (conf.defaultSet) this[setTemplateName](conf.defaultSet)
+
+                      this._tempOptions = {
+                        set: setTemplateName,
+                      }
+
+                      this.export(
+                        templateName,
+                        setTemplateName,
+                      )
+
+                      this.onExport = function(pragma){ 
+                          pragma.export(templateName, setTemplateName)
+                      }
+
+                      return this
+                    }
+                }),
+
   fromObject: function(obj){
     util.log(`Creating template object from obj: [${JSON.stringify(obj)}]`)
 

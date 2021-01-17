@@ -149,7 +149,6 @@ export default class Pragma extends Node {
 
   set value(n) {
     let pv = _processValue(n, this.range, this._loopVal)
-    console.log(pv)
 
     if (pv.set) {
       this.v = pv.val
@@ -212,15 +211,28 @@ export default class Pragma extends Node {
   }
 
   // FOR TEMPLATES
-  get export(){ return this.exports }
-  set export(n){ this.exports = n}
+  addExport(exp){
+    this.exports = this.exports || []
+    this.exports.push(exp)
+  }
+
+  export(...attrs){
+    for (let a of attrs) {
+      this.addExport(a)
+    }
+  }
 
   from(pragma){
-    if (pragma.export){
-      for (let attr of pragma.export){
+    if (pragma.exports){
+      for (let attr of pragma.exports){
         this[attr] = pragma[attr]
       }
     }
+
+    if (pragma.onExport){
+      pragma.onExport(this)
+    }
+
     return this
   }
 

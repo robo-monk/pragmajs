@@ -15,7 +15,7 @@ export function icons(iconSet){
     (_iconSVG, tpl) => _p().run(
       function(){
         this.element = applyDefaults(_e(_iconSVG), tpl.defaults)
-        this.export = ['element']
+        this.export('element')
     })
   )
 }

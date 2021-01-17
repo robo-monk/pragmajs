@@ -1,6 +1,14 @@
 import { Pragma } from "../index"
+import { create } from "./create"
 
 export const slider = new Pragma()
+                        .from(create.template.config({
+                          name: 'slider',
+                          defaultSet: {
+                            min: 0,
+                            max: 1000
+                          }
+                        }))
                         .run(function() {
                           let min = 0
                           let max = 10
@@ -13,11 +21,12 @@ export const slider = new Pragma()
                           })
                         })
                         .do(function(){
-
                         })
                         .run(function() {
-                          this.export = [
+                          this.export(
                             'element',
-                            'actionChain'
-                          ]
+                            'actionChain',
+                            // 'setSliderTemplate',
+                            // '_sliderTemplate'
+                          )
                         })

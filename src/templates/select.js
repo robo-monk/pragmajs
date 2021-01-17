@@ -1,5 +1,4 @@
 export const monitor = new Pragma()
-                        // .as(null, "0")
                         .run(function() {
                           this.setMonitorTemplate = function(f){
                             this._monitorTemplate = f
@@ -12,10 +11,10 @@ export const monitor = new Pragma()
                           this.html(this._monitorTemplate(this.value))
                         })
                         .run(function() {
-                          this.export = [
+                          this.export(
                             'element',
-                            'setMonitorTemplate',
-                            '_monitorTemplate',
+                            // 'setMonitorTemplate',
+                            // '_monitorTemplate',
                             'actionChain'
-                          ]
+                          )
                         })

@@ -674,7 +674,6 @@ class Pragma extends Node {
 
   set value(n) {
     let pv = _processValue(n, this.range, this._loopVal);
-    console.log(pv);
 
     if (pv.set) {
       this.v = pv.val;
@@ -737,15 +736,28 @@ class Pragma extends Node {
   }
 
   // FOR TEMPLATES
-  get export(){ return this.exports }
-  set export(n){ this.exports = n;}
+  addExport(exp){
+    this.exports = this.exports || [];
+    this.exports.push(exp);
+  }
+
+  export(...attrs){
+    for (let a of attrs) {
+      this.addExport(a);
+    }
+  }
 
   from(pragma){
-    if (pragma.export){
-      for (let attr of pragma.export){
+    if (pragma.exports){
+      for (let attr of pragma.exports){
         this[attr] = pragma[attr];
       }
     }
+
+    if (pragma.onExport){
+      pragma.onExport(this);
+    }
+
     return this
   }
 
@@ -843,50 +855,37 @@ for (let a of _adoptGetters) {
  *}
  */
 
-const monitor = new Pragma()
-                        .run(function() {
-                          this.setMonitorTemplate = function(f){
-                            this._monitorTemplate = f;
-                            return this
-                          };
-
-                          this.setMonitorTemplate(v => v);
-                        })
-                        .do(function() {
-                          this.html(this._monitorTemplate(this.value));
-                        })
-                        .run(function() {
-                          this.export = [
-                            'element',
-                            'setMonitorTemplate',
-                            '_monitorTemplate',
-                            'actionChain'
-                          ];
-                        });
-
-const slider = new Pragma()
-                        .run(function() {
-                          let min = 0;
-                          let max = 10;
-                          let val = 5;
-                          this.as(`<input type='range' min=${min} max=${max} value=${val}></input>`);
-                          this.setRange(min, max);
-                          this.on("input").do(function() {
-                            this.value = parseInt(this.element.value);
-                            console.log(this.value);
-                          });
-                        })
-                        .do(function(){
-
-                        })
-                        .run(function() {
-                          this.export = [
-                            'element',
-                            'actionChain'
-                          ];
-                        });
-
 const create = {
+  template: new Pragma()
+                .run(function() {
+                    this.config = function(conf) {
+                      let setTemplateName =`set${conf.name.capitalize()}Template`;
+                      let templateName =`_${conf.name}Template`;
+
+                      this[setTemplateName] = function(f){
+                        this[templateName] = f;
+                        return this
+                      };
+
+                      if (conf.defaultSet) this[setTemplateName](conf.defaultSet);
+
+                      this._tempOptions = {
+                        set: setTemplateName,
+                      };
+
+                      this.export(
+                        templateName,
+                        setTemplateName,
+                      );
+
+                      this.onExport = function(pragma){ 
+                          pragma.export(templateName, setTemplateName);
+                      };
+
+                      return this
+                    };
+                }),
+
   fromObject: function(obj){
     log(`Creating template object from obj: [${JSON.stringify(obj)}]`);
 
@@ -936,6 +935,54 @@ const create = {
   }
 };
 
+const monitor = new Pragma()
+                        .from(create.template.config({
+                          name: 'monitor',
+                          defaultSet: v => v
+                        }))
+                        .do(function() {
+                          this.html(this._monitorTemplate(this.value));
+                        })
+                        .run(function() {
+                          console.log('monitor', this);
+                          this.export(
+                            'element',
+                            // 'setMonitorTemplate',
+                            // '_monitorTemplate',
+                            'actionChain'
+                          );
+                        });
+
+const slider = new Pragma()
+                        .from(create.template.config({
+                          name: 'slider',
+                          defaultSet: {
+                            min: 0,
+                            max: 1000
+                          }
+                        }))
+                        .run(function() {
+                          let min = 0;
+                          let max = 10;
+                          let val = 5;
+                          this.as(`<input type='range' min=${min} max=${max} value=${val}></input>`);
+                          this.setRange(min, max);
+                          this.on("input").do(function() {
+                            this.value = parseInt(this.element.value);
+                            console.log(this.value);
+                          });
+                        })
+                        .do(function(){
+                        })
+                        .run(function() {
+                          this.export(
+                            'element',
+                            'actionChain',
+                            // 'setSliderTemplate',
+                            // '_sliderTemplate'
+                          );
+                        });
+
 function applyDefaults(el, d){
   if (d.fill){
     fillSVG(el, d.fill);
@@ -949,7 +996,7 @@ function icons(iconSet){
     (_iconSVG, tpl) => _p().run(
       function(){
         this.element = applyDefaults(_e(_iconSVG), tpl.defaults);
-        this.export = ['element'];
+        this.export('element');
     })
   )
 }
