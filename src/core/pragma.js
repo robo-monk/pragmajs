@@ -1,7 +1,7 @@
 import Node from "./node"
 import _e from "./element"
 import ActionChain from "./actionChain"
-import { generateRandomKey, toHTMLAttr, log } from "./util/index"
+import { generateRandomKey, toHTMLAttr, log, throwSoft } from "./util/index"
 
 const _parseMap = {
 
@@ -63,6 +63,40 @@ function parseMap(map, obj) {
   }
 }
 
+
+function _isRangeBounded(range){
+  return range.min != undefined && range.max != undefined
+}
+function _retValObj(val, set){
+  return {
+    val: val,
+    set: set
+  }
+}
+function _rangeBoundVal(v, range){
+  v = range.min ? Math.max(range.min, v) : v
+  v = range.max ? Math.min(range.max, v) : v
+  // console.log(v)
+  return v
+  // r ? Math.max(r[0], Math.min(v, r[1])) : v
+}
+
+function _loopBoundVal(v, range){
+  if (!(_isRangeBounded(range)))
+    return throwSoft(`Could not loop value, since range (${JSON.stringify(range)}) is unbounded`)
+
+  v = v > range.max ? range.min : v
+  v = v < range.min ? range.max : v
+  return v
+}
+
+function _processValue(v, range, _loop) {
+  if (!range) return _retValObj(v, true)
+  if (_loop) return _retValObj(_loopBoundVal(v, range), true)
+  let r = _rangeBoundVal(v, range)
+  return _retValObj(r, r==v)
+}
+
 export default class Pragma extends Node {
   constructor(map, parent){
     super()
@@ -74,7 +108,6 @@ export default class Pragma extends Node {
     } else {
       this.key = map
     }
-    // this.key = typeof key === 'string' ? key : generateRandomKey()
 
     if (!this.element) this.as()
   }
@@ -93,21 +126,39 @@ export default class Pragma extends Node {
     this.elementDOM = n
   }
 
-  set value(n) {
+// -------------------- VALUE THINGS
 
-    function _processValue(v) {
-      return v
-    }
+  setRange(min=null, max=null){
+    this.range = this.range || {}
+    this.range.min = min === null ? this.range.min : min
+    this.range.max = max === null ? this.range.max : max
+    return this
+  }
 
-    this.v = _processValue(n)
-    this.exec()
+  breakLoop() { this._loopVal = false; return this }
+  setLoop(min, max){
+    this.setRange(min, max)
+    this._loopVal = true
+    return this
   }
 
   get value(){
     return this.v
   }
+  setValue(n) { this.value = n; return this }
 
-  setValue(n){ this.value = n; return this }
+  set value(n) {
+    let pv = _processValue(n, this.range, this._loopVal)
+    console.log(pv)
+
+    if (pv.set) {
+      this.v = pv.val
+      this.exec()
+    }
+  }
+
+
+//  -------------------------------
 
   exec() {
     this.actionChain.execAs(this, ...arguments)
@@ -139,7 +190,7 @@ export default class Pragma extends Node {
     return this.buildAry(maps)
   }
 
-  on(event){
+  on(event, cb=null){
     var self = this
     return {
       do: function(cb){
@@ -206,7 +257,6 @@ export default class Pragma extends Node {
   }
 
   pragmatizeAt(query){
-    // console.log("pragmatizing", this.element, "to", query)
     this.element.appendTo(query)
     return this
   }

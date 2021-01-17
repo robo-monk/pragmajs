@@ -39,7 +39,7 @@
     }
   }
 
-  function throwSoft$1 (desc, potential=null, fixes=['rerun the code 10 times'], trigger=null, force=false) {
+  function throwSoft (desc, potential=null, fixes=['rerun the code 10 times'], trigger=null, force=false) {
     if (!_deving() && !force) return null
     console.error(`%c 🧯 pragma.js  %c \n
       encountered a soft error 🔫 %c \n
@@ -160,7 +160,7 @@
   }
 
   function addClassAryTo(cary, el){
-    if (!(Array.isArray(cary))) return throwSoft$1(`Could not add class [${cary}] to [${el}]`)
+    if (!(Array.isArray(cary))) return throwSoft(`Could not add class [${cary}] to [${el}]`)
     for (let c of cary){
       let _subary = c.split(" ");
       if (_subary.length>1) {
@@ -197,7 +197,7 @@
       return selectOrCreateDOM(e)
     }
 
-    return throwSoft$1(`Could not find/create element from [${e}]`)
+    return throwSoft(`Could not find/create element from [${e}]`)
   }
 
   function fillSVG(svg, color){
@@ -244,7 +244,7 @@
       }
 
       if (unsupported.length > 0) {
-        throwSoft$1(`CSS syntax error`, 'typos', unsupported);
+        throwSoft(`CSS syntax error`, 'typos', unsupported);
       }
       return cssDict
     }),
@@ -274,7 +274,7 @@
   var index = /*#__PURE__*/Object.freeze({
     __proto__: null,
     _deving: _deving,
-    throwSoft: throwSoft$1,
+    throwSoft: throwSoft,
     log: log,
     suc: suc,
     whenDOM: whenDOM,
@@ -297,7 +297,7 @@
 
 
   function domify(e){
-    if (e == null || e == undefined) return throwSoft$1(`Could not find a DOM element for ${e}`)
+    if (e == null || e == undefined) return throwSoft(`Could not find a DOM element for ${e}`)
     if (e.element) return domify(e.element)
     let a = elementFrom(e);
     return a
@@ -590,6 +590,40 @@
     }
   }
 
+
+  function _isRangeBounded(range){
+    return range.min != undefined && range.max != undefined
+  }
+  function _retValObj(val, set){
+    return {
+      val: val,
+      set: set
+    }
+  }
+  function _rangeBoundVal(v, range){
+    v = range.min ? Math.max(range.min, v) : v;
+    v = range.max ? Math.min(range.max, v) : v;
+    // console.log(v)
+    return v
+    // r ? Math.max(r[0], Math.min(v, r[1])) : v
+  }
+
+  function _loopBoundVal(v, range){
+    if (!(_isRangeBounded(range)))
+      return throwSoft(`Could not loop value, since range (${JSON.stringify(range)}) is unbounded`)
+
+    v = v > range.max ? range.min : v;
+    v = v < range.min ? range.max : v;
+    return v
+  }
+
+  function _processValue(v, range, _loop) {
+    if (!range) return _retValObj(v, true)
+    if (_loop) return _retValObj(_loopBoundVal(v, range), true)
+    let r = _rangeBoundVal(v, range);
+    return _retValObj(r, r==v)
+  }
+
   class Pragma extends Node {
     constructor(map, parent){
       super();
@@ -601,7 +635,6 @@
       } else {
         this.key = map;
       }
-      // this.key = typeof key === 'string' ? key : generateRandomKey()
 
       if (!this.element) this.as();
     }
@@ -620,21 +653,39 @@
       this.elementDOM = n;
     }
 
-    set value(n) {
+  // -------------------- VALUE THINGS
 
-      function _processValue(v) {
-        return v
-      }
+    setRange(min=null, max=null){
+      this.range = this.range || {};
+      this.range.min = min === null ? this.range.min : min;
+      this.range.max = max === null ? this.range.max : max;
+      return this
+    }
 
-      this.v = _processValue(n);
-      this.exec();
+    breakLoop() { this._loopVal = false; return this }
+    setLoop(min, max){
+      this.setRange(min, max);
+      this._loopVal = true;
+      return this
     }
 
     get value(){
       return this.v
     }
+    setValue(n) { this.value = n; return this }
 
-    setValue(n){ this.value = n; return this }
+    set value(n) {
+      let pv = _processValue(n, this.range, this._loopVal);
+      console.log(pv);
+
+      if (pv.set) {
+        this.v = pv.val;
+        this.exec();
+      }
+    }
+
+
+  //  -------------------------------
 
     exec() {
       this.actionChain.execAs(this, ...arguments);
@@ -666,7 +717,7 @@
       return this.buildAry(maps)
     }
 
-    on(event){
+    on(event, cb=null){
       var self = this;
       return {
         do: function(cb){
@@ -733,7 +784,6 @@
     }
 
     pragmatizeAt(query){
-      // console.log("pragmatizing", this.element, "to", query)
       this.element.appendTo(query);
       return this
     }
@@ -796,19 +846,47 @@
    */
 
   const monitor = new Pragma()
-                          .as(null, "0")
                           .run(function() {
-                            this.monitorTpl = (v) => v;
+                            this.setMonitorTemplate = function(f){
+                              this._monitorTemplate = f;
+                              return this
+                            };
+
+                            this.setMonitorTemplate(v => v);
                           })
                           .do(function() {
-                            this.html(this.monitorTpl(this.value));
+                            this.html(this._monitorTemplate(this.value));
+                          })
+                          .run(function() {
+                            this.export = [
+                              'element',
+                              'setMonitorTemplate',
+                              '_monitorTemplate',
+                              'actionChain'
+                            ];
                           });
 
-  const button = new Pragma()
-                          .as(null, "")
-                          .on("click").do(function() {
-                              console.log("clicked button");
+  const slider = new Pragma()
+                          .run(function() {
+                            let min = 0;
+                            let max = 10;
+                            let val = 5;
+                            this.as(`<input type='range' min=${min} max=${max} value=${val}></input>`);
+                            this.setRange(min, max);
+                            this.on("input").do(function() {
+                              this.value = parseInt(this.element.value);
+                              console.log(this.value);
                             });
+                          })
+                          .do(function(){
+
+                          })
+                          .run(function() {
+                            this.export = [
+                              'element',
+                              'actionChain'
+                            ];
+                          });
 
   const create = {
     fromObject: function(obj){
@@ -856,7 +934,7 @@
         return this.fromObject(n)
       }
 
-      throwSoft$1(`Could not create a template object from argument [${n}])`);
+      throwSoft(`Could not create a template object from argument [${n}])`);
     }
   };
 
@@ -885,7 +963,7 @@
   var index$1 = /*#__PURE__*/Object.freeze({
     __proto__: null,
     monitor: monitor,
-    button: button,
+    slider: slider,
     create: create,
     icons: icons,
     icon: icon

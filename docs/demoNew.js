@@ -16,10 +16,23 @@ const icons = tpl.icons(uiIcons).setDefaults({
 let iconGate = _p("gate").from(icons.gate)
 iconGate.pragmatizeAt("p")
 
-console.log(icons)
-console.log(icons.defaults)
+let monitor = _p('tv')
+          .setValue(0)
+          .from(tpl.monitor)
+          .setMonitorTemplate(
+            v => `${v} second${v == 1 ? ' has' : 's have'} passed`)
+          .pragmatizeAt("#paper")
+          .setLoop(0, 10)
+
+setInterval(() => {
+  monitor.value += 1
+}, 1000)
+
+let slider = _p("slider").
+            from(tpl.slider).
+            pragmatizeAt("#paper")
+
 // _e(icons.gate).appendTo("p")
-console.log()
 //let ppp = _p('meow')
 //ppp.kaka = "haha"
 //ppp.export = ["kaka"]
