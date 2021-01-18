@@ -1,7 +1,8 @@
 import { Pragma, util, _p } from "../index"
 
 export const create = {
-  template: new Pragma()
+  get template() {
+    return new Pragma()
                 .run(function() {
                     this.config = function(conf) {
                       let setTemplateName =`set${conf.name.capitalize()}Template`
@@ -23,14 +24,15 @@ export const create = {
                         setTemplateName,
                       )
 
-                      this.onExport = function(pragma){ 
+                      this.onExport = function(pragma){
                           pragma.export(templateName, setTemplateName)
                       }
 
                       return this
                     }
-                }),
-
+                })
+  },
+  
   fromObject: function(obj){
     util.log(`Creating template object from obj: [${JSON.stringify(obj)}]`)
 

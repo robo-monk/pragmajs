@@ -236,6 +236,17 @@ export default class Pragma extends Node {
     return this
   }
 
+  wireTo(pragma){
+    let self = this
+    pragma.do(function(){
+      // console.log(this)
+      // console.log(p.value)
+      // this.value = pragma.value
+      self.value = this.value
+    })
+    return this
+  }
+
   // ADD SCRIPT TO RUN WHEN VALUE CHANGES
   do(){
     this.actionChain.add(...arguments)

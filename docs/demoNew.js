@@ -18,7 +18,7 @@ iconGate.pragmatizeAt("p")
 
 let monitor = _p('tv')
           .setValue(0)
-          .from(tpl.monitor)
+          .from(tpl.monitor())
           .setMonitorTemplate(
             v => `${v} second${v == 1 ? ' has' : 's have'} passed`)
           .pragmatizeAt("#paper")
@@ -28,13 +28,23 @@ setInterval(() => {
   monitor.value += 1
 }, 1000)
 
+
+let sliderView = _p("slider view")
+
 let slider = _p("slider")
-            .from(tpl.slider)
-            .setSliderTemplate({
+            .from(tpl.slider({
               min: 0,
               max: 10
-            })
-            .pragmatizeAt("#paper")
+            }))
+
+let sliderMonitor = _p("slider monitor")
+    .from(tpl.monitor())
+    .wireTo(slider)
+
+
+sliderView.contain(slider, sliderMonitor)
+          .pragmatizeAt("#paper")
+
 // _e(icons.gate).appendTo("p")
 //let ppp = _p('meow')
 //ppp.kaka = "haha"

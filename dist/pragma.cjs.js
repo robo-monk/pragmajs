@@ -761,6 +761,17 @@ class Pragma extends Node {
     return this
   }
 
+  wireTo(pragma){
+    let self = this;
+    pragma.do(function(){
+      // console.log(this)
+      // console.log(p.value)
+      // this.value = pragma.value
+      self.value = this.value;
+    });
+    return this
+  }
+
   // ADD SCRIPT TO RUN WHEN VALUE CHANGES
   do(){
     this.actionChain.add(...arguments);
@@ -856,7 +867,8 @@ for (let a of _adoptGetters) {
  */
 
 const create = {
-  template: new Pragma()
+  get template() {
+    return new Pragma()
                 .run(function() {
                     this.config = function(conf) {
                       let setTemplateName =`set${conf.name.capitalize()}Template`;
@@ -878,14 +890,15 @@ const create = {
                         setTemplateName,
                       );
 
-                      this.onExport = function(pragma){ 
+                      this.onExport = function(pragma){
                           pragma.export(templateName, setTemplateName);
                       };
 
                       return this
                     };
-                }),
-
+                })
+  },
+  
   fromObject: function(obj){
     log(`Creating template object from obj: [${JSON.stringify(obj)}]`);
 
@@ -935,53 +948,48 @@ const create = {
   }
 };
 
-const monitor = new Pragma()
-                        .from(create.template.config({
-                          name: 'monitor',
-                          defaultSet: v => v
-                        }))
-                        .do(function() {
-                          this.html(this._monitorTemplate(this.value));
-                        })
-                        .run(function() {
-                          console.log('monitor', this);
-                          this.export(
-                            'element',
-                            // 'setMonitorTemplate',
-                            // '_monitorTemplate',
-                            'actionChain'
-                          );
-                        });
+function monitor(config){
+  return new Pragma()
+          .from(create.template.config({
+            name: 'monitor',
+            defaultSet: config || (v => v)
+          }))
+          .do(function() {
+            this.html(this._monitorTemplate(this.value));
+          })
+          .run(function() {
+            console.log('monitor', this);
+            this.export(
+              'element',
+              'actionChain'
+            );
+          })
+}
 
-const slider = new Pragma()
-                        .from(create.template.config({
-                          name: 'slider',
-                          defaultSet: {
-                            min: 0,
-                            max: 1000
-                          }
-                        }))
-                        .run(function() {
-                          let min = 0;
-                          let max = 10;
-                          let val = 5;
-                          this.as(`<input type='range' min=${min} max=${max} value=${val}></input>`);
-                          this.setRange(min, max);
-                          this.on("input").do(function() {
-                            this.value = parseInt(this.element.value);
-                            console.log(this.value);
-                          });
-                        })
-                        .do(function(){
-                        })
-                        .run(function() {
-                          this.export(
-                            'element',
-                            'actionChain',
-                            // 'setSliderTemplate',
-                            // '_sliderTemplate'
-                          );
-                        });
+function slider(config){
+  return new Pragma()
+    .from(create.template.config({
+      name: 'slider',
+      defaultSet: config || {
+        min: 0,
+        max: 1000
+      }
+    }))
+    .run(function() {
+      let min = 0;
+      let max = 10;
+      let val = 5;
+      this.as(`<input type='range' min=${min} max=${max} value=${val}></input>`);
+      this.setRange(min, max);
+      this.on("input").do(function() {
+        this.value = parseInt(this.element.value);
+      });
+      this.export(
+        'element',
+        'actionChain',
+      );
+    })
+  }
 
 function applyDefaults(el, d){
   if (d.fill){
