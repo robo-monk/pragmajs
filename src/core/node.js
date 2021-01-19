@@ -1,5 +1,5 @@
 // recursively connected with other nodes
-import { generateRandomKey } from "./util/index"
+import { generateRandomKey, throwSoft } from "./util/index"
 
 export default class Node {
   constructor(key) {
@@ -52,7 +52,15 @@ export default class Node {
     }
   }
 
+  adopt(...children){
+      for (let child of children){
+        this.add(child)
+      }
+      return this
+  }
+
   add(node) {
+    if (!node) return throwSoft(`Could not add [${node}] to [${this.id}]`)
     if (this.childMap.has(node.key)) {
       node.key = node.key + "~"
       return this.add(node)

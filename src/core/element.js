@@ -71,6 +71,14 @@ const elementProto = {
     return this
   },
 
+  prependTo: function(where){
+    this.onDocLoad(() => {
+      domify(where).prepend(this)
+      this._render()
+    })
+    return this
+  },
+
   append: function(e){
     this.onRender(() => {
       let d = domify(e)
@@ -133,9 +141,17 @@ const elementProto = {
     return this.querySelectorAll(query)
   },
 
-  offset: function offset(){
+  rect: function rect(){
     return typeof this.getBoundingClientRect === "function" ?
             this.getBoundingClientRect() : {}
+  },
+
+  offset: function offset(){
+    var rect = this.rect()
+    return {
+      top: rect.top + window.scrollY,
+      left: rect.left + window.scrollX
+    }
   },
 
   x: function(relative_width){
@@ -151,10 +167,10 @@ const elementGetters = {
     return this.offset().left
   },
   width: function(){
-    return this.offset().width
+    return this.rect().width
   },
   height: function(){
-    return this.offset().height
+    return this.rect().height
   },
   text: function(){
     return this.textContent

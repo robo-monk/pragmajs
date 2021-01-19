@@ -16,7 +16,7 @@ export default [
 		plugins: [
 			resolve(), // so Rollup can find `ms`
 			commonjs(), // so Rollup can convert `ms` to an ES module
-			//terser() // mini
+			terser() // mini
 		]
 	},
 
@@ -32,6 +32,9 @@ export default [
 		output: [
 			{ file: pkg.main, format: 'cjs' },
 			{ file: pkg.module, format: 'es' }
+		],
+		plugins: [
+			terser()
 		]
 	}
 ]

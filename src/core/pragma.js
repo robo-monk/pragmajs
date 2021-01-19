@@ -118,12 +118,16 @@ export default class Pragma extends Node {
   set element(n) {
     // TODO check if element is of type elememtn blah blha
     // log(">> SETTING THIS DOM ELEMENT", n, this.id)
-    if (n.id){
-      this.id = n.id
-    } else {
-      n.id = this.id
-    }
+
     this.elementDOM = n
+    this.id = this.element.id || this.id
+    //
+    // if (this.elementDOM.id){
+    //   this.id = this.elementDOM.id
+    //   console.log("OUR ID", n.id)
+    // } else {
+    //   n.id = this.id
+    // }
   }
 
 // -------------------- VALUE THINGS
@@ -142,6 +146,9 @@ export default class Pragma extends Node {
     return this
   }
 
+  get dv(){
+    return this.v - this._lv
+  }
   get value(){
     return this.v
   }
@@ -151,6 +158,7 @@ export default class Pragma extends Node {
     let pv = _processValue(n, this.range, this._loopVal)
 
     if (pv.set) {
+      this._lv = this.v
       this.v = pv.val
       this.exec()
     }
@@ -205,7 +213,6 @@ export default class Pragma extends Node {
   // FOR HTML DOM
   as(query=null, innerHTML){
     query = query || `div#${this.id}.pragma`
-    // log("this as", query)
     this.element = _e(query, innerHTML)
     return this
   }
@@ -326,12 +333,13 @@ for (let a of _adoptGetters) {
   })
 }
 
+
 // Mousetrap integration
-try {
- if (typeof Mousetrap === 'function') {
+globalThis.pragmaSpace.integrateMousetrap = function(trap){
+  if (typeof trap === 'function') {
    Pragma.prototype.bind = function(key, f, on=undefined){
      let self = this
-      Mousetrap.bind(key, function(){
+      trap.bind(key, function(){
         return self.runAs(f)
       }, on)
       return this
@@ -340,6 +348,10 @@ try {
    globalThis.pragmaSpace.mousetrapIntegration = true
    suc('Mousetrap configuration detected! Extended Pragmas to support .bind() method!')
  }
+}
+
+try {
+  globalThis.pragmaSpace.integrateMousetrap(Mousetrap)
 } catch (e) {
 
 }
