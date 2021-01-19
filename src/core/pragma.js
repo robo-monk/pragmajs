@@ -1,7 +1,7 @@
 import Node from "./node"
 import _e from "./element"
 import ActionChain from "./actionChain"
-import { generateRandomKey, toHTMLAttr, log, throwSoft } from "./util/index"
+import { generateRandomKey, toHTMLAttr, suc, log, throwSoft } from "./util/index"
 
 const _parseMap = {
 
@@ -205,7 +205,7 @@ export default class Pragma extends Node {
   // FOR HTML DOM
   as(query=null, innerHTML){
     query = query || `div#${this.id}.pragma`
-    log("this as", query)
+    // log("this as", query)
     this.element = _e(query, innerHTML)
     return this
   }
@@ -257,9 +257,13 @@ export default class Pragma extends Node {
   // RUN SCRIPTS WITH THIS SCOPE
   run(...scripts){
     for (let script of scripts){
-      script.bind(this)()
+      this.runAs(script)
     }
     return this
+  }
+
+  runAs(script){
+    return script.bind(this)()
   }
 
   contain(...childs){
@@ -320,6 +324,24 @@ for (let a of _adoptGetters) {
       return this.element[a]
     }
   })
+}
+
+// Mousetrap integration
+try {
+ if (typeof Mousetrap === 'function') {
+   Pragma.prototype.bind = function(key, f, on=undefined){
+     let self = this
+      Mousetrap.bind(key, function(){
+        return self.runAs(f)
+      }, on)
+      return this
+   }
+
+   globalThis.pragmaSpace.mousetrapIntegration = true
+   suc('Mousetrap configuration detected! Extended Pragmas to support .bind() method!')
+ }
+} catch (e) {
+
 }
 
  // Pragma.prototype[a] = function() {

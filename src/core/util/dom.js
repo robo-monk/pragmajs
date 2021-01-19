@@ -75,7 +75,7 @@ function selectOrCreateDOM(query){
     let e = document.querySelector(query)
     if (e) return e
   } catch (e) {}
-  
+
   let q = parseQuery(query)
 
   let el =  document.createElement(q.tag || "div")
@@ -100,8 +100,6 @@ function elementFrom(e){
 }
 
 function fillSVG(svg, color){
-  console.log(color)
-  console.log(_e(svg).findAll("path"))
   _e(svg).findAll("path").forEach(path => {
     const ff = path.attr("fill")
     if (ff!="none" && ff!="transparent"){

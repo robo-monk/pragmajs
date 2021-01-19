@@ -167,7 +167,8 @@ for (let [key, val] of Object.entries(elementProto)){
 
 for (let [key, val] of Object.entries(elementGetters)){
   Object.defineProperty(Element.prototype, key, {
-    get: val
+    get: val,
+    configurable: true
   })
 }
 

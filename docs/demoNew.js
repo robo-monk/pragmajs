@@ -45,6 +45,18 @@ let sliderMonitor = _p("slider monitor")
 sliderView.contain(slider, sliderMonitor)
           .pragmatizeAt("#paper")
 
+
+let fonts = [ 'a', 'b', 'c' ]
+
+let options = _p("options")
+              .from(tpl.select({
+                options: fonts,
+              }))
+              .do(function(){
+                console.log('options >', this.value)
+              })
+              .pragmatizeAt('#paper')
+
 // _e(icons.gate).appendTo("p")
 //let ppp = _p('meow')
 //ppp.kaka = "haha"

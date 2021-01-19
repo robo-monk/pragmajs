@@ -11,7 +11,6 @@ export function monitor(config){
             this.html(this._monitorTemplate(this.value))
           })
           .run(function() {
-            console.log('monitor', this)
             this.export(
               'element',
               'actionChain'

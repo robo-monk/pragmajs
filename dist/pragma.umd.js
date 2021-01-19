@@ -176,7 +176,7 @@
       let e = document.querySelector(query);
       if (e) return e
     } catch (e) {}
-    
+
     let q = parseQuery(query);
 
     let el =  document.createElement(q.tag || "div");
@@ -201,8 +201,6 @@
   }
 
   function fillSVG(svg, color){
-    console.log(color);
-    console.log(_e$1(svg).findAll("path"));
     _e$1(svg).findAll("path").forEach(path => {
       const ff = path.attr("fill");
       if (ff!="none" && ff!="transparent"){
@@ -449,7 +447,8 @@
 
   for (let [key, val] of Object.entries(elementGetters)){
     Object.defineProperty(Element.prototype, key, {
-      get: val
+      get: val,
+      configurable: true
     });
   }
 
@@ -732,7 +731,7 @@
     // FOR HTML DOM
     as(query=null, innerHTML){
       query = query || `div#${this.id}.pragma`;
-      log("this as", query);
+      // log("this as", query)
       this.element = _e$1(query, innerHTML);
       return this
     }
@@ -784,9 +783,13 @@
     // RUN SCRIPTS WITH THIS SCOPE
     run(...scripts){
       for (let script of scripts){
-        script.bind(this)();
+        this.runAs(script);
       }
       return this
+    }
+
+    runAs(script){
+      return script.bind(this)()
     }
 
     contain(...childs){
@@ -847,6 +850,24 @@
         return this.element[a]
       }
     });
+  }
+
+  // Mousetrap integration
+  try {
+   if (typeof Mousetrap === 'function') {
+     Pragma.prototype.bind = function(key, f, on=undefined){
+       let self = this;
+        Mousetrap.bind(key, function(){
+          return self.runAs(f)
+        }, on);
+        return this
+     };
+
+     globalThis.pragmaSpace.mousetrapIntegration = true;
+     suc('Mousetrap configuration detected! Extended Pragmas to support .bind() method!');
+   }
+  } catch (e) {
+
   }
 
    // Pragma.prototype[a] = function() {
@@ -960,7 +981,6 @@
               this.html(this._monitorTemplate(this.value));
             })
             .run(function() {
-              console.log('monitor', this);
               this.export(
                 'element',
                 'actionChain'
@@ -993,6 +1013,49 @@
       })
     }
 
+  const defaults = {
+    onOptionCreate: function(self, option){
+      self.contain(option);
+    },
+    optionTemplate: function(option){
+        return new Pragma(option)
+                .html(option)
+                .addClass('pragma-click')
+                .on('click').do(function(){
+                  this.parent.value = this.key;
+                })
+    }
+  };
+
+  function select(config){
+    return new Pragma()
+      .from(create.template.config({
+        name: 'select',
+        defaultSet: config.options
+      }))
+      .run(function() {
+        config.onOptionCreate = config.onOptionCreate || defaults.onOptionCreate;
+        config.optionTemplate = config.optionTemplate || defaults.optionTemplate;
+
+        if (this._selectTemplate.constructor === Array){
+          for (let el of this._selectTemplate){
+            config.onOptionCreate(this, config.optionTemplate(el));
+          }
+        }else {
+          for (let [ key, val ] of Object.entries(this._selectTemplate)){
+            const pair = {}; pair[key] = val;
+            config.onOptionCreate(this, config.optionTemplate(key, val), pair);
+          }
+        }
+
+        this.export(
+          'element',
+          'actionChain',
+          'childMap'
+        );
+      })
+    }
+
   function applyDefaults(el, d){
     if (d.fill){
       fillSVG(el, d.fill);
@@ -1019,6 +1082,7 @@
     __proto__: null,
     monitor: monitor,
     slider: slider,
+    select: select,
     create: create,
     icons: icons,
     icon: icon
