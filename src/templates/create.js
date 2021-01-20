@@ -24,15 +24,15 @@ export const create = {
                         setTemplateName,
                       )
 
-                      this.onExport = function(pragma){
+                      this.onExport(pragma => {
                           pragma.export(templateName, setTemplateName)
-                      }
+                      })
 
                       return this
                     }
                 })
   },
-  
+
   fromObject: function(obj){
     util.log(`Creating template object from obj: [${JSON.stringify(obj)}]`)
 

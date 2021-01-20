@@ -1,7 +1,7 @@
 import Node from "./node"
 import _e from "./element"
 import ActionChain from "./actionChain"
-import { generateRandomKey, toHTMLAttr, suc, log, throwSoft } from "./util/index"
+import { generateRandomKey, toHTMLAttr, createEventChains, suc, log, throwSoft } from "./util/index"
 
 const _parseMap = {
 
@@ -100,6 +100,7 @@ function _processValue(v, range, _loop) {
 export default class Pragma extends Node {
   constructor(map, parent){
     super()
+    createEventChains(this, 'export')
 
     this.actionChain = new ActionChain()
 
@@ -235,11 +236,8 @@ export default class Pragma extends Node {
         this[attr] = pragma[attr]
       }
     }
-
-    if (pragma.onExport){
-      pragma.onExport(this)
-    }
-
+    
+    if (pragma.exportChain) pragma.exportChain.exec(this)
     return this
   }
 

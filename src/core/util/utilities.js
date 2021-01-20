@@ -4,6 +4,10 @@ function generateRandomKey(){
   return btoa(Math.random()).substr(10, 5)
 }
 
+function aryDiff(a, b){
+  return a.filter(i => b.indexOf(i)<0)
+}
+
 function objDiff(obj, edit, recursive=false){
   // TODO add recursive feature
   for (let [key, value] of Object.entries(edit)){
@@ -54,6 +58,7 @@ function createEventChains(obj, ...chains){
 export {
   generateRandomKey,
   objDiff,
+  aryDiff,
   _extend,
   createEventChains
 }

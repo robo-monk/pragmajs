@@ -65,7 +65,8 @@ const elementProto = {
 
   appendTo: function(where){
     this.onDocLoad(() => {
-      domify(where).appendChild(this)
+      this._parentElement = domify(where)
+      this._parentElement.appendChild(this)
       this._render()
     })
     return this
@@ -73,7 +74,8 @@ const elementProto = {
 
   prependTo: function(where){
     this.onDocLoad(() => {
-      domify(where).prepend(this)
+      this._parentElement = domify(where)
+      this._parentElement.prepend(this)
       this._render()
     })
     return this
@@ -85,6 +87,13 @@ const elementProto = {
       this.appendChild(d)
     })
     return this
+  },
+
+  destroy: function(){
+    this.onRender(()=> {
+      // console.log(`destroy ${this}`, this)
+      if (this.parentElement) this.parentElement.removeChild(this)
+    })
   },
 
   css: function(styles){
