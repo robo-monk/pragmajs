@@ -28,6 +28,17 @@ export const create = {
                           pragma.export(templateName, setTemplateName)
                       })
 
+                      // adopt other keys in config
+                      
+                      conf.name && delete conf.name
+                      conf.defaultSet && delete conf.defaultSet
+
+                      for (let [attr, val] of Object.entries(conf)) {
+                          this[attr] = val
+                          this.export(attr)
+                          this.onExport( pragma => pragma.export(attr) )
+                      }
+
                       return this
                     }
                 })
