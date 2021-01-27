@@ -1,5 +1,5 @@
 // recursively connected with other nodes
-import { throwSoft, rk8 } from "./util/index"
+import { throwSoft, rk8, rk5 } from "./util/index"
 
 export default class Node {
   constructor(key) {
@@ -39,8 +39,12 @@ export default class Node {
     return childs
   }
 
+  get(key){
+    return this.childMap.get(key)
+  }
+
   find(key) {
-    key = key.toString()
+    // key = key.toString()
     // recursively find a key
     // return false
     // console.log('trying to find', key)
@@ -62,7 +66,7 @@ export default class Node {
   add(node) {
     if (!node) return throwSoft(`Could not add [${node}] to [${this.id}]`)
     if (this.childMap.has(node.key)) {
-      node.key = `${node.key}_${rk8()}`
+      node.key = `${node.key}<${rk5()}`
       return this.add(node)
     }
     node.parent = this

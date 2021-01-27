@@ -104,6 +104,7 @@ export default class Pragma extends Node {
 
     this.actionChain = new ActionChain()
 
+    console.log("-------------")
     if (typeof map === "object"){
       parseMap(map, this)
     } else {
@@ -115,20 +116,24 @@ export default class Pragma extends Node {
 
 
   get _e(){ return this.element }
+  setElement(e, inheritId=true){
+    this.elementDOM = e
+    if (inheritId && this.element.id){
+      console.log(this.element, 'has id')
+      this.id = this.element.id
+    }
+
+    return this
+  }
+
   get element(){ return this.elementDOM }
   set element(n) {
+    this.setElement(n)
     // TODO check if element is of type elememtn blah blha
     // log(">> SETTING THIS DOM ELEMENT", n, this.id)
 
-    this.elementDOM = n
-    this.id = this.element.id || this.id
-    //
-    // if (this.elementDOM.id){
-    //   this.id = this.elementDOM.id
-    //   console.log("OUR ID", n.id)
-    // } else {
-    //   n.id = this.id
-    // }
+
+    // this.id = this.element.id || this.id
   }
 
 // -------------------- VALUE THINGS
@@ -174,11 +179,14 @@ export default class Pragma extends Node {
   }
 
   set key(key){
+    console.log('setting key to ', key)
     this._KEY = key == null ? generateRandomKey() : key
   }
+
   get key() { return this._KEY }
 
   set id(n) {
+    console.log('setting key to from id ', n)
     this.key = n
     if (this.element) this.element.id = this.id
   }
@@ -214,7 +222,8 @@ export default class Pragma extends Node {
   // FOR HTML DOM
   as(query=null, innerHTML){
     query = query || `div#${this.id}.pragma`
-    this.element = _e(query, innerHTML)
+    // this.element = _e(query, innerHTML)
+    this.setElement(_e(query, innerHTML), false)
     return this
   }
 
