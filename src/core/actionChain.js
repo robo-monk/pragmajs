@@ -1,6 +1,10 @@
 export default class ActionChain {
-  constructor(){
+  constructor(self){
+    this.self = self
     this.actions = new Map()
+
+    //API extension
+    this.delete = this.destroy
   }
 
   addWithKey(cb, key=null){
@@ -21,9 +25,12 @@ export default class ActionChain {
   }
 
   exec(...args){
-    this.forAction(function(key, act) {
-      act(...args)
-    })
+    self = this.self
+    this.execAs(self, ...args)
+  }
+
+  destroy(...keys){
+    keys.forEach(k => this.actions.delete(k))
   }
 
   execAs(self, ...args){

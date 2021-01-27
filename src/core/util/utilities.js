@@ -1,7 +1,17 @@
 import ActionChain from "../actionChain"
 
-function generateRandomKey(){
-  return btoa(Math.random()).substr(10, 5)
+function rk5(){
+ return Math.random().toString(36).substring(3, 6) + Math.random().toString(36).substring(5, 8)
+}
+function rk8(){ return rk(8)}
+
+function rk(l=7) {
+ if (l < 5) return rk5()
+ return (rk5() + rk(l-5)).substring(0, l)
+}
+
+function generateRandomKey(l){
+  return rk(l)
 }
 
 function aryDiff(a, b){
@@ -35,30 +45,55 @@ String.prototype.capitalize = function() {
 function _newChain(name, obj){
   let chainName = `${name}Chain`
   let eventName = `on${name.capitalize()}`
+
+  obj[chainName] = new ActionChain(obj)
+
+  obj[eventName] = function (cb, key) {
+    obj[chainName].addWithKey(cb, key)
+  }
+
+  return {
+      chainName: chainName,
+      eventName: eventName
+  }
+}
+
+function createChains(obj, ...chains){
+  for (let chain of chains){
+      _newChain(chain, obj)
+  }
+}
+
+function _newEventChain(name, obj){
+  let refs = _newChain(name, obj)
   let done = `is${name.capitalize()}ed`
 
-  obj[chainName] = new ActionChain()
-
-  obj[chainName].add(() => {
+  obj[refs.chainName].add(() => {
     obj[done] = true
   })
 
-  obj[eventName] = function (cb) {
+  obj[refs.eventName] = function (cb) {
     if (obj[done]) return cb(obj)
-    obj[chainName].add(cb)
+    obj[refs.chainName].add(cb)
   }
 }
 
 function createEventChains(obj, ...chains){
   for (let chain of chains){
-      _newChain(chain, obj)
+      _newEventChain(chain, obj)
   }
 }
+
+
+
+
 
 export {
   generateRandomKey,
   objDiff,
   aryDiff,
   _extend,
-  createEventChains
+  createEventChains,
+  createChains,
+  rk, rk5, rk8
 }

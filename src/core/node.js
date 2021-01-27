@@ -1,10 +1,10 @@
 // recursively connected with other nodes
-import { generateRandomKey, throwSoft } from "./util/index"
+import { throwSoft, rk8 } from "./util/index"
 
 export default class Node {
   constructor(key) {
     this.childMap = new Map()
-    this.key = typeof key === 'string' ? key : generateRandomKey()
+    this.key = typeof key === 'string' ? key : rk8()
     // API
     this.containsKey = this.childMap.has
   }
@@ -62,7 +62,7 @@ export default class Node {
   add(node) {
     if (!node) return throwSoft(`Could not add [${node}] to [${this.id}]`)
     if (this.childMap.has(node.key)) {
-      node.key = node.key + "~"
+      node.key = `${node.key}_${rk8()}`
       return this.add(node)
     }
     node.parent = this

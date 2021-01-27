@@ -236,7 +236,7 @@ export default class Pragma extends Node {
         this[attr] = pragma[attr]
       }
     }
-    
+
     if (pragma.exportChain) pragma.exportChain.exec(this)
     return this
   }

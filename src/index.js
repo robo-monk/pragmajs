@@ -1,7 +1,8 @@
 import _e from "./core/element"
 import Pragma from "./core/pragma"
+import ActionChain from "./core/actionChain"
 
-export { _e, Pragma }
+export { _e, Pragma, ActionChain }
 
 // API layer
 

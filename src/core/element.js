@@ -150,6 +150,14 @@ const elementProto = {
     return this.querySelectorAll(query)
   },
 
+  deepFindAll: function(query){
+    let hits = Array.from(this.findAll(query))
+    for (let child of this.children){
+      hits = hits.concat(child.deepFindAll(query))
+    }
+  return hits
+  },
+
   rect: function rect(){
     return typeof this.getBoundingClientRect === "function" ?
             this.getBoundingClientRect() : {}

@@ -5,31 +5,36 @@ export const create = {
     return new Pragma()
                 .run(function() {
                     this.config = function(conf) {
-                      let setTemplateName =`set${conf.name.capitalize()}Template`
-                      let templateName =`_${conf.name}Template`
+                      if (conf.name){
+                        let setTemplateName =`set${conf.name.capitalize()}Template`
+                        let templateName =`_${conf.name}Template`
 
-                      this[setTemplateName] = function(f){
-                        this[templateName] = f
-                        return this
+                        this[setTemplateName] = function(f){
+                          this[templateName] = f
+                          return this
+                        }
+
+                        if (conf.defaultSet) this[setTemplateName](conf.defaultSet)
+
+                        this._tempOptions = {
+                          set: setTemplateName,
+                        }
+                        this.export(
+                          templateName,
+                          setTemplateName,
+                        )
+
+                        this.onExport(pragma => {
+                            pragma.export(templateName, setTemplateName)
+                        })
                       }
 
-                      if (conf.defaultSet) this[setTemplateName](conf.defaultSet)
-
-                      this._tempOptions = {
-                        set: setTemplateName,
-                      }
-
-                      this.export(
-                        templateName,
-                        setTemplateName,
-                      )
-
-                      this.onExport(pragma => {
-                          pragma.export(templateName, setTemplateName)
-                      })
+                      // export myself
+                      this.export('config')
+                      this.onExport(p => p.export('config'))
 
                       // adopt other keys in config
-                      
+
                       conf.name && delete conf.name
                       conf.defaultSet && delete conf.defaultSet
 
