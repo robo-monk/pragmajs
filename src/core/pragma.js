@@ -104,7 +104,7 @@ export default class Pragma extends Node {
 
     this.actionChain = new ActionChain()
 
-    console.log("-------------")
+    // console.log("-------------")
     if (typeof map === "object"){
       parseMap(map, this)
     } else {
@@ -119,7 +119,7 @@ export default class Pragma extends Node {
   setElement(e, inheritId=true){
     this.elementDOM = e
     if (inheritId && this.element.id){
-      console.log(this.element, 'has id')
+      // console.log(this.element, 'has id')
       this.id = this.element.id
     }
 
@@ -178,15 +178,16 @@ export default class Pragma extends Node {
     return this
   }
 
+  setKey(key) { this.key = key; return this }
   set key(key){
-    console.log('setting key to ', key)
+    // console.log('setting key to ', key)
     this._KEY = key == null ? generateRandomKey() : key
   }
 
   get key() { return this._KEY }
 
   set id(n) {
-    console.log('setting key to from id ', n)
+    // console.log('setting key to from id ', n)
     this.key = n
     if (this.element) this.element.id = this.id
   }
