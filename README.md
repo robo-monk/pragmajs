@@ -8,7 +8,7 @@
 
 ## Dead simple, fast UI-composer in JavaScript
 
-[Check out Demo](https://robo-monk.github.io/pragmajs)
+[Check out a currently under construction Demo](https://robo-monk.github.io/pragmajs)
 
 <br>
 
@@ -35,7 +35,7 @@ If you want to create an element from an HTMLElement that already exists in the 
 <div id='jeff'></div>
 ```
 ```js	
-import { _e } from 'prgmajs'
+import { _e } from 'pragmajs'
 let element = _e("#jeff") // select the element like you would in CSS
 ```
 
