@@ -45,7 +45,8 @@ If you want to create a new element programatically and append it to the DOM you
 let element = _e("div#jeff.center-div-2.woo", "text").appendTo('body')
 ```
 will result in this:
-```
+
+```html
 <body>
   <div id='jeff' class='center-div-2 woo'>text</div>
 </body>
@@ -59,11 +60,11 @@ will result in this:
   let selector = "#jeff"
 
   _e("div#vid")
-    .appendTo(element/selector)
-    .prependTo(element/selector)
-    .destroy()
+    .appendTo(element || selector)
+    .prependTo(element || selector)
+    .destroy() // remove the element from the dom. fucken obliterate it
 
-    .append(element
+    .append(element) // append an element inside.
 
     .css(`
       position absolute
@@ -176,9 +177,10 @@ A `Pragma` is an object that provides an interface for creating complex interact
 		// run the passed callback functions as the pragma itself. The `this` keyword inside the functions will reference the pragma
 
 	  .pragmatize() // append pragma's element to its parent
-
-	  .pragmatizeAt(element/selector)
-		  //append pragma's element at the element/selector you provide
+	  .pragmatizeAt(element || selector)
+      //append pragma's element at the element/selector you provide
+      
+    .contain(another_pragma) // add another_pragma as a `child` of `p` and append it inside p's associated HTML element
 
 ```
 You can also call some of `_e`'s methods from the pragma directly, will modify its associated html element (if any) accordingly.
