@@ -70,7 +70,10 @@ will result in this:
       position absolute
       background red
       text-align center
-    `) // you can write normal css styles, but you could make your life easier by writing in the simplified syntax which replaces new lines with `;` and you dont need to type `:` after every css attr. your choice
+    `) // you can write normal css styles, but you could
+    // make your life easier by writing in the simplified
+    // syntax which replaces new lines with `;` and you 
+    // dont need to type `:` after every css attr. your choice
 
     .html(`innerHTML`) // change inner html
     
@@ -103,11 +106,15 @@ A `Pragma` is an object that provides an interface for creating complex interact
 ```js
   import { _e, _p } from 'pragmajs'
 
-  let pragma1 = _p('name') // you can give the Pragma a name (which is going to be its key), or leave it blank to generate a random one through an overengineered random string generator
+  let pragma1 = _p('name') // you can give the Pragma a 
+         // name (which is going to be its key), or leave 
+         // it blank to generate a random one through 
+         // an overengineered random string generator
 
   let element = _e('#jeff') // an element that exists on the dom already
   let pragma2 = _p()
-                  .as(element) // associate pragma2 with element pragma2.element is going to be #jeff
+                  .as(element) // associate pragma2 with 
+                  // element pragma2.element is going to be #jeff
   
   let pragma3 = _p()
                   .as(_e("div#gme.hold"))
@@ -119,7 +126,8 @@ A `Pragma` is an object that provides an interface for creating complex interact
                   `)
 
   import { tpl } from 'pragmajs'
-	let pragma4 = p().from(tpl.monitor) //create a Pragma from a template (another Pragma)
+  let pragma4 = p().from(tpl.monitor) //create a Pragma 
+                            // from a template (another Pragma)
 	
 ```
 
@@ -127,60 +135,82 @@ A `Pragma` is an object that provides an interface for creating complex interact
 
 ```js
 
-  let p = _p()
+let p = _p()
 
-	p.element = "<HTMLElement>" || _e('#dash') // set the element associated with the pragma
-  console.log(p.element, p._e) // => <HTML Element id='dash'>
+p.element = "<HTMLElement>" || _e('#dash') // set the element associated with the pragma
+console.log(p.element, p._e) // => <HTML Element id='dash'>
 
   // --- PRAGMA VALUE & ACTION CHAIN ---
 
-	p.do(function(plip, plop, plap){ 
-    console.log(`Value changed to ${this.value}`, plip, plop, plap) 
-  })
-    // assign a callback function that will run every time a shift in the pragma's value occurs. All the callbacks that are being run when the value changes, are part of the *ActionChain* of the Pragma.
+p.do(function(plip, plop, plap){ 
+  console.log(`Value changed to ${this.value}`, plip, plop, plap) 
+})  // assign a callback function that will run 
+    // every time a shift in the pragma's value occurs. 
+    // All the callbacks that are being run when the value changes,
+    // are part of the *ActionChain* of the Pragma.
 
 
 
-  // every time the value of the pragma is changed, its *ActionChain* runs
-	p.value = 420  // the value is going to change and because of the above p.do(..) the console is going to print: => Value changed to 420  
-  console.log(p.value) // => 420 
+// every time the value of the pragma is changed, its *ActionChain* runs
+p.value = 420  // the value is going to change 
+          //  and because of the above p.do(..) 
+          // the console is going to print: => Value changed to 420  
+
+console.log(p.value) // => 420 
 
 
 
-	p.exec(1,2,3) // when you call exec on a pragma it will run its *Action Chain* with whatever arguments you add
-  // => Value changed to 420, 1, 2, 3
+p.exec(1,2,3) // run its *Action Chain* with 
+              // whatever arguments you add
+// => Value changed to 420, 1, 2, 3
 
 
-  let another_pragma = _p().do(function(){ console.log('wooooo', this.value)})
-	p.wireTo(another_pragma) // link the pragma value to another_pragma's value. Every time the pragma's value changes, change the another_pragma's value to the same one
-  p.value += 1
+let another_pragma = _p().do(function(){
+  console.log('wooooo', this.value)
+})
 
-  // => Value changed to 421
-  // => wooooo, 421
+p.wireTo(another_pragma) // link the pragma value 
+                        // to another_pragma's value. 
+                        // Every time the pragma's value 
+                        // changes, change the 
+                        // another_pragma's value to the same one
+
+p.value += 1
+// => Value changed to 421
+// => wooooo, 421
 
 
-  // --- UTILITIES ---
+// --- UTILITIES ---
 
-	p.key = 'secks'
-  p.setKey('john lennon') // set `key` of the pragma
+p.key = 'secks'
+p.setKey('john lennon') // set `key` of the pragma
+
+console.log(p.id) // => john-lennon
+// return the HTML id of 
+// the element associated 
+// with the pragma
+
+
+p
+  .on('click').do(function() { console.log('ive been clicked')})
+  .on('hover').do(function() { console.log('ive been hovered')})
+
+  .addListeners({'click': function(){}, 'hover': function(){}})
+
+  .run(function(){}, function(){} ....)
+    // run the passed callback 
+    // functions as the pragma itself. 
+    // The `this` keyword inside the functions 
+    // will reference the pragma
+
+  .pragmatize() // append pragma's element to its parent
+  .pragmatizeAt(element || selector)
+      // append pragma's element at the 
+      // element/selector you provide
   
-  console.log(p.id) // => john-lennon
-  // return the HTML id of the element associated with the pragma
-
-
-	p .on('click').do(function() { console.log('ive been clicked')})
-	  .on('hover').do(function() { console.log('ive been hovered')})
-
-    .addListeners({'click': function(){}, 'hover': function(){}})
-
-    .run(function(){}, function(){} ....)
-		// run the passed callback functions as the pragma itself. The `this` keyword inside the functions will reference the pragma
-
-	  .pragmatize() // append pragma's element to its parent
-	  .pragmatizeAt(element || selector)
-      //append pragma's element at the element/selector you provide
-      
-    .contain(another_pragma) // add another_pragma as a `child` of `p` and append it inside p's associated HTML element
+  .contain(another_pragma) // add another_pragma 
+  // as a `child` of `p` and append it 
+  // inside p's associated HTML element
 
 ```
 You can also call some of `_e`'s methods from the pragma directly, will modify its associated html element (if any) accordingly.
