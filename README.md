@@ -27,93 +27,167 @@ yarn add pragmajs
 
 # How To
 
-You can find an interactive version of this tutorial [here](https://robo-monk.github.io/pragmajs)
+## Quick HTML Element manipulation
 
+If you want to create an element from an HTMLElement that already exists in the DOM:
 
-## Simple Concepts
+```html
+<div id='jeff'></div>
+```
+```js	
+import { _e } from 'prgmajs'
+let element = _e("#jeff") // select the element like you would in CSS
+```
 
-### What is a Pragma?
+If you want to create a new element programatically and append it to the DOM yourself, you can do:
+	
+```js
+let element = _e("div#jeff.center-div-2.woo", "text").appendTo('body')
+```
+will result in this:
+```
+<body>
+  <div id='jeff' class='center-div-2 woo'>text</div>
+</body>
+```
 
-A Pragma is an object, that has certain interesting properties and capabilities which we will explore briefly in this tutorial. Most of the Pragmas we'll be creating will be interconnected with an element in the DOM, but they're NOT the same. A Pragma, hypothetically, can have many different DOMs, and even exist without one.
-
-### Compose
-
-To create a Pragma, we first need to `Compose` it. In this stage, we'll be creating & manipulating the appearance of the element that is going to be connected with the new Pragma, while adding properties and behaviours to the Pragma itself.
-
-You can always change the appearance of the element or add/remove properties of/to/from a pragma later, but structuraly you should add *most* of these when you compose it.
+### _e API (v1)
 
 ```js
-// code exploring .with, .as
+
+  let element = _e("#jeff")
+  let selector = "#jeff"
+
+  _e("div#vid")
+    .appendTo(element/selector)
+    .prependTo(element/selector)
+    .destroy()
+
+    .append(element
+
+    .css(`
+      position absolute
+      background red
+      text-align center
+    `) // you can write normal css styles, but you could make your life easier by writing in the simplified syntax which replaces new lines with `;` and you dont need to type `:` after every css attr. your choice
+
+    .html(`innerHTML`) // change inner html
+    
+    .setId(`id`)
+    .addClass('class1', 'class2', 'class3', ...)
+    
+    .listenTo({ 'click': () => {}, 'hover': () => {} ... })
+    
+    .attr(attrName, value) // edit html attribute like src or href
+    
+    .find(selector) // find an element inside
+    .findAll(selector) // find all elements inside
+
+    .rect() // get BoundingRect of element
+    .offset() // get offset of element
+
+  // self explanatory GETTERS
+  element.top
+  element.left
+  element.width
+  element.height
+  element.text
+
 ```
 
-### Pragmatize
+## Pragmas
+A `Pragma` is an object that provides an interface for creating complex interactions with minimal code. A `Pragma` can be associated with an `HTMLElement`, which can be extremely useful for translating these complex interactions to the front end.
 
-You'll notice that after we compose a Pragma we `pragmatize` it to tell the `Pragma` object where in the DOM it needs to be rendered, and in which fashion. We can wait and `pragmatize` the pragma element later on our program as well.
+### Creating a new Pragma
+```js
+  import { _e, _p } from 'pragmajs'
+
+  let pragma1 = _p('name') // you can give the Pragma a name (which is going to be its key), or leave it blank to generate a random one through an overengineered random string generator
+
+  let element = _e('#jeff') // an element that exists on the dom already
+  let pragma2 = _p()
+                  .as(element) // associate pragma2 with element pragma2.element is going to be #jeff
+  
+  let pragma3 = _p()
+                  .as(_e("div#gme.hold"))
+                  .html("if he is still in, im still in")
+                  .css(`
+                    background red
+                    font-size 420
+                    font-family 'Comic Sans'
+                  `)
+
+  import { tpl } from 'pragmajs'
+	let pragma4 = p().from(tpl.monitor) //create a Pragma from a template (another Pragma)
+	
+```
+
+### Pragma API:
 
 ```js
 
-// code exploring .pragmatize(), at().pragmatize(, , ,), .host, .contain
+  let p = _p()
+
+	p.element = "<HTMLElement>" || _e('#dash') // set the element associated with the pragma
+  console.log(p.element, p._e) // => <HTML Element id='dash'>
+
+  // --- PRAGMA VALUE & ACTION CHAIN ---
+
+	p.do(function(plip, plop, plap){ 
+    console.log(`Value changed to ${this.value}`, plip, plop, plap) 
+  })
+    // assign a callback function that will run every time a shift in the pragma's value occurs. All the callbacks that are being run when the value changes, are part of the *ActionChain* of the Pragma.
+
+
+
+  // every time the value of the pragma is changed, its *ActionChain* runs
+	p.value = 420  // the value is going to change and because of the above p.do(..) the console is going to print: => Value changed to 420  
+  console.log(p.value) // => 420 
+
+
+
+	p.exec(1,2,3) // when you call exec on a pragma it will run its *Action Chain* with whatever arguments you add
+  // => Value changed to 420, 1, 2, 3
+
+
+  let another_pragma = _p().do(function(){ console.log('wooooo', this.value)})
+	p.wireTo(another_pragma) // link the pragma value to another_pragma's value. Every time the pragma's value changes, change the another_pragma's value to the same one
+  p.value += 1
+
+  // => Value changed to 421
+  // => wooooo, 421
+
+
+  // --- UTILITIES ---
+
+	p.key = 'secks'
+  p.setKey('john lennon') // set `key` of the pragma
+  
+  console.log(p.id) // => john-lennon
+  // return the HTML id of the element associated with the pragma
+
+
+	p .on('click').do(function() { console.log('ive been clicked')})
+	  .on('hover').do(function() { console.log('ive been hovered')})
+
+    .addListeners({'click': function(){}, 'hover': function(){}})
+
+    .run(function(){}, function(){} ....)
+		// run the passed callback functions as the pragma itself. The `this` keyword inside the functions will reference the pragma
+
+	  .pragmatize() // append pragma's element to its parent
+
+	  .pragmatizeAt(element/selector)
+		  //append pragma's element at the element/selector you provide
+
 ```
+You can also call some of `_e`'s methods from the pragma directly, will modify its associated html element (if any) accordingly.
 
-### Stylize
-
-Here are some useful functions pragmas have.
-```JavaScript
-.css, .listen, .html.class, .element, .illustrate
-```
-
-## Advanced Concepts
-
-### Introduction to Pragma Values
-
-So far, we've seen how Pragmas connect with elements in the DOM. By default, a Pragma has a singular `value`. Usually this value is primitive (integer, string etc.), but of course it can be anything. Every time, the `value` of the Pragma is changed to something else, a `Chain of Actions` is being run.
-
-### Timer Demo
 ```js
-//timer demo without the template
+pragma.html('wo')
+      .css('color crystalblue')
+      .addClass('lucy', 'in', 'the', 'sky', 'center-div-flexbox', 'zindexxxxx')
+      .setId('paul')
+
+console.log(p.offset, p.text, p.top, p.left, p.width, p.height)
 ```
-
-
-### Introduction to Pragma Relationships
-
-A Pragma can also form relationships with other Pragmas. Inspired by the structure of `HTML`, where you can have a `div` inside a `div`, a Pragma can contain other Pragmas.
-
-```js
-.contain, .host, .add
-```
-
-### Master Pragma
-
-This results in a structure where the top-level Pragma (aka the Pragma that has no *higher* parent) is called the `master`. The `master` Pragma, is a special kind of Pragma, because it will run its own `Chain of Actions` each time *any* of its children (or children of children, children of children of children etc...)  change their value.
-
-```js
-// code showcasing multiple levels of pragma parents and stuff, with contain and host
-```
-
-
-## Templates
-
-Lets take a step back, and revisit our Timer Demo. Essentially the biggest chunck of code is just for changing the text of the DOM element connected with the `timer` pragma, to display the `timer` pragma `value`. If you think about it that is something that is really common, and we use it very often in various elements. Thus, Pragmajs comes with some teplates out of the box that will help you build your project faster and cleaner.
-
-Here's the timer demo with a template:
-
-```js
-//timer demo with a template
-```
-
-Check out the current [template collection]().
-
-
-## Closing Remarks
-
-Although, PragmaJS is still in early stages of development, I think it provides us with a really interesting and beatiful way of creating and thinking about  applications. Its conceptually simple, and is built to be extensible and customisable from the ground up. Structurally we can have one singular pragma doing the high-level processing, and some other "smaller" Pragmas holding values and talking to the end user.
-
-A Menu Template, for example, would create a Pragma that has a value that changes every time a user clicks a different menu choice. You would pass it an array of options, and it would **create the pragma for you**. You don't even need to know how many pragmas it generated, you only user the "**master**" of all the possible sub pragmas, which holds 1 singular value, treating **1 problem**, and contributing towards solving your bigger problem.
-
-Which itself at the end has 1 singular variable if any, but treats 1 problem. The end user doesn't care how many sub problems you had as dev to solve. You don't care how many sub sub problems a template has to solve to solve your sub problem, which in our case was a menu to edit some settings for your quantum cloud computing graph. Because you still can't center a div and CSS still is a pain in the ass.
-
-I really came to appreciate how powerful and beautiful this concept is, and made some templates, which are included in the distribution. But the actual beauty of it is that you can and probably should **create your own templates** **using** some basic and "essential" **templates** pragma has at the moment.
-
-I hope **you** build **epic things** with it.
-
-robomonk
