@@ -79,10 +79,12 @@ const elementProto = {
     return this
   },
 
-  append: function(e){
+  append: function(...elements){
     this.onRender(() => {
-      let d = domify(e)
-      this.appendChild(d)
+      for (let e of elements){
+        let d = domify(e)
+        this.appendChild(d)  
+      }
     })
     return this
   },
@@ -202,6 +204,9 @@ const elementGetters = {
   },
   classArray: function(){
     return Array.from(this.classList)
+  },
+  childrenArray: function(){
+    return Array.from(this.children)
   }
 }
 

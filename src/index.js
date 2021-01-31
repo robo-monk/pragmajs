@@ -33,3 +33,6 @@ export function globalify() {
   }
 }
 
+export function render(location){
+  window.location.href = location 
+}

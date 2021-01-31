@@ -12,6 +12,15 @@ describe("_p correctly adopts _e getters", () => {
   expect(p.text).toBe("dragon baboon")
 })
 
+describe("_e appends multiple _e", () => {
+  let e = _e('div', 'test') 
+  let e1 = _e('div', 'test') 
+  let e2 = _e('div', 'test') 
+  let e3 = _e('div', 'test') 
+  e.append(e1, e2, e3)
+  expect(e.childrenArray.length).toBe(3)
+})
+
 describe("_e class arrays'", () => {
   let e = _e('div', 'test') 
   e.addClass('one', 'two', 'three')
