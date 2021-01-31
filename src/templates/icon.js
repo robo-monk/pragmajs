@@ -1,6 +1,6 @@
 import { create } from "./create"
 import { fillSVG } from "../core/util/index"
-import { _p } from "../index"
+import { _p, _e } from "../index"
 
 function applyDefaults(el, d){
   if (d.fill){

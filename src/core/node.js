@@ -50,9 +50,9 @@ export default class Node {
     // console.log('trying to find', key)
     // console.log(this.childMap)
     if (this.childMap.has(key)) return this.childMap.get(key)
-    for (let [k, value] of this.childMap) {
-      let vv = value.find(key)
-      if (vv) return vv
+    for (let value of this.childMap.values()) {
+      let v = value.find(key)
+      if (v) return v
     }
   }
 

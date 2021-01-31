@@ -345,7 +345,7 @@ for (let a of _adoptGetters) {
 }
 
 
-// Mousetrap integration
+// Mousetrap integration TODO improve this
 globalThis.pragmaSpace.integrateMousetrap = function(trap){
   if (typeof trap === 'function') {
    Pragma.prototype.bind = function(key, f, on=undefined){
@@ -364,7 +364,8 @@ globalThis.pragmaSpace.integrateMousetrap = function(trap){
 try {
   globalThis.pragmaSpace.integrateMousetrap(Mousetrap)
 } catch (e) {
-
+  log(`Tried to integrate extensions, but failed. To disable,
+  this attempt: globalThis.pragmaSpace.integrate3rdParties = false`)
 }
 
  // Pragma.prototype[a] = function() {

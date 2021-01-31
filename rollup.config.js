@@ -2,8 +2,16 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 
 import { terser } from "rollup-plugin-terser"
+
+import sizes from 'rollup-plugin-sizes';
+import visualizer from 'rollup-plugin-visualizer'
 import pkg from './package.json';
 
+const plugs = [
+	terser(), // mini
+	sizes(),
+	visualizer()
+]
 export default [
 	// browser-friendly UMD build
 	{
@@ -16,8 +24,8 @@ export default [
 		plugins: [
 			resolve(), // so Rollup can find `ms`
 			commonjs(), // so Rollup can convert `ms` to an ES module
-			// terser() // mini
-		]
+	
+		].concat(plugs)
 	},
 
 	// CommonJS (for Node) and ES module (for bundlers) build.
@@ -35,6 +43,6 @@ export default [
 		],
 		plugins: [
 			// terser()
-		]
+		].concat(plugs)
 	}
 ]

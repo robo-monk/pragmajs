@@ -1,4 +1,4 @@
-import { Pragma, util } from "../index"
+import { Pragma } from "../index"
 import { create } from "./create"
 
 export function monitor(config){

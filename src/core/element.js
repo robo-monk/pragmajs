@@ -1,17 +1,13 @@
 // Its like $("#id") of jquery
 
-import ActionChain from "./actionChain"
 import {
   throwSoft,
   whenDOM,
-  parseQuery,
   addClassAryTo,
   removeClassAryFrom,
   toggleClassAryOf,
-  selectOrCreateDOM,
   elementFrom,
   apply,
-  _extend,
   createEventChains
 } from "./util/index"
 

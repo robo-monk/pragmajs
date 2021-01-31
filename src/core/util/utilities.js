@@ -18,7 +18,7 @@ function aryDiff(a, b){
   return a.filter(i => b.indexOf(i)<0)
 }
 
-function objDiff(obj, edit, recursive=false){
+function objDiff(obj, edit){
   // TODO add recursive feature
   for (let [key, value] of Object.entries(edit)){
     obj[key] = value
@@ -27,13 +27,13 @@ function objDiff(obj, edit, recursive=false){
   return obj
 }
 
-function addProperties(obj){
-  for (let [attr, val] of obj){
-    obj[attr] = val
-  }
-  return obj
+// function addProperties(obj){
+//   for (let [attr, val] of obj){
+//     obj[attr] = val
+//   }
+//   return obj
+// }
 
-}
 function _extend(e, proto){
   Object.setPrototypeOf(e, objDiff(Object.getPrototypeOf(e), proto))
 }

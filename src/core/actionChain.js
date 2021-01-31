@@ -25,8 +25,7 @@ export default class ActionChain {
   }
 
   exec(...args){
-    self = this.self
-    this.execAs(self, ...args)
+    this.execAs(this.self, ...args)
   }
 
   destroy(...keys){

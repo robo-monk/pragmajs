@@ -1,4 +1,4 @@
-import { Pragma, util, _p } from "../index"
+import { Pragma, util } from "../index"
 
 export const create = {
   get template() {

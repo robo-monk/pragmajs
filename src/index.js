@@ -22,12 +22,14 @@ export * as tpl from "./templates/index"
 
 const exported = [ '_e', '_p', 'Pragma', 'util', 'tpl' ]
 
-export function globalify(options){
-  if (typeof pragma !== "undefined" && pragma.__esModule){
-    for (let func of exported){
-      globalThis[func] = pragma[func]
+export function globalify() {
+  let pragmaModule = (globalThis || window)["pragma"]
+  if (pragmaModule !== "undefined" && pragmaModule.__esModule) {
+    for (let func of exported) {
+      globalThis[func] = pragmaModule[func]
     }
-  }else{
+  } else {
     console.error("Could not globalify [pragma]")
   }
 }
+

@@ -1,4 +1,4 @@
-import { throwSoft, log, suc } from "./log"
+import { throwSoft, suc } from "./log"
 import { createEventChains } from "./utilities"
 import _e from "../element"
 
@@ -79,7 +79,7 @@ function selectOrCreateDOM(query){
   try {
     let e = document.querySelector(query)
     if (e) return e
-  } catch (e) {}
+  } catch {}
 
   let q = parseQuery(query)
 
