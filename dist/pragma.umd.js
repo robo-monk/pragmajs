@@ -199,17 +199,22 @@
     return props
   }
 
-  function addClassAryTo(cary, el){
-    if (!(Array.isArray(cary))) return throwSoft(`Could not add class [${cary}] to [${el}]`)
+  function loopThruClassAryAndDo(cary, el, action){
+    if (!(Array.isArray(cary))) return throwSoft(`Could not ${action} class [${cary}] -> [${el}]`)
     for (let c of cary){
       let _subary = c.split(" ");
       if (_subary.length>1) {
-        addClassAryTo(_subary, el);
+        loopThruClassAryAndDo(_subary, el, action);
+        //loopThruClassAryTo(_subary, el)
         continue
       }
-      el.classList.add(c);
+      el.classList[action](c);
     }
   }
+
+  function addClassAryTo(cary, el){ loopThruClassAryAndDo(cary, el, 'add'); }
+  function removeClassAryFrom(cary, el){ loopThruClassAryAndDo(cary, el, 'remove'); }
+  function toggleClassAryOf(cary, el){ loopThruClassAryAndDo(cary, el, 'toggle'); }
 
   function selectOrCreateDOM(query){
     try {
@@ -318,6 +323,8 @@
     whenDOM: whenDOM,
     parseQuery: parseQuery,
     addClassAryTo: addClassAryTo,
+    removeClassAryFrom: removeClassAryFrom,
+    toggleClassAryOf: toggleClassAryOf,
     selectOrCreateDOM: selectOrCreateDOM,
     elementFrom: elementFrom,
     toHTMLAttr: toHTMLAttr,
@@ -445,6 +452,16 @@
       return this
     },
 
+    removeClass: function(...classes){
+      removeClassAryFrom(classes, this);
+      return this
+    },
+
+    toggleClass: function(...classes){
+      toggleClassAryOf(classes, this); 
+      return this
+    },
+
     listenTo: function(...args){
       this.onRender(() => {
         this.addEventListener(...args);
@@ -517,6 +534,9 @@
     text: function(){
       return this.textContent
     },
+    classArray: function(){
+      return Array.from(this.classList)
+    }
   };
 
   for (let [key, val] of Object.entries(elementProto)){
@@ -932,6 +952,8 @@
     "html",
     "css",
     "addClass",
+    "removeClass",
+    "toggleClass",
     "setId",
   ];
 
@@ -946,7 +968,8 @@
     // html things
     // "text",
     "offset", "text",
-    'top', 'left', 'width', 'height', 'x'
+    'top', 'left', 'width', 'height', 'x',
+    'classArray'
   ];
 
   for (let a of _adoptGetters) {

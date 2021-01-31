@@ -58,17 +58,22 @@ function parseQuery(selector, defaultTagName = "div") {
   return props
 }
 
-function addClassAryTo(cary, el){
-  if (!(Array.isArray(cary))) return throwSoft(`Could not add class [${cary}] to [${el}]`)
+function loopThruClassAryAndDo(cary, el, action){
+  if (!(Array.isArray(cary))) return throwSoft(`Could not ${action} class [${cary}] -> [${el}]`)
   for (let c of cary){
     let _subary = c.split(" ")
     if (_subary.length>1) {
-      addClassAryTo(_subary, el)
+      loopThruClassAryAndDo(_subary, el, action)
+      //loopThruClassAryTo(_subary, el)
       continue
     }
-    el.classList.add(c)
+    el.classList[action](c)
   }
 }
+
+function addClassAryTo(cary, el){ loopThruClassAryAndDo(cary, el, 'add') }
+function removeClassAryFrom(cary, el){ loopThruClassAryAndDo(cary, el, 'remove') }
+function toggleClassAryOf(cary, el){ loopThruClassAryAndDo(cary, el, 'toggle') }
 
 function selectOrCreateDOM(query){
   try {
@@ -112,6 +117,8 @@ export {
   whenDOM,
   parseQuery,
   addClassAryTo,
+  removeClassAryFrom,
+  toggleClassAryOf,
   selectOrCreateDOM,
   elementFrom,
   toHTMLAttr,

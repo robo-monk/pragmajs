@@ -6,6 +6,8 @@ import {
   whenDOM,
   parseQuery,
   addClassAryTo,
+  removeClassAryFrom,
+  toggleClassAryOf,
   selectOrCreateDOM,
   elementFrom,
   apply,
@@ -120,6 +122,16 @@ const elementProto = {
     return this
   },
 
+  removeClass: function(...classes){
+    removeClassAryFrom(classes, this)
+    return this
+  },
+
+  toggleClass: function(...classes){
+    toggleClassAryOf(classes, this) 
+    return this
+  },
+
   listenTo: function(...args){
     this.onRender(() => {
       this.addEventListener(...args)
@@ -192,6 +204,9 @@ const elementGetters = {
   text: function(){
     return this.textContent
   },
+  classArray: function(){
+    return Array.from(this.classList)
+  }
 }
 
 for (let [key, val] of Object.entries(elementProto)){

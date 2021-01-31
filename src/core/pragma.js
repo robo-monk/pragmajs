@@ -316,6 +316,8 @@ const _hostElementAttrs = [
   "html",
   "css",
   "addClass",
+  "removeClass",
+  "toggleClass",
   "setId",
 ]
 
@@ -330,7 +332,8 @@ const _adoptGetters = [
   // html things
   // "text",
   "offset", "text",
-  'top', 'left', 'width', 'height', 'x'
+  'top', 'left', 'width', 'height', 'x',
+  'classArray'
 ]
 
 for (let a of _adoptGetters) {
