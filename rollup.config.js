@@ -10,8 +10,13 @@ import pkg from './package.json';
 const plugs = [
 	terser(), // mini
 	sizes(),
-	visualizer()
+	visualizer({
+		filename: "docs/stats.html",
+		title: "PragmaJS Visualised",
+		sourcemap: false
+	})
 ]
+
 export default [
 	// browser-friendly UMD build
 	{
