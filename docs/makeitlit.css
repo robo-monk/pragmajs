@@ -44,7 +44,7 @@ h1 {
 
 pre, code {
   font-family: "Space Mono";
-  background-color: transparent  !important;
+  /*background-color: transparent  !important;*/
   font-size: 1em;
   text-align: left;
 }

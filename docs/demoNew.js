@@ -57,19 +57,105 @@ pragma.globalify()
               //.pragmatizeAt('#paper')
 
 
-function demo1(){
-  alert(this)
-}
+let $tab = "<"
+let $sp = " "
+let $nl = "<br>"
 
-let demo = _p('demo')
-            .run(function(){
-              this.play = demo => {
-                console.log(demo)
-                demo.bind(this)()
+let demo = _p()
+            .from(tpl.create.template.config({
+              name: 'monitor',
+              value: function(){
+                console.log(`no demo set`)
+              },
+              title: 'Demo'
+            }))
+            .run({
+              createElement(){
+                this.as(_e(`div#demo-block-${this.key}`))
+              },
+              createCodeBlock(){
+                this.codeBlock = _e(`pre#demo-code-${this.key}`)
+                        .css(`
+                          background-color #212530
+                          width 80%
+                          max-width 400px
+                          height fit-content
+                          min-height 50px   
+                          border-radius 5px
+                          margin auto
+                          padding 20px 30px
+                        `)
+                
+                _e('div#play', 'play')
+                  .listenTo('click', () => {
+                      this.play()
+                    }
+                  )
+                  .appendTo(this)
+                this.append(this.codeBlock)
+              },
+              createTitle(){
+                this.prepend(_e(`h2#demo-title-${this.key}`)
+                              .html(this.title)
+                            )
+              },
+              editFuncBlock(){
+                this.editFuncBlock = func => {
+                  let str = func.toString()
+                  this.codeBlock.html(str)
+                }
+              },
+              
+              playMake(){
+                this.play = function(){
+                  // console.log(demo)
+                  this.value.bind(this)()
+                }
               }
             })
+            .do(function(){
+              this.editFuncBlock(this.value)
+            })
+            .run(function(){
+              this.export('element',
+                    'actionChain',
+                    'editFuncBlock',
+                    'play'
+                    )
+            })
 
-demo.play(demo1)
+// demo.value = demo1
+//
+
+function demoFactory(cb, title=cb.name, e="#paper"){
+  return _p()
+          .from(demo.config({
+            title: title,
+            value: cb
+          }))
+          .pragmatizeAt(e)
+}
+
+const demos = {
+  demo1(){
+    alert(this)
+  }
+}
+
+
+for (let [title, demo] of Object.entries(demos)){
+  demoFactory(demo, title)
+}
+//let demo1 = _p()
+              //.from(demo.config({
+                //value: demo1Code,
+              //}))
+              //.pragmatizeAt("#paper")
+
+
+
+//demo.play(demo1)
+
 // _e(icons.gate).appendTo("p")
 //let ppp = _p('meow')
 //ppp.kaka = "haha"
