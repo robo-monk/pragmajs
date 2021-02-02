@@ -75,3 +75,44 @@ describe("Pragmas can contain other pragmas", () => {
     // console.log(b)
   })
 })
+
+describe("pragma.run", () => {
+  let p = new Pragma()
+
+  test("simple run", () => {
+    let t
+    p.run(function(){
+      t = this.key
+    })
+    expect(t).toBe(p.key)
+  })
+
+  test("multiple run", () => {
+    let randKey = "yehaww"
+    p.run(function(){
+      this.key = randKey
+    }, function(){
+      expect(this.key).toBe(randKey)
+    }, function(){
+      this.jeff = randKey
+    })
+    expect(p.jeff).toBe(randKey)
+  })
+  
+  test('dictionary run', () => {
+    p = new Pragma()
+    let randKey = "meeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    p.run({
+      setKey(){
+        this.key = randKey
+      }, 
+      expectKey(){
+        expect(this.key).toBe(randKey)
+      }, 
+      jeffrey(){
+        this.jeff = randKey
+      }
+    })
+  })
+
+})

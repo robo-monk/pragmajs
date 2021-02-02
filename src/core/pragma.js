@@ -270,11 +270,24 @@ export default class Pragma extends Node {
 
 
   // RUN SCRIPTS WITH THIS SCOPE
+
+
   run(...scripts){
+    let sample = scripts[0]
+    if (typeof sample === 'function'){
+      this._runAry(scripts)
+    } else if (typeof sample === 'object'){
+      this._runAry(Object.values(sample))
+    } else {
+      throwSoft(`Could not run [${scripts}] as [${this}]`)
+    }
+    return this
+  }
+
+  _runAry(scripts){
     for (let script of scripts){
       this.runAs(script)
     }
-    return this
   }
 
   runAs(script){

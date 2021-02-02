@@ -4,58 +4,72 @@ pragmaSpace.dev = true
 pragma.globalify()
 
 
-_p('test')
-  .html("hahah this is the shit")
-  .pragmatizeAt("p")
+//_p('test')
+  //.html("hahah this is the shit")
+  //.pragmatizeAt("p")
 
-// const icons = tpl.create.from(uiIcons)
-const icons = tpl.icons(uiIcons).setDefaults({
-  fill: 'whitesmoke'
-})
+//// const icons = tpl.create.from(uiIcons)
+//const icons = tpl.icons(uiIcons).setDefaults({
+  //fill: 'whitesmoke'
+//})
 
-let iconGate = _p("gate").from(icons.gate)
-iconGate.pragmatizeAt("p")
+//let iconGate = _p("gate").from(icons.gate)
+//iconGate.pragmatizeAt("p")
 
-let monitor = _p('tv')
-          .setValue(0)
-          .from(tpl.monitor())
-          .setMonitorTemplate(
-            v => `${v} second${v == 1 ? ' has' : 's have'} passed`)
-          .pragmatizeAt("#paper")
-          .setLoop(0, 10)
+//let monitor = _p('tv')
+          //.setValue(0)
+          //.from(tpl.monitor())
+          //.setMonitorTemplate(
+            //v => `${v} second${v == 1 ? ' has' : 's have'} passed`)
+          //.pragmatizeAt("#paper")
+          //.setLoop(0, 10)
 
-setInterval(() => {
-  monitor.value += 1
-}, 1000)
-
-
-let sliderView = _p("slider view")
-
-let slider = _p("slider")
-            .from(tpl.slider({
-              min: 0,
-              max: 10
-            }))
-
-let sliderMonitor = _p("slider monitor")
-    .from(tpl.monitor())
-    .wireTo(slider)
+//setInterval(() => {
+  //monitor.value += 1
+//}, 1000)
 
 
-sliderView.contain(slider, sliderMonitor)
-          .pragmatizeAt("#paper")
+//let sliderView = _p("slider view")
 
-let fonts = [ 'a', 'b', 'c' ]
+//let slider = _p("slider")
+            //.from(tpl.slider({
+              //min: 0,
+              //max: 10
+            //}))
 
-let options = _p("options")
-              .from(tpl.select({
-                options: fonts,
-              }))
-              .do(function(){
-                console.log('options >', this.value)
-              })
-              .pragmatizeAt('#paper')
+//let sliderMonitor = _p("slider monitor")
+    //.from(tpl.monitor())
+    //.wireTo(slider)
 
+
+//sliderView.contain(slider, sliderMonitor)
+          //.pragmatizeAt("#paper")
+
+//let fonts = [ 'a', 'b', 'c' ]
+
+//let options = _p("options")
+              //.from(tpl.select({
+                //options: fonts,
+              //}))
+              //.do(function(){
+                //console.log('options >', this.value)
+              //})
+              //.pragmatizeAt('#paper')
+
+
+function demo1(){
+  alert(this)
+}
+
+let demo = _p('demo')
+            .run(function(){
+              this.play = demo => {
+                console.log(demo)
+                demo.bind(this)()
+              }
+            })
+
+demo.play(demo1)
 // _e(icons.gate).appendTo("p")
 //let ppp = _p('meow')
 //ppp.kaka = "haha"
