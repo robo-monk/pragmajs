@@ -333,7 +333,9 @@ const _hostElementAttrs = [
   "toggleClass",
   "setId",
   'append',
-  'prepend'
+  'prepend',
+  'appendTo',
+  'prependTo'
 ]
 
 for (let a of _hostElementAttrs) {
