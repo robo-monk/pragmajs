@@ -7,12 +7,29 @@ describe("_e extends Element", () => {
   })
 })
 
-describe("_p correctly adopts _e getters", () => {
+test("_p correctly adopts _e getters", () => {
   let p = _p("meow").as(_e('div', 'dragon baboon'))
   expect(p.text).toBe("dragon baboon")
 })
 
-describe("_e appends multiple _e", () => {
+test("_e find", () => {
+  let e = _e('div', 'test') 
+  let e1 = _e('div', 'test') 
+  let e2 = _e('div', 'test') 
+  let e3 = _e('div', 'test') 
+  e.append(e1, e2, e3)
+
+  e.findAll('div').forEach(el => {
+    el.html('42069')
+  })
+
+  expect(e3.html()).toBe('42069')
+  //console.log(e1)
+  //console.log(e2)
+
+})
+
+test("_e appends multiple _e", () => {
   let e = _e('div', 'test') 
   let e1 = _e('div', 'test') 
   let e2 = _e('div', 'test') 
@@ -21,7 +38,7 @@ describe("_e appends multiple _e", () => {
   expect(e.childrenArray.length).toBe(3)
 })
 
-describe("_e class arrays'", () => {
+test("_e class arrays'", () => {
   let e = _e('div', 'test') 
   e.addClass('one', 'two', 'three')
   e.removeClass('one', 'two')

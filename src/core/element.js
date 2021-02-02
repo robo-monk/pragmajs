@@ -104,6 +104,7 @@ const elementProto = {
   },
 
   html: function(inner){
+    if (!inner) return this.innerHTML
     this.onRender(() => {
       apply.html(inner, this)
     })
@@ -153,10 +154,18 @@ const elementProto = {
   },
 
   find: function(){
-    return this.querySelector(...arguments)
+    return _e(this.query(...arguments))
   },
 
   findAll: function(query){
+    return Array.from(this.queryAll(query)).map(c => _e(c))
+  },
+
+  query: function(){
+    return this.querySelector(...arguments)
+  },
+
+  queryAll: function(query){
     return this.querySelectorAll(query)
   },
 
@@ -165,7 +174,8 @@ const elementProto = {
     for (let child of this.children){
       hits = hits.concat(child.deepFindAll(query))
     }
-  return hits
+
+    return hits
   },
 
   rect: function rect(){
