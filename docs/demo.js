@@ -1,230 +1,280 @@
-//import Pragma, { valueControls, variants, composer, container } from '../src'
-//import Pragma, { valueControls, variants, composer, container } from '../src'
-// TODO do code blocks like this, and print them to an element
-// import doBlock from "./demos/helloworld"
+let uiIcons = {"gate": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"24\" height=\"24\"><path fill=\"none\" d=\"M0 0h24v24H0z\"/><path d=\"M18.901 10a2.999 2.999 0 0 0 4.075 1.113 3.5 3.5 0 0 1-1.975 3.55L21 21h-6v-2a3 3 0 0 0-5.995-.176L9 19v2H3v-6.336a3.5 3.5 0 0 1-1.979-3.553A2.999 2.999 0 0 0 5.098 10h13.803zm-1.865-7a3.5 3.5 0 0 0 4.446 2.86 3.5 3.5 0 0 1-3.29 3.135L18 9H6a3.5 3.5 0 0 1-3.482-3.14A3.5 3.5 0 0 0 6.964 3h10.072z\" fill=\"#000\"/></svg>", "alien": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"24\" height=\"24\"><path fill=\"none\" d=\"M0 0h24v24H0z\"/><path d=\"M12 2a8.5 8.5 0 0 1 8.5 8.5c0 6.5-5.5 12-8.5 12s-8.5-5.5-8.5-12A8.5 8.5 0 0 1 12 2zm5.5 10a4.5 4.5 0 0 0-4.475 4.975 4.5 4.5 0 0 0 4.95-4.95A4.552 4.552 0 0 0 17.5 12zm-11 0c-.16 0-.319.008-.475.025a4.5 4.5 0 0 0 4.95 4.95A4.5 4.5 0 0 0 6.5 12z\" fill=\"#000\"/></svg>"}
 
-// TODO have an api that can support building literally any page through one var,
-// let comp = Compose().build(Compose()........ / dont use it like that but concept wise it should
-// be doable and actually really efficient
+pragma.globalify()
+pragmaSpace.dev = true
 
+let $tab = "<"
+let $sp = " "
+let $nl = "<br>"
 
-//hwblock.pragmatize()
-// doBlock()
-// console.log(doBlock.toString())
+let demo = _ => _p()
+            .from(tpl.create.template.config({
+              name: 'demo',
+              value: function(){
+                console.log(`no demo set`)
+              }
+            }))
+            .run({
+              createElement(){
+                this.as(_e(`div.demo-block#demo-block-${this.key}`).css('margin 80px 0'))
+              },
+              createCodeBlock(){
+                this.codeBlock = _e(`pre#demo-code-${this.key}.js`)
+                        .css(`
+                          background-color #212530
+                          width 100%
+                          min-width 400px
+                          height fit-content
+                          min-height 50px   
+                          border-radius 5px
+                          margin auto
+                          padding 20px 30px
+                        `)
+                
+                _e('div#play', 'play')
+                  .css(`
+                    margin 10px auto
+                    width fit-content
+                    cursor pointer
+                  `)
+                  .listenTo('click', () => {
+                      this.play()
+                    }
+                  )
+                  .appendTo(this)
+                this.append(this.codeBlock)
+              },
+              createTitle(){
+                return
+                this.prepend(_e(`h2#demo-title-${this.key}`)
+                              .html(this.title)
+                            )
+              },
+              editFuncBlock(){
+                this.editFuncBlock = func => {
+                  let str = func.toString()
+                  this.codeBlock.html(str)
+                  hljs.highlightBlock(this.codeBlock)
+                }
+              },
+              
+              playMake(){
+                this.play = function(){
+                  // console.log(demo)
+                  this.value.bind(this)()
+                }
+              }
+            })
+            .do(function(){
+              this.editFuncBlock(this.value)
+            })
+            .run(function(){
+              this.export(
+                'element',
+                'actionChain',
+                'codeBlock',
+                'editFuncBlock',
+                'play',
+              )
+            })
 
-import hljs from 'highlight.js/lib/core'
-import javascript from 'highlight.js/lib/languages/javascript'
-hljs.registerLanguage('javascript', javascript)
+// demo.value = demo1
+//
 
-
-import { Bridge, Select, Compose, Button, Comp, IconBuilder, Pragma } from "../dist"
-import iconsDB from "./demoIcons.json"
-
-import helloworld from "./demos/helloworld"
-import bigdemo from "./demos/bigdemo"
-import todo from "./demos/todo"
-import { timer, timer2 } from "./demos/timerdemo"
-import illustrate from "./demos/icons"
-import trip from "./demos/trip"
-import lector from './demos/lector'
-
-// const beautify = require('js-beautify');
-var beautify = require('js-beautify')
-
-let icons = new IconBuilder(iconsDB)
-icons.default.fill = "whitesmoke"
-let paper = new Comp({
-    key: "paper",
-    element: $("#paper")
-  })
-
-function strBlock(block) {
-  let lines = block.toString().split("\n")
-  let untab_lines = []
-  lines = lines.splice(1, lines.length-3) // remove function text and the return }
-  lines.forEach((line, i) => {
-    untab_lines[i] = line.replace("  ", "") 
-  })
-
-  return beautify(untab_lines.join("\n").replaceAll("_src.", "")
-             .replaceAll("; ", "/q/")
-             .replaceAll(";", "")
-             .replaceAll("/q/", ";")
-             .replaceAll("(0, Compose)", "Compose")
-    .replaceAll("(0, Bridge)", "Bridge"), {
-      end_with_newline: true, 
-      indent_size: 2,
-      space_in_empty_paren: true,
-      break_chained_methods: false
-    })
+function demoFactory(fac, title, e="#paper"){
+  if (typeof fac.before === 'function') fac.before()
+  let demoPragma = _p()
+          .from(demo().config({
+            title: title,
+            value: fac[title]
+          }))
+          .pragmatizeAt(e)
+  if (typeof fac.after === 'function') fac.after(demoPragma)
 }
-let cleanIds = []
-function doBlock(block, nextblock) {
-  cleanIds.forEach( (id) => {
-    $(`#${id}`).remove()
-  })
-  cleanIds = block(paper)
-  if (nextblock) {
-    paper.contain(nextblock)
-    hljs.highlightBlock(nextblock.element.find("pre")[0])
-    // setTimeout(() => { console.log(paper.element.find("pre")[1]); hljs.highlightBlock(paper.element[0]) }, 500)
-    console.log("next block")
-  }
+
+const demos = {
+  _eSelect: {
+_eSelect(){
+
+/*
+    If you want to create an element
+    from an HTMLElement that already 
+    exists in the DOM:
+*/
+
+  let element = _e("#jeff")
+  console.log(element)
+},
+    after(dem){
+      _e("div#jeff")
+        .html("I'm an element with id = jeff. (Check your js console)") 
+        .prependTo(dem)
+    }
+  },
+
+  _eCreate: {
+_eCreate(){
+/*
+   If you want to create a new element
+   programatically and append it to the DOM
+   yourself, you can do:
+*/
+  let parentElement = this.element // ignore
+
+  let element = _e("div#elon.center-div.woo", "- Elon Musk")
+                    .appendTo(parentElement)
+
+  // create a div element with id elon, classes center-div, woo
+  // and with Elon Musk as inner HTML, & append it under this
+  // code block
+  console.log(element)
+ },
+    after(dem){
+      // _e("div#jeff")
+        // .html("I'm an element with id = jeff.") 
+        // .prependTo(dem)
+    }
+  },
+  _eCreateAndPrependToBody: {
+    _eCreateAndPrependToBody(){
+      // *** play the upper demo first to play this
+      let element = _e("#lucy", "'I'm tripping balls'")
+                      .prependTo('#elon')
+
+      console.log(element)
+    },
+  },
+
+  _eDestroy: {
+_eDestroy(){
+  // *** play the upper demo first to play this
+  _e("#lucy").destroy() 
+  // select element with id=elon, and destroy it
 }
+  },
 
-
-const Block = ((key, block, nextblock) => { 
-  let preElement = $(document.createElement("pre"))
-  let codeElement = $(document.createElement("code"))
-  codeElement.text(strBlock(block))
-  codeElement.addClass("lang-js")
-  preElement.html(codeElement)
+  _eFun: {
+_eFun(){
+  let parentElement = this.element // ignore
   
+  _e("div#fun-div.with.fun.classes")
+    .html("woooo, this is so fun, <br> click me for magic")
+    .css(`
+      color whitesmoke
+      background #212530
+      border-radius 10px
+      padding 10px  
+      cursor pointer
+      text-align center
+      transition all .3s ease
+    `)
+    .listenTo('click', function(){
+      this.css('color #0074D9')
+    })
+    .appendTo(parentElement)
+}
+  },
 
-  let doblock = Button.action("doblock", icons.grab("play"), (m, comp) => { 
-    doBlock(block, nextblock) 
-    comp.icon.fadeTo(80, .5)
-  }, "Do Block")
+  _pCreate: {
+_pCreate(){
+  // *** play the upper demo first to play this
 
-  let copyblock = Button.action("copyblock", icons.grab("copy"), (m, comp) => {
-    navigator.clipboard.writeText(strBlock(block))
-    comp.icon.fadeTo(80, .2)
-    comp.setTippy("Copied!")
-    comp.tippy.show()
-  }, "Copy")
 
-  return new Comp({
-      key: key,
-      icon: key+".js",
-      type: "demo-block",
-      elements: [
-        {
-          key: "code",
-          type: "code",
-          element: preElement
-        }
-      ]
-    }).contain(doblock, copyblock)
+  let pragma1 = _p('name') 
+  // you can give the Pragma a 
+  // name (which is going to be its key), or leave
+  // it blank to generate a random one through 
+  // an overengineered random string generator
+
+
+  let element = _e('#fun-div') 
+      // an element that exists on the dom already ^^
+  
+  let pragma2 = _p() // blank for random name
+    .as(element)
+    .html("Now, im associated with a Pragma.")
+
+    /*
+     ** Note: when you call .html(), .css()
+     and other functions of _e in a _p, they just
+     redirect to the call to the _p's element.
+     
+     Thus pragma.html('yo') will *do* the same as
+     pragma.elemetn.html('yo')
+     */
+}
+  },
+
+  _pCreateTotallyNew: {
+_pCreateTotallyNew(){
+  let parentElement = this.element //ignore
+
+  let pragma = _p()
+                .as(_e("div#paul"))
+                .html("Paul McCartney")
+                .appendTo(parentElement)
+
+  let pragma2 = _p()
+                .as(_e("div#john"))
+                .html("John Lennon")
+                .pragmatizeAt(parentElement) 
+                    // equevelant to appendTo (for Pragmas)
+}
+  },
+
+  _pCreateBeatles: {
+_pCreateBeatles(){
+
+  let parentElement = this.element // ignore
+
+  let beatles = _p('beatles')
+                .as("div#beatles", 
+                  `Click here and enter a beatle to highlight!`)
+                .css("cursor pointer")
+                .appendTo(parentElement)
+                .do(function(){
+                  if (this._lv){
+                    // _lv is the last value the pragma had
+                    this.find(this._lv).css('color gray')
+                  }
+                  this.find(this.value).css('color yellow')
+                })
+                
+
+  let john = _p('john').as("div.", "John Lennon")
+  // div#, to make a new div
+  let paul = _p('paul').as("div.", "Paul McCartney")
+  let george = _p('george').as("div.", "George Harrison")
+  let ringo = _p('ringo').as("div.", "Ringo Starr")
+
+  beatles.contain(john, paul, george, ringo)
+  beatles.on('click').do(function(){
+    this.value = prompt('enter john/paul/ringo/george')
   })
+}
+},
 
-// rainbow.color()
+timer: {
 
-let tripblock = Block("tripdemo", trip)
-let bgblock = Block("bigdemo", bigdemo, tripblock)
-let todoblock= Block("tododemo", todo, bgblock)
-let timer2block= Block("timerdemo2", timer2, todoblock)
-let timerblock= Block("timerdemo", timer, timer2block)
-let hwblock = Block("helloworld", helloworld, timerblock)
+  timer(){
+  let parentElement = this.element
 
-let iconsblock = Block("icons", illustrate, hwblock)
-paper.contain(iconsblock)
+  let timer = _p('timer')
+              .as("div.")
+              .do(function(){
+                this.html(this.value)
+              })
+              .run(function(){
+                setInterval(_=>this.value++, 1000)
+              })
+              .setValue(0)
+              .pragmatizeAt(parentElement)
 
+  console.log(timer)
+}
+}
+}
 
-// let lectorblock = Block("lector", lector)
-// paper.contain(lectorblock)
-// lectorblock.find("doblock").element.click()
-
-hljs.initHighlightingOnLoad()
-
-
-
-// console.time()
-// console.timeEnd()
-
-// let idle = false
-// function fadeAway(){
-//   if (idle) {
-//     settings.element.fadeTo(100, .5)
-//     setTimeout(() => {
-//       if (idle) settings.element.fadeOut()
-//     }, 1500)
-//   }
-// }
-// $(document).idle({
-//   onIdle: (() => {
-//     idle = true
-//     fadeAway()
-//   }),
-//   onActive: (() => {
-//     idle = false
-//     settings.element.fadeTo(1, 50)
-//   }),
-//   idle: 5000
-// })
-
-// fader.chain(settings)
-// settings.chain(fader)
-// compose({} <- pragma maiiiipu)
-// compose(key, icon, elements, type <- pragma map)
-//
-//let colorsComp = new Comp(variants({
-            //key: "color",
-            //value: 1,
-            //icon: (key, index) => { return `<div style='width:25px;height:25px;border-radius:25px;background:${key}'></div>` },
-            //set: (v, comp) => {
-              //$('.p-6').css({"color": colors[comp.find("color").value]})
-            //},
-            //variants: colors
-        //}))
-
-
-
-// setInterval(() => {
-//   console.log(settings.logs) 
-// }, 1000)
-
-// console.time(".find()")
-// console.log(settings.find("markermode"))
-// console.timeEnd(".find()")
-
-// console.log(colorsComp.depthKey)
-
-//
-//let settings = composer("settingsWrapper", "⚙️", [])
-//let master = container(settings, composer(
-  //"toolbar",
-  //"⚙️",
-  //[
-    //composer("settings", "", [
-        //variants({
-            //key: "color",
-            //value: 1,
-            //icon: (key, index) => { return `<div style='width:25px;height:25px;border-radius:25px;background:${key}'></div>` },
-            //set: (comp) => {
-              //$('.p-6').css({"color": colors[comp.find("color").value]})
-            //},
-            //variants: colors
-        //}), 
-        //variants({
-            //key: "font",
-            //value: 1,
-            //icon: (key, index) => { return `<div style='width:25px;height:25px;border-radius:25px;font-family:${key}'>Aa</div>` },
-            //set: (comp) => {
-              //$('.p-6').css({"font-family": fonts[comp.find("font").value]})
-            //},
-            //variants: fonts
-        //}), 
-        //valueControls("fovea", 5, 2) 
-      //]), 
-    //valueControls("font-size", 18, 2, (value, comp)=>{
-      //$('.p-6').css({"font-size": value})
-      //console.log(value)
-    //})
-  //]
-//))
-
-
-// let master = new PragmaComposer(map)
-  // let t = tippy(`#${settings.key}`, {
-  //   content: master.element[0],
-  //   allowHTML: true,
-  //   interactive: true
-  // })
-
-// setInterval( () => {
-//   master.find("color").value += 1
-//   master.find("font").value += 1
-//   master.find("wpm").value += 50
-// }, 1500)
-// let lec = new Lector($("#article"), settings)
-// lec.read()
+for (let [title, demo] of Object.entries(demos)){
+  demoFactory(demo, title)
+}

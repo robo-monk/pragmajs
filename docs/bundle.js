@@ -1,1 +1,0 @@
-console.error("Error: Can't walk dependency graph: Cannot find module '../dist' from '/Users/robo/Documents/Fready/pragmajs/docs/demo.js'\n    required by /Users/robo/Documents/Fready/pragmajs/docs/demo.js");

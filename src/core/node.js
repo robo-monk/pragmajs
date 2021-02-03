@@ -74,6 +74,12 @@ export default class Node {
     // this.children.push(spragma)
   }
 
+  delete(key){return this.remove(key)}
+  remove(key){
+    let node = this.childMap.get(key)
+    if (node) this.childMap.delete(key)
+  }
+
   shapePrefix(prefix = "") {
     let shape = `${prefix}| ${this.type} - ${this.key} \n`
     if (this.hasKids) {

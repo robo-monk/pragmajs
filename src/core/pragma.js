@@ -335,7 +335,8 @@ const _hostElementAttrs = [
   'append',
   'prepend',
   'appendTo',
-  'prependTo'
+  'prependTo',
+  'listenTo'
 ]
 
 for (let a of _hostElementAttrs) {

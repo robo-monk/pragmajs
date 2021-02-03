@@ -168,14 +168,26 @@ const elementProto = {
   queryAll: function(query){
     return this.querySelectorAll(query)
   },
+  
+  hide: function(){
+    this.style.display = 'none'
+    return this
+  },
+  
+  show: function(){
+    this.style.display = ''
+    return this
+  },
 
-  deepFindAll: function(query){
-    let hits = Array.from(this.findAll(query))
+  deepQueryAll: function(query){
+    let hits = Array.from(this.queryAll(query))
     for (let child of this.children){
-      hits = hits.concat(child.deepFindAll(query))
+      hits = hits.concat(child.deepQueryAll(query))
     }
-
     return hits
+  },
+  deepFindAll: function(query){
+    return this.deepQueryAll(query).map(c => _e(c))
   },
 
   rect: function rect(){
