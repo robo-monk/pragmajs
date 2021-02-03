@@ -294,7 +294,7 @@ export default class Pragma extends Node {
     return script.bind(this)()
   }
   
-  containAry(childAry){
+  containAry(childs){
     for (let child of childs) {
       super.add(child)
       if (child.isRendered){
