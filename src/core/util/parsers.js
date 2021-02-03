@@ -1,6 +1,6 @@
 import { throwSoft } from "./log"
+import { snake2camel } from "./utilities"
 
-const snake2camel = str => str.replace(/([-_]\w)/g, g => g[1].toUpperCase()) 
 
 const apply = {
   html: ((html, dom) => {
@@ -16,7 +16,7 @@ const apply = {
 
 const parse = {
   cssToDict: ((str) => {
-    str = str.replaceAll("\n", ";").replaceAll(":", " ")
+    str = str.replace(/\n/g, ";").replace(/:/g, " ")
     let cssDict = new Map()
     for (let style of str.split(";")) {
       if (style.replace(/\s/g, "").length < 2) continue

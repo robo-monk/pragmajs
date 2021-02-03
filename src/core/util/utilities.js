@@ -34,6 +34,8 @@ function objDiff(obj, edit){
 //   return obj
 // }
 
+const snake2camel = str => str.replace(/([-_]\w)/g, g => g[1].toUpperCase()) 
+
 function _extend(e, proto){
   Object.setPrototypeOf(e, objDiff(Object.getPrototypeOf(e), proto))
 }
@@ -95,5 +97,6 @@ export {
   _extend,
   createEventChains,
   createChains,
+  snake2camel,
   rk, rk5, rk8
 }
