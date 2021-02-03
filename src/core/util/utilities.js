@@ -18,6 +18,14 @@ function aryDiff(a, b){
   return a.filter(i => b.indexOf(i)<0)
 }
 
+function bench(...cbs){
+  for (let cb of cbs){
+    console.time(cb.name)
+    cb()
+    console.timeEnd(cb.name)
+  }
+}
+
 function objDiff(obj, edit){
   // TODO add recursive feature
   for (let [key, value] of Object.entries(edit)){
@@ -86,10 +94,6 @@ function createEventChains(obj, ...chains){
   }
 }
 
-
-
-
-
 export {
   generateRandomKey,
   objDiff,
@@ -98,5 +102,6 @@ export {
   createEventChains,
   createChains,
   snake2camel,
+  bench,
   rk, rk5, rk8
 }

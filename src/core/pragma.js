@@ -293,8 +293,8 @@ export default class Pragma extends Node {
   runAs(script){
     return script.bind(this)()
   }
-
-  contain(...childs){
+  
+  containAry(childAry){
     for (let child of childs) {
       super.add(child)
       if (child.isRendered){
@@ -304,6 +304,10 @@ export default class Pragma extends Node {
       }
     }
     return this
+  }
+
+  contain(...childs){
+    return this.containAry(childs)
   }
 
   pragmatize(){
