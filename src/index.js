@@ -1,6 +1,7 @@
 import _e from "./core/element"
 import Pragma from "./core/pragma"
 import ActionChain from "./core/actionChain"
+import { _thread } from "./core/util/thread"
 
 export { _e, Pragma, ActionChain }
 
@@ -19,8 +20,10 @@ export { π, _p }
 export * as util from "./core/util/index"
 export * as tpl from "./templates/index"
 
+export { _thread } from "./core/util/thread"
 
-const exported = [ '_e', '_p', 'Pragma', 'util', 'tpl' ]
+
+const exported = [ '_e', '_p', 'Pragma', 'util', 'tpl', '_thread' ]
 
 export function globalify() {
   let pragmaModule = (globalThis || window)["pragma"]

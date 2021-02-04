@@ -18,12 +18,10 @@ function aryDiff(a, b){
   return a.filter(i => b.indexOf(i)<0)
 }
 
-function bench(...cbs){
-  for (let cb of cbs){
-    console.time(cb.name)
-    cb()
-    console.timeEnd(cb.name)
-  }
+function bench(cb, name){
+  console.time(name)
+  cb()
+  console.timeEnd(name)
 }
 
 function objDiff(obj, edit){
