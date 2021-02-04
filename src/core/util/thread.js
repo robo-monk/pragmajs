@@ -26,3 +26,16 @@ export function _thread(cb) {
  
     threadedFunction("sweaty").then(d => console.log('heee', d))
 */
+    
+
+export function _runAsync(cb) {
+    return new Promise(r => r(cb()))
+}
+
+export function runAsync(...cbs) {
+    return _runAsync(_ => {
+        for (let cb of cbs) {
+            _runAsync(cb)
+        }
+    })
+}

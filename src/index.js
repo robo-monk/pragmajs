@@ -20,7 +20,7 @@ export { π, _p }
 export * as util from "./core/util/index"
 export * as tpl from "./templates/index"
 
-export { _thread } from "./core/util/thread"
+export { _thread, runAsync, _runAsync } from "./core/util/thread"
 
 
 const exported = [ '_e', '_p', 'Pragma', 'util', 'tpl', '_thread' ]

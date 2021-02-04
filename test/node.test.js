@@ -30,7 +30,7 @@ describe("Node can add nodes", () => {
     let e = new Pragma('key')
 
     a.adopt(b,c,d,e)
-    console.log(a.childMap.keys())
+    // console.log(a.childMap.keys())
 
     expect(a.children.length).toBe(4)
     expect(a.find(b.key)).toBe(b)
