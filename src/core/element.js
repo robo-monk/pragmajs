@@ -116,6 +116,17 @@ const elementProto = {
     return this
   },
 
+  setData: function(obj){
+    for (let [key, val] of Object.entries(obj)){
+      this.dataset[key] = val
+    }
+    return this
+  },
+
+  getData: function(key){
+    return this.dataset[key] 
+  },
+
   addClass: function(...classes){
     addClassAryTo(classes, this)
     return this
