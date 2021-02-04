@@ -340,13 +340,24 @@ const _hostElementAttrs = [
   'prepend',
   'appendTo',
   'prependTo',
-  'listenTo'
+  'listenTo',
+  'setData'
 ]
 
 for (let a of _hostElementAttrs) {
  Pragma.prototype[a] = function() {
     this.element[a](...arguments)
     return this
+  }
+}
+
+const _adoptElementAttrs = [
+  'getData'
+]
+
+for (let a of _adoptElementAttrs) {
+ Pragma.prototype[a] = function() {
+    return this.element[a](...arguments)
   }
 }
 
