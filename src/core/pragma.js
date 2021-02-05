@@ -13,8 +13,8 @@ const _parseMap = {
     self.value = v
   },
 
-  id: (self, id) => {
-    self.id = id
+  key: (self, key) => {
+    self.key = key
   },
 
   class: (self, className) => {
@@ -188,7 +188,7 @@ export default class Pragma extends Node {
 
   set id(n) {
     // console.log('setting key to from id ', n)
-    this.key = n
+    // this.key = n
     if (this.element) this.element.id = this.id
   }
 
