@@ -46,6 +46,14 @@ function _extend(e, proto){
   Object.setPrototypeOf(e, objDiff(Object.getPrototypeOf(e), proto))
 }
 
+function mimic(obj, mimic, props){
+  for (let prop of (props || Object.keys(mimic))){
+    let desc = Object.getOwnPropertyDescriptor(mimic, prop) 
+    if (!desc) break
+    Object.defineProperty(obj, prop, desc)
+  }
+}
+
 String.prototype.capitalize = function() {
   return this.charAt(0).toUpperCase() + this.slice(1)
 }
@@ -100,6 +108,7 @@ export {
   createEventChains,
   createChains,
   snake2camel,
+  mimic,
   bench,
   rk, rk5, rk8
 }

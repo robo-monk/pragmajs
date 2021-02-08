@@ -18,12 +18,10 @@ const _p = π
 export { π, _p }
 
 export * as util from "./core/util/index"
-export * as tpl from "./templates/index"
 
 export { _thread, runAsync, _runAsync } from "./core/util/thread"
 
-
-const exported = [ '_e', '_p', 'Pragma', 'util', 'tpl', '_thread' ]
+const exported = [ '_e', '_p', 'Pragma', 'util', '_thread' ]
 
 export function globalify() {
   let pragmaModule = (globalThis || window)["pragma"]

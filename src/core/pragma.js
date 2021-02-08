@@ -2,6 +2,7 @@ import Node from "./node"
 import _e from "./element"
 import ActionChain from "./actionChain"
 import { generateRandomKey, toHTMLAttr, createEventChains, suc, log, throwSoft } from "./util/index"
+import { util } from ".."
 
 const _parseMap = {
 
@@ -230,8 +231,8 @@ export default class Pragma extends Node {
 
   // FOR TEMPLATES
   addExport(exp){
-    this.exports = this.exports || []
-    this.exports.push(exp)
+    this.exports = this.exports || new Set()
+    this.exports.add(exp)
   }
 
   export(...attrs){
@@ -242,9 +243,14 @@ export default class Pragma extends Node {
 
   from(pragma){
     if (pragma.exports){
-      for (let attr of pragma.exports){
-        this[attr] = pragma[attr]
-      }
+      util.mimic(this, pragma, pragma.exports)
+      //for (let attr of pragma.exports){
+        //// this[attr] = pragma[attr]
+        //let desc = Object.getOwnPropertyDescriptor(pragma, attr) 
+        //if (!desc) break
+
+        //Object.defineProperty(this, attr, desc)
+      //}
     }
 
     if (pragma.exportChain) pragma.exportChain.exec(this)

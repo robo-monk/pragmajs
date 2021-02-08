@@ -8,7 +8,7 @@ import visualizer from 'rollup-plugin-visualizer'
 import pkg from './package.json';
 
 const plugs = [
-	terser(), // mini
+	// terser(), // mini
 	sizes(),
 	visualizer({
 		filename: "docs/stats.html",

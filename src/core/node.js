@@ -3,10 +3,20 @@ import { throwSoft, rk8, rk5 } from "./util/index"
 
 export default class Node {
   constructor(key) {
-    this.childMap = new Map()
+    this._childMap = new Map()
     this.key = typeof key === 'string' ? key : rk8()
     // API
     this.containsKey = this.childMap.has
+  }
+  set childMap(n){
+    for (let [key, child] of n){
+      if (child instanceof Node){
+        this.add(child)
+      }
+    }
+  }
+  get childMap(){
+    return this._childMap
   }
 
   get kidsum() { return this.childMap.size }
