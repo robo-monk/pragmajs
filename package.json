@@ -1,6 +1,6 @@
 {
   "name": "pragmajs",
-  "version": "0.6.0",
+  "version": "0.6.0a",
   "description": "Simple javascript UI generation",
   "license": "MIT",
   "repository": {
@@ -57,7 +57,7 @@
     "test:watch": "jest --watchAll",
     "dev": "rollup -c -w",
     "lint": "yarn run eslint src",
-    "prepublish": "yarn test"
+    "prepublishOnly": "yarn build && yarn test"
   },
   "bugs": {
     "url": "https://github.com/robo-monk/pragma.js/issues"
