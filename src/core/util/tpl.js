@@ -1,4 +1,6 @@
-const createTemplate = conf => _p()
+import { Pragma, util } from "../../index"
+
+const createTemplate = conf => new Pragma()
     .run(function () {
         util.createChains(this, 'config')
 

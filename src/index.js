@@ -1,7 +1,6 @@
 import _e from "./core/element"
 import Pragma from "./core/pragma"
 import ActionChain from "./core/actionChain"
-import { _thread } from "./core/util/thread"
 
 export { _e, Pragma, ActionChain }
 

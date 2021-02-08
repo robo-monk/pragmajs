@@ -1,17 +1,17 @@
 export function _thread(cb) {
   let code = `
-  onmessage = e => postMessage(JSON.stringify((${cb.toString()})(e.data))) 
+    onmessage = e => postMessage(JSON.stringify((${cb.toString()})(e.data))) 
   `  
   var blob = new Blob([code], {
     type: "application/javascript"
   })
 
   var worker = new Worker(URL.createObjectURL(blob))
-  
+
   return function(){
-  	worker.postMessage(arguments)
+      worker.postMessage(arguments)
     return new Promise(resolve=> {
-    	worker.addEventListener('message', m => resolve(JSON.parse(m.data)))
+      worker.addEventListener('message', m => resolve(JSON.parse(m.data)))
     })
   }
 }
@@ -29,13 +29,13 @@ export function _thread(cb) {
     
 
 export function _runAsync(cb) {
-    return new Promise(r => r(cb()))
+  return new Promise(r => r(cb()))
 }
 
 export function runAsync(...cbs) {
-    return _runAsync(_ => {
-        for (let cb of cbs) {
-            _runAsync(cb)
-        }
-    })
+  return _runAsync(() => {
+    for (let cb of cbs) {
+        _runAsync(cb)
+    }
+  })
 }

@@ -300,13 +300,13 @@ export default class Pragma extends Node {
     return script.bind(this)()
   }
   
-  containAry(childs){
+  containAry(childs, action='append'){
     for (let child of childs) {
       super.add(child)
       if (child.isRendered){
         throwSoft(`[${child}] is already appended`)
       }else{
-        this.element.append(child)
+        this.element[action](child)
       }
     }
     return this
@@ -314,6 +314,10 @@ export default class Pragma extends Node {
 
   contain(...childs){
     return this.containAry(childs)
+  }
+
+  containFirst(...childs){
+    return this.containAry(childs.reverse(), 'prepend')
   }
 
   pragmatize(){
