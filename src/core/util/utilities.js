@@ -100,6 +100,16 @@ function createEventChains(obj, ...chains){
   }
 }
 
+function addStyles(css){
+  if (!globalThis.pragmaSpace.styles){
+    globalThis.pragmaSpace.styles = _e('style').prependTo('head')
+  }
+
+  globalThis.pragmaSpace.styles.html(
+    globalThis.pragmaSpace.styles.html() + css
+  )
+}
+
 export {
   generateRandomKey,
   objDiff,
@@ -110,5 +120,6 @@ export {
   snake2camel,
   mimic,
   bench,
+  addStyles,
   rk, rk5, rk8
 }

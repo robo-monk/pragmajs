@@ -250,6 +250,7 @@ export default class Pragma extends Node {
       }
       
       if (pragma.exports){
+        // if ('exportChain' in pragma.exports)
         util.mimic(this, pragma, pragma.exports)
       }
 
