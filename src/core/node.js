@@ -73,9 +73,9 @@ export default class Node {
       return this
   }
 
-  add(node) {
+  add(node, replace=false) {
     if (!node) return throwSoft(`Could not add [${node}] to [${this.id}]`)
-    if (this.childMap.has(node.key)) {
+    if (!replace && this.childMap.has(node.key)) {
       node.key = `${node.key}<${rk5()}`
       return this.add(node)
     }

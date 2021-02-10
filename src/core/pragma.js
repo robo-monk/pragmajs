@@ -241,6 +241,30 @@ export default class Pragma extends Node {
     }
   }
 
+  import(...pragmas){
+    let exportChain = new ActionChain()
+
+    for (let pragma of pragmas){
+      if (typeof pragma === 'function'){
+        pragma = pragma()
+      }
+      
+      if (pragma.exports){
+        util.mimic(this, pragma, pragma.exports)
+      }
+
+      if (pragma.exportChain){
+        exportChain.add(_ => {
+          pragma.exportChain.exec(this)
+        })  
+      }
+    }
+    
+    exportChain.exec()
+    return this
+  }
+
+  // TODO DEPRECATE
   from(pragma){
     if (pragma.exports){
       util.mimic(this, pragma, pragma.exports)
@@ -317,6 +341,7 @@ export default class Pragma extends Node {
   }
 
   containFirst(...childs){
+    // TODO FIX 
     return this.containAry(childs.reverse(), 'prepend')
   }
 
