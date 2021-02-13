@@ -61,7 +61,9 @@ export default class Node {
     // console.log(this.childMap)
     if (this.childMap.has(key)) return this.childMap.get(key)
     for (let value of this.childMap.values()) {
-      let v = value.find(key)
+      let v
+      try { v = value.find(key) } catch {} // if the value 
+        // is typeof element and key is not valid selector..
       if (v) return v
     }
   }

@@ -1,4 +1,4 @@
-import { Pragma } from "../dist/pragma.esm"
+import { Pragma, _p } from "../dist/pragma.esm"
 
 describe("Pragma can be generated with Map", () => {
   let p = new Pragma({
@@ -113,6 +113,23 @@ describe("pragma.run", () => {
         this.jeff = randKey
       }
     })
+  })
+
+})
+
+describe("Pragma extend", () => {
+  test('.extend', () => {
+    let e = 0
+    let p = _p('meow')
+              .extend('setKey', function(key){
+                this._setKey(key)
+                e = 1
+                return this
+              })
+              .setKey('yeet')
+    
+    expect(p.key).toBe('yeet')
+    expect(e).toBe(1)
   })
 
 })

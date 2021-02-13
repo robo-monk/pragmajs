@@ -300,6 +300,12 @@ export default class Pragma extends Node {
   }
 
 
+  // EXTEND
+  extend(attr, newer){
+    util.overwrite(this, attr, newer)
+    return this
+  }
+
   // RUN SCRIPTS WITH THIS SCOPE
 
 
@@ -328,11 +334,13 @@ export default class Pragma extends Node {
   containAry(childs, action='append'){
     for (let child of childs) {
       super.add(child)
+
       if (child.isRendered){
         throwSoft(`[${child}] is already appended`)
       }else{
         this.element[action](child)
       }
+      
     }
     return this
   }
@@ -415,6 +423,7 @@ for (let a of _adoptGetters) {
 
 
 // Mousetrap integration TODO improve this
+if (!globalThis.pragmaSpace) globalThis.pragmaSpace = {}
 globalThis.pragmaSpace.integrateMousetrap = function(trap){
   if (typeof trap === 'function') {
    Pragma.prototype.bind = function(key, f, on=undefined){

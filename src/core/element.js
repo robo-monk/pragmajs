@@ -206,7 +206,15 @@ const elementProto = {
             this.getBoundingClientRect() : {}
   },
 
-  offset: function offset(){
+  offset: function offset(obj){
+
+    if (obj){
+      const cssAttrs = [ 'width', 'height', 'left', 'right', 'top', 'bottom']
+      cssAttrs.forEach(attr => {
+        if (attr in obj) this.style[attr] = obj[attr] + 'px'
+      })
+    }
+
     var rect = this.rect()
     return {
       top: rect.top + window.scrollY,

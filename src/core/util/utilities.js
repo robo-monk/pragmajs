@@ -1,4 +1,5 @@
 import ActionChain from "../actionChain"
+import { _e } from "../../index"
 
 function rk5(){
  return Math.random().toString(36).substring(3, 6) + Math.random().toString(36).substring(5, 8)
@@ -32,13 +33,6 @@ function objDiff(obj, edit){
 
   return obj
 }
-
-// function addProperties(obj){
-//   for (let [attr, val] of obj){
-//     obj[attr] = val
-//   }
-//   return obj
-// }
 
 const snake2camel = str => str.replace(/([-_]\w)/g, g => g[1].toUpperCase()) 
 
@@ -110,11 +104,18 @@ function addStyles(css){
   )
 }
 
+function overwrite(object, attr, over){
+  let superf = object[attr]
+  object[`_${attr}`] = superf.bind(object)
+  object[attr] = over
+}
+
 export {
   generateRandomKey,
   objDiff,
   aryDiff,
   _extend,
+  overwrite,
   createEventChains,
   createChains,
   snake2camel,
