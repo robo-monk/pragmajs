@@ -105,6 +105,9 @@ export default class Pragma extends Node {
 
     this.actionChain = new ActionChain()
 
+    this.implements = new Set
+    this.implements.add('pragma')
+
     // console.log("-------------")
     if (typeof map === "object"){
       parseMap(map, this)
@@ -294,6 +297,11 @@ export default class Pragma extends Node {
   }
 
   // ADD SCRIPT TO RUN WHEN VALUE CHANGES
+  onValueChange(){
+    this.do(arguments)
+    return this
+  }
+
   do(){
     this.actionChain.add(...arguments)
     return this
@@ -301,6 +309,7 @@ export default class Pragma extends Node {
 
 
   // EXTEND
+
   extend(attr, newer){
     util.overwrite(this, attr, newer)
     return this
@@ -308,6 +317,23 @@ export default class Pragma extends Node {
 
   // RUN SCRIPTS WITH THIS SCOPE
 
+  implement(...objs){
+    objs.forEach(obj => {
+      let runnable = null
+      if (typeof obj === 'function') {
+        runnable = obj().run || obj 
+      } else if (obj.run) {
+        runnable = obj.run
+      } else {
+        return util.throwSoft(`no runnable found when trying to implement ${obj}`)
+      }
+
+      this.run(runnable)
+      this.implements.add(obj.name || util.rk8())
+    })
+
+    return this
+  }
 
   run(...scripts){
     let sample = scripts[0]

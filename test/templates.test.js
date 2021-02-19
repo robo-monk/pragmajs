@@ -1,4 +1,4 @@
-import { _p, util } from "../dist/pragma.esm"
+import { _p, util, Pragma } from "../dist/pragma.esm"
 
 
 describe(".export + .from", () => {
@@ -68,3 +68,59 @@ describe(".export + .import", () => {
 
 })
 
+
+describe("implement & implements", () => {
+  
+  let borris = 0
+  class Jolene extends Pragma {
+    constructor(roar) {
+      super()
+      this.roar = roar || "gre"
+    }
+
+    incrementBorris(){
+      borris += 1
+      return this
+    }
+
+  }
+
+  function jolene(conf){
+    return {
+      name: 'jolene',
+      run: function() {
+        this.jolene = new Jolene(conf)
+      }
+    }
+  }
+
+  test("no config", () => {
+
+    let p = _p('test')
+              .implement(jolene)
+
+    expect(p.jolene.roar).toBe('gre')
+  })
+
+  test("with config", () => {
+    let p = _p('test')
+              .implement(jolene('wraies vouties'))
+
+    expect(p.jolene.roar).toBe('wraies vouties')
+  })
+
+  test("new functions", () => {
+     let p = _p('test')
+              .implement(jolene('wraies vouties'))
+
+    p.jolene.incrementBorris()
+    expect(borris).toBe(1)
+  })
+
+  test('implements', () => {
+     let p = _p('test')
+              .implement(jolene, jolene, jolene)
+
+    expect(p.implements.size).toBe(2)
+  })
+})
