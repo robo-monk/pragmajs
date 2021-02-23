@@ -103,13 +103,13 @@ const elementProto = {
     return this
   },
 
-  text: function(text){
+  setText: function(text){
     if (!text) return this.text
     this.onRender(() => {
-      this.text = text 
+      this.textContent = text 
     })
     return this
-  }
+  },
   html: function(inner){
     if (!inner) return this.innerHTML
     this.onRender(() => {
