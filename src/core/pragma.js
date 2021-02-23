@@ -120,13 +120,9 @@ export default class Pragma extends Node {
 
 
   get _e(){ return this.element }
-  setElement(e, inheritId=true){
-    this.elementDOM = e
-    if (inheritId && this.element.id){
-      // console.log(this.element, 'has id')
-      this.id = this.element.id
-    }
 
+  setElement(e){
+    this.elementDOM = e
     return this
   }
 
@@ -134,10 +130,6 @@ export default class Pragma extends Node {
   set element(n) {
     this.setElement(n)
     // TODO check if element is of type elememtn blah blha
-    // log(">> SETTING THIS DOM ELEMENT", n, this.id)
-
-
-    // this.id = this.element.id || this.id
   }
 
 // -------------------- VALUE THINGS
@@ -157,23 +149,22 @@ export default class Pragma extends Node {
   }
 
   get dv(){
-    return this.v - this._lv
+    return this.v - this.lastValue
   }
   get value(){
     return this.v
   }
-  setValue(n) { this.value = n; return this }
 
+  setValue(n) { this.value = n; return this }
   set value(n) {
     let pv = _processValue(n, this.range, this._loopVal)
 
     if (pv.set) {
-      this._lv = this.v
+      this.lastValue = this.v
       this.v = pv.val
       this.exec()
     }
   }
-
 
 //  -------------------------------
 
@@ -183,6 +174,7 @@ export default class Pragma extends Node {
   }
 
   setKey(key) { this.key = key; return this }
+
   set key(key){
     // console.log('setting key to ', key)
     this._KEY = key == null ? generateRandomKey() : key
@@ -190,14 +182,8 @@ export default class Pragma extends Node {
 
   get key() { return this._KEY }
 
-  set id(n) {
-    // console.log('setting key to from id ', n)
-    // this.key = n
-    if (this.element) this.element.id = this.id
-  }
-
   get id() {
-    return toHTMLAttr(this.key)
+    return this.element ? this.element.id : null
   }
 
   buildAry(aryOfMaps){
@@ -221,67 +207,13 @@ export default class Pragma extends Node {
         return self
       }
     }
-  }
-
+ }
 
   // FOR HTML DOM
   as(query=null, innerHTML){
-    query = query || `div#${this.id}.pragma`
+    query = query || `div#${toHTMLAttr(this.key)}.pragma`
     // this.element = _e(query, innerHTML)
-    this.setElement(_e(query, innerHTML), false)
-    return this
-  }
-
-  // FOR TEMPLATES
-  addExport(exp){
-    this.exports = this.exports || new Set()
-    this.exports.add(exp)
-  }
-
-  export(...attrs){
-    for (let a of attrs) {
-      this.addExport(a)
-    }
-  }
-
-  import(...pragmas){
-    let exportChain = new ActionChain()
-
-    for (let pragma of pragmas){
-      if (typeof pragma === 'function'){
-        pragma = pragma()
-      }
-      
-      if (pragma.exports){
-        // if ('exportChain' in pragma.exports)
-        util.mimic(this, pragma, pragma.exports)
-      }
-
-      if (pragma.exportChain){
-        exportChain.add(_ => {
-          pragma.exportChain.exec(this)
-        })  
-      }
-    }
-    
-    exportChain.exec()
-    return this
-  }
-
-  // TODO DEPRECATE
-  from(pragma){
-    if (pragma.exports){
-      util.mimic(this, pragma, pragma.exports)
-      //for (let attr of pragma.exports){
-        //// this[attr] = pragma[attr]
-        //let desc = Object.getOwnPropertyDescriptor(pragma, attr) 
-        //if (!desc) break
-
-        //Object.defineProperty(this, attr, desc)
-      //}
-    }
-
-    if (pragma.exportChain) pragma.exportChain.exec(this)
+    this.setElement(_e(query, innerHTML))
     return this
   }
 
@@ -297,6 +229,7 @@ export default class Pragma extends Node {
   }
 
   // ADD SCRIPT TO RUN WHEN VALUE CHANGES
+  
   onValueChange(){
     this.do(arguments)
     return this
@@ -375,18 +308,8 @@ export default class Pragma extends Node {
     return this.containAry(childs)
   }
 
-  containFirst(...childs){
-    // TODO FIX 
-    return this.containAry(childs.reverse(), 'prepend')
-  }
-
   pragmatize(){
     this.element.appendTo(this.parent ? this.parent.element || "body" : "body")
-    return this
-  }
-
-  pragmatizeAt(query){
-    this.element.appendTo(query)
     return this
   }
 
