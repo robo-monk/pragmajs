@@ -170,8 +170,8 @@ p.onNext('yoing2', () => {
 })
 
 p.triggerEvent("yoing2") // prints: 'im only going to get triggered on the next yoing event'
-p.triggerEvent("yoing") // nothing happens
-p.triggerEvent("yoing") // nothing happens
+p.triggerEvent("yoing2") // nothing happens
+p.triggerEvent("yoing2") // nothing happens
 ```
 
 ```js
