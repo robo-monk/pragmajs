@@ -164,7 +164,7 @@ describe("Pragma .on", () => {
   })
 })
 
-describe("Pragma .monitor", () => {
+describe("Pragma wire", () => {
   test('monitor custom variable', () => {
     let p = _p('custom')
     let test = 42

@@ -116,6 +116,11 @@ export default class Pragma extends Node {
     if (!this.element) this.as()
   }
 
+  listenTo(){
+    this.element.listenTo(arguments)
+    return this
+  }
+
   _addToEventChain(name, ...cbs){
     let chain = this._events.get(name)
     if (chain){
@@ -473,7 +478,6 @@ const _hostElementAttrs = [
   'prepend',
   'appendTo',
   'prependTo',
-  'listenTo',
   'setData'
 ]
 
