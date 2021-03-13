@@ -104,6 +104,7 @@ export default class Pragma extends Node {
     createEventChains(this, 'export')
 
     this.actionChain = new ActionChain()
+    this._events = new Map()
 
     // console.log("-------------")
     if (typeof map === "object"){
@@ -115,12 +116,113 @@ export default class Pragma extends Node {
     if (!this.element) this.as()
   }
 
+  _addToEventChain(name, ...cbs){
+    let chain = this._events.get(name)
+    if (chain){
+      let keys = chain.add(...cbs)
+      this._events.set(name, chain)
+      return keys
+    }
+
+    return null
+  }
+
+  createEvent(eventTitle, ...cbs){
+    let actions = new ActionChain(this)
+    this._events.set(eventTitle, actions)
+    if (cbs.length > 0) this.on(eventTitle, cbs)
+   
+    return this
+  }
+
+  createEvents(...events){
+    events.forEach(event => {
+      this.createEvent(event)
+    })
+
+    return this
+  }
+
+  triggerEvents(eventAry, ...args){
+    eventAry.forEach(event => {
+      this.triggerEvent(event, ...args)
+    })
+    return this
+  }
+
+  triggerEvent(eventName, ...args){
+    if (!this._events.has(eventName)) return util.throwSoft(`pragma doesnt have ${event} - cannot .triggerEvent("${event}")]`, pragma)
+    this._events.get(eventName).execAs(this, ...args)
+
+    return this 
+  }
+
+  _on(event, ...cbs){
+    let keys = this._addToEventChain(event, ...cbs)
+    if (keys === null) return util.throwSoft(`pragma doesnt have ${event} - cannot .on("${event}")`, this)
+    return keys
+  }
+
+  on(){
+    this._on(...arguments)
+    return this
+  }
+
+  _onNext(event, cb){
+    let cbOnce = function(){
+      cb(...arguments) 
+      return thisCallback => {
+        thisCallback.selfDestruct() 
+      }
+    }
+
+    let key = this._on(event, cbOnce)
+  }
+
+  onNext(){
+    this._onNext(...arguments)
+       return this
+  }
+
+  createWires(...wireNames) { wireNames.forEach(wire => this.createWire(wire) ); return this }
+  createWire(wireName){
+
+    let events = {
+      change: `${wireName}Change`,
+      set: `${wireName}Set`
+    }
+
+    this.createEvents(events.change, events.set)
+
+    Object.defineProperty(this, wireName, {
+      set: newValue => {
+        const oldValue = this[`_${wireName}`]
+        this[`_${wireName}`] = newValue
+
+        this.triggerEvents([events.change], newValue, oldValue)
+      },
+      get: () => {
+        return this[`_${wireName}`]
+      }
+    })
+
+    this[`set${wireName.capitalize()}`] = value => {
+      this[`${wireName}`] = value
+      return this
+    }
+
+    this[`set${wireName.capitalize()}Silently`] = value => {
+      this[`_${wireName}`] = value
+      return this
+    }
+
+    return this
+  }
 
   get _e(){ return this.element }
   setElement(e, inheritId=true){
     this.elementDOM = e
     if (inheritId && this.element.id){
-      // console.log(this.element, 'has id')
       this.id = this.element.id
     }
 
@@ -207,19 +309,6 @@ export default class Pragma extends Node {
   build(...maps) {
     return this.buildAry(maps)
   }
-
-  on(event, cb=null){
-    var self = this
-    return {
-      do: function(cb){
-        self.element.listenTo(event, () => {
-          self.run(cb)
-        })
-        return self
-      }
-    }
-  }
-
 
   // FOR HTML DOM
   as(query=null, innerHTML){
