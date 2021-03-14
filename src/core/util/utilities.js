@@ -95,14 +95,8 @@ function createEventChains(obj, ...chains){
   }
 }
 
-function addStyles(css){
-  if (!globalThis.pragmaSpace.styles){
-    globalThis.pragmaSpace.styles = _e('style').prependTo('head')
-  }
-
-  globalThis.pragmaSpace.styles.html(
-    globalThis.pragmaSpace.styles.html() + css
-  )
+function addStyles(css, name=`injected-pragma-style`){
+  _e(`style#${name}-${rk5()}`, css).appendTo('head')
 }
 
 function overwrite(object, attr, over){
