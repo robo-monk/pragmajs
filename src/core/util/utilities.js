@@ -88,6 +88,7 @@ function _newEventChain(name, obj){
   }
 }
 
+// DEPRECATE
 function createEventChains(obj, ...chains){
   for (let chain of chains){
       _newEventChain(chain, obj)

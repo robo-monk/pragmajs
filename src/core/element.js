@@ -197,6 +197,7 @@ const elementProto = {
     return this
   },
 
+// DEPRECATE
   deepQueryAll: function(query){
     let hits = Array.from(this.queryAll(query))
     for (let child of this.children){
@@ -204,6 +205,7 @@ const elementProto = {
     }
     return hits
   },
+// DEPRECATE
   deepFindAll: function(query){
     return this.deepQueryAll(query).map(c => _e(c))
   },

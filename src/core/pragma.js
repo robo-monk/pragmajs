@@ -4,6 +4,7 @@ import ActionChain from "./actionChain"
 import { generateRandomKey, toHTMLAttr, createEventChains, suc, log, throwSoft } from "./util/index"
 import { util } from ".."
 
+// DEPRECATE
 const _parseMap = {
 
   parent: (self, parent) => {
@@ -116,8 +117,8 @@ export default class Pragma extends Node {
     if (!this.element) this.as()
   }
 
-  listenTo(){
-    this.element.listenTo(arguments)
+  listenTo(event, action){
+    this.element.listenTo(event, action.bind(this))
     return this
   }
 
