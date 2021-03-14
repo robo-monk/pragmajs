@@ -131,8 +131,74 @@ A `Pragma` is an object that provides an interface for creating complex interact
 	
 ```
 
-### Pragma API:
+## Pragma API:
 
+### New:
+
+```js
+let p = _p()
+
+p.createEvent("yoing")
+
+p.on("yoing", function(...args) {
+	// this keyword is bounded to be p
+	console.log(...args)
+})
+
+p.triggerEvent("yoing", "yoingArgument1", "yoingArgument2") 
+	// going to print "yoingARgument1", "yoingArgument2"
+
+p.on("yoing", function(...args) {
+	console.log('im also gonna get triggered from now on')
+})
+
+p.triggerEvent("yoing", "yoingArgument1", "yoingArgument2") 
+	// going to print "yoingARgument1", "yoingArgument2"
+	// 'im also gonna get triggered from now on'
+
+
+
+```
+
+```js
+
+let p = p()
+p.createEvent('yoing2')
+
+p.onNext('yoing2', () => {
+	console.log('im only going to get triggered on the next yoing event')
+})
+
+p.triggerEvent("yoing2") // prints: 'im only going to get triggered on the next yoing event'
+p.triggerEvent("yoing2") // nothing happens
+p.triggerEvent("yoing2") // nothing happens
+```
+
+```js
+
+let p = p()
+
+p
+	.createWire('index')
+	.setIndex(0) // sets index wire to 0
+
+p.on('indexChange', (newValue, lastValue) => {
+	// will get triggered when p.index changes value
+	console.log(newValue, lastValue)
+})
+
+p.onNext('indexChange', () => { //... })
+
+p.index = 1 // prints: 1, 0
+p.index = 2 // prints: 2, 1
+p.setIndex(3) // prints: 3, 2
+
+p.setIndexSilently(10) // nothing gets triggered 
+
+```
+
+
+### Legacy:
 ```js
 
 let p = _p()

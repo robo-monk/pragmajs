@@ -10,12 +10,16 @@ export default class ActionChain {
   addWithKey(cb, key=null){
     key = key || this.actions.size
     this.actions.set(key, cb)
+    return key
   }
 
   add(...cbs){
+    let keys = []
     for (let cb of cbs){
-      this.addWithKey(cb)
+      keys.push(this.addWithKey(cb))
     }
+
+    return keys.length > 1 ? keys : keys[0]
   }
 
   forAction(cb){
@@ -33,8 +37,31 @@ export default class ActionChain {
   }
 
   execAs(self, ...args){
-    this.forAction(function(key, act) {
-      act.bind(self)(...args)
+    this.forAction((key, act) => {
+      let retVal = null
+
+      if (typeof act.bind === 'function'){
+        retVal = act.bind(self)(...args)
+      } else {
+        retVal = act(...args)
+      }
+
+      if (typeof retVal === 'function'){
+        // TODO make this a class
+        
+        let self = {
+          key: key,
+          action: act,
+          replaceWith: cb => {
+            // TODO implement
+          },
+          selfDestruct: () => {
+            this.destroy(key) 
+          }
+        }
+
+        retVal(self)
+      }
     })
   }
 }

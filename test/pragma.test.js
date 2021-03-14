@@ -133,3 +133,56 @@ describe("Pragma extend", () => {
   })
 
 })
+
+describe("Pragma .on", () => {
+  let p = _p('yoing')
+  p.createEvent('yoing')
+  test('custom event, singular action', () => {
+    let value = 69
+
+
+    p.on('yoing', () => {
+      value = 420
+    })
+
+    p.triggerEvent('yoing')
+
+    expect(value).toBe(420)
+  })
+
+  test('onNext custom event', () => {
+    let value = 69
+    p.onNext('yoing', () => {
+      value ++
+    })
+
+    p.triggerEvent('yoing')
+    p.triggerEvent('yoing')
+    p.triggerEvent('yoing')
+
+    expect(value).toBe(70)
+  })
+})
+
+describe("Pragma wire", () => {
+  test('monitor custom variable', () => {
+    let p = _p('custom')
+    let test = 42
+    p.createWire('index')
+
+    p.on('indexChange', (value, lastValue) => {
+      test = value
+    }).setIndex(69)
+
+    expect(test).toBe(69)
+  
+
+    p.setIndexSilently(0)
+    expect(test).toBe(69)
+
+    p.index = 0
+    expect(test).toBe(0)
+  })
+})
+
+
