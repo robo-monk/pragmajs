@@ -67,7 +67,7 @@ function parseMap(map, obj) {
 
 
 function _isRangeBounded(range){
-  return range.min != undefined && range.max != undefined
+  return range && range.min != undefined && range.max != undefined
 }
 function _retValObj(val, set){
   return {
@@ -87,9 +87,18 @@ function _loopBoundVal(v, range){
   if (!(_isRangeBounded(range)))
     return throwSoft(`Could not loop value, since range (${JSON.stringify(range)}) is unbounded`)
 
+  if (v == undefined) v = range.min
+
   v = v > range.max ? range.min : v
   v = v < range.min ? range.max : v
   return v
+}
+
+function _processValue2(v, range, loop) {
+  if (loop) return _retValObj(_loopBoundVal(v, loop), true)
+  if (range) return _retValObj(_rangeBoundVal(v, range), r==v)
+
+  return _retValObj(v, true)
 }
 
 function _processValue(v, range, _loop) {
@@ -200,12 +209,16 @@ export default class Pragma extends Node {
 
     this.createEvents(events.change, events.set)
 
+
     Object.defineProperty(this, wireName, {
       set: newValue => {
+        let pv = _processValue2(newValue, this[`_${wireName}Range`], this[`_${wireName}Loop`])
         const oldValue = this[`_${wireName}`]
-        this[`_${wireName}`] = newValue
-
-        this.triggerEvents([events.change], newValue, oldValue)
+        if (pv.set) {
+          this[`_${wireName}`] = pv.val
+          this.triggerEvent(events.change, pv.val, oldValue)
+        }
+        this.triggerEvent(events.set, newValue, oldValue)
       },
       get: () => {
         return this[`_${wireName}`]
@@ -219,6 +232,16 @@ export default class Pragma extends Node {
 
     this[`set${wireName.capitalize()}Silently`] = value => {
       this[`_${wireName}`] = value
+      return this
+    }
+
+    this[`set${wireName.capitalize()}Loop`] = (min, max) => {
+      this[`_${wireName}Loop`] = { min: min, max: max }
+      return this
+    }
+
+    this[`set${wireName.capitalize()}Range`] = (min, max) => {
+      this[`_${wireName}Range`] = { min: min, max: max }
       return this
     }
 
@@ -267,6 +290,7 @@ export default class Pragma extends Node {
   get value(){
     return this.v
   }
+
   setValue(n) { this.value = n; return this }
 
   set value(n) {

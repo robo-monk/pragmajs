@@ -183,6 +183,34 @@ describe("Pragma wire", () => {
     p.index = 0
     expect(test).toBe(0)
   })
+
+  test.skip('.setWireRange', () => {
+    let p = _p() 
+    p.createWire("suck")
+      .setSuckRange(1, 10)
+
+    p.setSuck(0)
+    expect(p.suck).toBeUndefined()
+
+    p.setSuck(1)
+    for (let i=0; i<100; i++){
+      p.suck += 1 
+    }
+
+    expect(p.suck).toBe(10)
+  })
+
+  test('.setWireLoop', () => {
+    let p = _p()
+    p.createWire('suck')
+      .setSuckLoop(42, 69)
+
+    p.suck = 0
+    expect(p.suck).toBe(69)
+
+    p.suck = 420
+    expect(p.suck).toBe(42)
+  })
 })
 
 
