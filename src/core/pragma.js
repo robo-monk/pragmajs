@@ -96,7 +96,10 @@ function _loopBoundVal(v, range){
 
 function _processValue2(v, range, loop) {
   if (loop) return _retValObj(_loopBoundVal(v, loop), true)
-  if (range) return _retValObj(_rangeBoundVal(v, range), r==v)
+  if (range) {
+    let r = _rangeBoundVal(v, range)
+    return _retValObj(r, r==v)
+  }
 
   return _retValObj(v, true)
 }
@@ -166,7 +169,7 @@ export default class Pragma extends Node {
   }
 
   triggerEvent(eventName, ...args){
-    if (!this._events.has(eventName)) return util.throwSoft(`pragma doesnt have ${event} - cannot .triggerEvent("${event}")]`, pragma)
+    if (!this._events.has(eventName)) return util.throwSoft(`pragma doesnt have ${event} - cannot .triggerEvent("${event}")]`, this)
     this._events.get(eventName).execAs(this, ...args)
 
     return this 
