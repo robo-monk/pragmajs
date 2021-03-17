@@ -98,7 +98,7 @@ function _processValue2(v, range, loop) {
   if (loop) return _retValObj(_loopBoundVal(v, loop), true)
   if (range) {
     let r = _rangeBoundVal(v, range)
-    return _retValObj(r, r==v)
+    return _retValObj(r, r===v)
   }
 
   return _retValObj(v, true)
@@ -217,10 +217,11 @@ export default class Pragma extends Node {
       set: newValue => {
         let pv = _processValue2(newValue, this[`_${wireName}Range`], this[`_${wireName}Loop`])
         const oldValue = this[`_${wireName}`]
-        if (pv.set) {
+        if (pv.set && (pv.val !== oldValue)) {
           this[`_${wireName}`] = pv.val
           this.triggerEvent(events.change, pv.val, oldValue)
         }
+
         this.triggerEvent(events.set, newValue, oldValue)
       },
       get: () => {

@@ -181,7 +181,7 @@ describe("Pragma wire", () => {
     expect(test).toBe(69)
 
     p.index = 0
-    expect(test).toBe(0)
+    expect(test).toBe(69)
   })
 
   test.skip('.setWireRange', () => {
