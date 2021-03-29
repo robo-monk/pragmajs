@@ -3,6 +3,7 @@ import Pragma from "./core/pragma"
 import ActionChain from "./core/actionChain"
 
 export { _e, Pragma, ActionChain }
+export { Script } from "./core/util/script"
 
 // API layer
 
