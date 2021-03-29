@@ -184,7 +184,7 @@ describe("Pragma wire", () => {
     expect(test).toBe(69)
   })
 
-  test.skip('.setWireRange', () => {
+  test('.setWireRange', () => {
     let p = _p() 
     p.createWire("suck")
       .setSuckRange(1, 10)

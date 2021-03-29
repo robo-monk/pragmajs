@@ -37,12 +37,12 @@ export function globalify() {
 // function html(){
 
 export function html(strings, ...values) {
-  return _e(values.reduce((finalString, value, index) => {
+  let _html = values.reduce((finalString, value, index) => {
     return `${finalString}${value}${strings[index + 1]}`
-  }, strings[0]).trim())
-}
+  }, strings[0])
 
-// }
+  return _e(_html.trim())
+}
 
 export function render(location){
   window.location.href = location 
