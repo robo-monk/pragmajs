@@ -34,6 +34,16 @@ export function globalify() {
   }
 }
 
+// function html(){
+
+export function html(strings, ...values) {
+  return _e(values.reduce((finalString, value, index) => {
+    return `${finalString}${value}${strings[index + 1]}`
+  }, strings[0]).trim())
+}
+
+// }
+
 export function render(location){
   window.location.href = location 
 }

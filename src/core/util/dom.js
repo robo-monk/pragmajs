@@ -76,6 +76,7 @@ function removeClassAryFrom(cary, el){ loopThruClassAryAndDo(cary, el, 'remove')
 function toggleClassAryOf(cary, el){ loopThruClassAryAndDo(cary, el, 'toggle') }
 
 function selectOrCreateDOM(query){
+  query = query.trim()
   try {
     let e = document.querySelector(query)
     if (e) return e

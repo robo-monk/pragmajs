@@ -1,4 +1,4 @@
-import { _e, _p } from "../dist/pragma.esm"
+import { _e, _p, html } from "../dist/pragma.esm"
 
 describe("_e extends Element", () => {
   let e = _e("div", "inner texticles, suck my testicles")
@@ -12,12 +12,20 @@ test("_p correctly adopts _e getters", () => {
   expect(p.text).toBe("dragon baboon")
 })
 
+test("_e can be generated from html snippent", () => {
+  let e = html`
+    <div id='yoing'>This is a document</div>
+  `.appendTo('body')
+  
+  expect(e.text).toBe('This is a document')
+})
+
 describe("_e find & query", () => {
  test("_e find all", () => {
-    let e = _e('div', 'test') 
-    let e1 = _e('div', 'test') 
-    let e2 = _e('div', 'test') 
-    let e3 = _e('div', 'test') 
+    let e = _e('div.', 'test') 
+    let e1 = _e('div.', 'test') 
+    let e2 = _e('div.', 'test') 
+    let e3 = _e('div.', 'test') 
     e.append(e1, e2, e3)
 
     e.findAll('div').forEach(el => {
@@ -32,16 +40,16 @@ describe("_e find & query", () => {
 })
 
 test("_e appends multiple _e", () => {
-  let e = _e('div', 'test') 
-  let e1 = _e('div', 'test') 
-  let e2 = _e('div', 'test') 
-  let e3 = _e('div', 'test') 
+  let e = _e('div.', 'test') 
+  let e1 = _e('div.', 'test') 
+  let e2 = _e('div.', 'test') 
+  let e3 = _e('div.', 'test') 
   e.append(e1, e2, e3)
   expect(e.childrenArray.length).toBe(3)
 })
 
 test("_e class arrays'", () => {
-  let e = _e('div', 'test') 
+  let e = _e('div.', 'test') 
   e.addClass('one', 'two', 'three')
   e.removeClass('one', 'two')
 
