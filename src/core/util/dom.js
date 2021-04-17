@@ -14,14 +14,19 @@ function _docLoad(){
   suc("📰 document is loaded.")
   globalThis.pragmaSpace.docLoadChain.exec()
 }
-document.addEventListener('readystatechange', () => {
-  if (document.readyState === "complete") _docLoad()
-})
 
-document.addEventListener('turbolinks:load', () => {
-  suc("🚀 TURBOLINKS loaded")
+if (document.readyState === "complete"){
   _docLoad()
-})
+} else {
+  document.addEventListener('readystatechange', () => {
+    if (document.readyState === "complete") _docLoad()
+  })
+
+  document.addEventListener('turbolinks:load', () => {
+    suc("🚀 TURBOLINKS loaded")
+    _docLoad()
+  })
+}
 
 var search = /[#.]/g
 
