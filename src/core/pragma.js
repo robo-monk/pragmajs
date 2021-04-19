@@ -429,6 +429,21 @@ export default class Pragma extends Node {
     return this
   }
 
+  // define functions like
+  // pragma.define(
+  //   function test() {
+  //     console.log('yeet')
+  //   }
+  // ).run(function() {
+  //   this.test() // #=> yeet
+  // })
+  define(...defs) {
+    for (let def of defs) {
+      if (!def.name) return console.error(`could not define, no name passed`, def)
+      this[def.name] = def
+    }
+    return this
+  }
   // RUN SCRIPTS WITH THIS SCOPE
 
 

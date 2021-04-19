@@ -133,6 +133,21 @@ A `Pragma` is an object that provides an interface for creating complex interact
 
 ## Pragma API:
 
+### Create new Pragma
+```js
+  let p = _p('pragma name')
+
+  p.define(
+    function test() {
+      console.log('yeet')
+    }
+  ).run(function() {
+    this.test() // => yeet
+  })
+
+  p.test() // => yeet
+
+```
 ### New:
 
 ```js
@@ -153,6 +168,8 @@ p.on("yoing", function(...args) {
 })
 
 p.triggerEvent("yoing", "yoingArgument1", "yoingArgument2") 
+
+
 	// going to print "yoingARgument1", "yoingArgument2"
 	// 'im also gonna get triggered from now on'
 
