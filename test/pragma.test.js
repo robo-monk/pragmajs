@@ -213,4 +213,61 @@ describe("Pragma wire", () => {
   })
 })
 
+describe(".define()", () => {
+  test('define one', () => {
+    let p = _p()
+    let a = 0
+
+    p.define({
+      break() {
+        a = 420
+      }
+    }).break()
+
+    expect(a).toBe(420)
+
+  })
+
+  test('redefine', () => {
+    let p = _p()
+    let a = 0
+
+    p.define({
+      break() {
+        a = 420
+      },
+
+      break() {
+        a = 69
+      }
+    }).break()
+
+    expect(a).toBe(69)
+
+  })
+
+  test('this', () => {
+    let p = _p()
+    let a = 0
+
+    p.define({
+      break() {
+        return 69
+      },
+
+      yeet() {
+        a = this.break()
+      },
+
+      me() {
+        return this
+      }
+    }).yeet()
+
+    expect(a).toBe(69)
+    expect(p.me()).toBe(p)
+
+  })
+})
+
 

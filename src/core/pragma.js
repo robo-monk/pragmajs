@@ -169,6 +169,7 @@ export default class Pragma extends Node {
   }
 
   triggerEvent(eventName, ...args){
+    // make this async and paralell
     if (!this._events.has(eventName)) return util.throwSoft(`pragma doesnt have ${event} - cannot .triggerEvent("${event}")]`, this)
     this._events.get(eventName).execAs(this, ...args)
 
@@ -437,10 +438,18 @@ export default class Pragma extends Node {
   // ).run(function() {
   //   this.test() // #=> yeet
   // })
-  define(...defs) {
-    for (let def of defs) {
-      if (!def.name) return console.error(`could not define, no name passed`, def)
-      this[def.name] = def
+  // define(...defs) {
+  //   for (let def of defs) {
+  //     if (!def.name) return console.error(`could not define, no name passed`, def)
+  //     this[def.name] = def
+  //   }
+  //   return this
+  // }
+
+  define({...defs}) {
+    for (let [key, fn] of Object.entries(defs)) {
+      if (!key) return console.error(`could not define, no name passed`, fn)
+      this[key] = fn
     }
     return this
   }
