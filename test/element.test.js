@@ -1,4 +1,4 @@
-import { _e, _p, html } from "../dist/pragma.esm"
+import { _e, _p, html, block } from "../dist/pragma.esm"
 
 describe("_e extends Element", () => {
   let e = _e("div", "inner texticles, suck my testicles")
@@ -60,4 +60,46 @@ test("_e class arrays'", () => {
 
    e.toggleClass("one")
   expect(e.classArray.length).toBe(1) 
+})
+
+
+describe("_e.define", () => {
+  test("elements equal the right ones", async () => {
+    let e = block`
+      <div id='yoing'>
+        This is a document
+        <div id='title'>
+        </div>
+        <div id='button'>
+        </div>
+
+        <div id='content'>
+          <div id='child-of-child'>
+          </div
+        </div>
+      </div>
+    `.define({
+      title: "#title",
+      button: "#button",
+      content: "#content",
+      child: "#child-of-child"
+    }).appendTo('body')
+
+    // document.body.appendChild(e.element)
+
+    // e.title = _e('#title')
+// .appendTo('body')
+    // await new Promise( r => setTimeout(() => {
+      // e.setData({
+        // "title": "#title"
+      // })
+      console.log(e.title)
+      let actualTitle = document.body.querySelector("#title")
+      expect(actualTitle).not.toBeFalsy()
+      expect(e.title).toBe(actualTitle)
+      e.title.html('yeet')
+      expect(e.title.html()).toBe('yeet')
+      console.log(e.title.html())
+
+  })
 })

@@ -33,6 +33,7 @@ function convertShadowToLight(e){
 
 export default function _e(query, innerHTML){
     let element = domify(query)
+    if (!element) return throwSoft(`${query} could not be found/created`)
 
     if (element.constructor === DocumentFragment){
       element = convertShadowToLight(element)
@@ -111,7 +112,7 @@ const elementProto = {
     return this
   },
   html: function(inner){
-    if (!inner) return this.innerHTML
+    if (inner == undefined) return this.innerHTML
     this.onRender(() => {
       apply.html(inner, this)
     })
@@ -174,6 +175,26 @@ const elementProto = {
   find: function(){
     return _e(this.query(...arguments))
   },
+
+  define: function(elements) {
+    // let map = {}
+    this.setData(elements)
+    for (let [key, attr] of Object.entries(elements)) {
+      this[key] = this.id ? `#${this.id}>${attr}` : attr
+      // this.prototype[key] = this.find(attr)
+      // let map = d
+      // Object.defineProperty(this, key, {
+        // value: this.find(attr),
+        // configurable: true
+      // })
+    }
+
+    // this.elements = map
+    // console.log(this.elements)
+    return this
+  },
+
+
 
   findAll: function(query){
     return Array.from(this.queryAll(query)).map(c => _e(c))

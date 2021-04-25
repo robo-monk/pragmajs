@@ -449,7 +449,13 @@ export default class Pragma extends Node {
   define({...defs}) {
     for (let [key, fn] of Object.entries(defs)) {
       if (!key) return console.error(`could not define, no name passed`, fn)
-      this[key] = fn
+      if (typeof fn === 'function') {
+        this[key] = fn
+      } else if (typeof fn === 'string') {
+        this[key] = this.element.find(fn)
+      } else {
+        console.error('could not define', key)
+      }
     }
     return this
   }

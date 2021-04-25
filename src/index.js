@@ -44,6 +44,11 @@ export function html(strings, ...values) {
   return _e(_html.trim())
 }
 
+export function block(string) {
+  let _html = html`${string}` 
+  return _p().as(_html)
+}
+
 export function render(location){
   window.location.href = location 
 }
