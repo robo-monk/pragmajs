@@ -93,13 +93,13 @@ describe("_e.define", () => {
       // e.setData({
         // "title": "#title"
       // })
-      console.log(e.title)
+      // console.log(e.title)
       let actualTitle = document.body.querySelector("#title")
       expect(actualTitle).not.toBeFalsy()
       expect(e.title).toBe(actualTitle)
       e.title.html('yeet')
       expect(e.title.html()).toBe('yeet')
-      console.log(e.title.html())
+      // console.log(e.title.html())
 
   })
 })
