@@ -44,8 +44,8 @@ export function html(strings, ...values) {
   return _e(_html.trim())
 }
 
-export function block(string) {
-  let _html = html`${string}` 
+export function block(strings, ...values) {
+  let _html = html(strings, ...values) 
   return _p().as(_html)
 }
 
