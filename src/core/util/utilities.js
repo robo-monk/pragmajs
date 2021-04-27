@@ -1,5 +1,5 @@
 import ActionChain from "../actionChain"
-import { _e } from "../../index"
+import { html, _e } from "../../index"
 
 function rk5(){
  return Math.random().toString(36).substring(3, 6) + Math.random().toString(36).substring(5, 8)
@@ -105,6 +105,11 @@ function overwrite(object, attr, over){
   object[attr] = over
 }
 
+function redirectTo(href, newTab=false) {
+  history?.pushState({}, document.title)
+  html`<a href="${href}" ${newTab ? `target="_blank"` : ''}</a>`.click()
+}
+
 export {
   generateRandomKey,
   objDiff,
@@ -117,5 +122,6 @@ export {
   mimic,
   bench,
   addStyles,
+  redirectTo,
   rk, rk5, rk8
 }

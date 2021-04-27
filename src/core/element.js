@@ -157,9 +157,13 @@ const elementProto = {
     return this
   },
 
-  attr: function(a, val=undefined){
+  clone: function(deep=true) {
+    return this.cloneNode(deep)
+  },
+
+  attr: function(a, val=null){
     if (typeof a === 'string'){
-      if (val === undefined) return this.getAttribute(a)
+      if (val === null) return this.getAttribute(a)
       const key = a
       a = {}
       a[key] = val

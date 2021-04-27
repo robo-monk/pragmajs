@@ -127,58 +127,64 @@ export default class Pragma extends Node {
     }
 
     if (!this.element) this.as()
+
+    this.init()
   }
+
+  init(){ return this }
 
   listenTo(event, action){
     this.element.listenTo(event, action.bind(this))
     return this
   }
 
+  // eventful
+
+  _createEvent(event) {
+    let chain = new ActionChain(this)
+    this._events.set(event, chain)
+    return chain
+  }
+
+  createEvent(eventTitle, ...cbs){
+    this._createEvent(eventTitle) 
+    if (cbs.length > 0) this.on(eventTitle, cbs)
+    return this
+  }
+
+  createEvents(...events){
+    events.forEach(event => this._createEvent(event))
+    return this
+  }
+
+
+  _getOrCreateEvent(name) {
+    return this._events.get(name) || this._createEvent(name)
+  }
+
   _addToEventChain(name, ...cbs){
-    let chain = this._events.get(name)
+    let chain = this._getOrCreateEvent(name) 
     if (chain){
       let keys = chain.add(...cbs)
       this._events.set(name, chain)
       return keys
     }
-
     return null
-  }
-
-  createEvent(eventTitle, ...cbs){
-    let actions = new ActionChain(this)
-    this._events.set(eventTitle, actions)
-    if (cbs.length > 0) this.on(eventTitle, cbs)
-   
-    return this
-  }
-
-  createEvents(...events){
-    events.forEach(event => {
-      this.createEvent(event)
-    })
-
-    return this
-  }
-
-  triggerEvents(eventAry, ...args){
-    eventAry.forEach(event => {
-      this.triggerEvent(event, ...args)
-    })
-    return this
   }
 
   triggerEvent(eventName, ...args){
     // make this async and paralell
-    if (!this._events.has(eventName)) return util.throwSoft(`pragma doesnt have ${event} - cannot .triggerEvent("${event}")]`, this)
-    this._events.get(eventName).execAs(this, ...args)
-
+    this._getOrCreateEvent(eventName).execAs(this, ...args)
     return this 
+  }
+
+  triggerEvents(eventAry, ...args){
+    eventAry.forEach(event => this.triggerEvent(event, ...args))
+    return this
   }
 
   _on(event, ...cbs){
     let keys = this._addToEventChain(event, ...cbs)
-    if (keys === null) return util.throwSoft(`pragma doesnt have ${event} - cannot .on("${event}")`, this)
     return keys
   }
 
@@ -194,17 +200,17 @@ export default class Pragma extends Node {
         thisCallback.selfDestruct() 
       }
     }
-
-    let key = this._on(event, cbOnce)
+    this._on(event, cbOnce)
   }
 
   onNext(){
     this._onNext(...arguments)
-       return this
+    return this
   }
 
   createWires(...wireNames) { wireNames.forEach(wire => this.createWire(wire) ); return this }
-  createWire(wireName){
+
+  createWire(wireName, initValue){
 
     let events = {
       change: `${wireName}Change`,
@@ -212,7 +218,6 @@ export default class Pragma extends Node {
     }
 
     this.createEvents(events.change, events.set)
-
 
     Object.defineProperty(this, wireName, {
       set: newValue => {
@@ -230,6 +235,7 @@ export default class Pragma extends Node {
       }
     })
 
+    /// DEPRECATE TOO SLOW FOR THIS SHIT
     this[`set${wireName.capitalize()}`] = value => {
       this[`${wireName}`] = value
       return this
@@ -250,6 +256,7 @@ export default class Pragma extends Node {
       return this
     }
 
+    if (initValue !== undefined) this[`_${wireName}`] = initValue
     return this
   }
 
@@ -350,6 +357,11 @@ export default class Pragma extends Node {
     query = query || `div#${this.id}.pragma`
     // this.element = _e(query, innerHTML)
     this.setElement(_e(query, innerHTML), false)
+    return this
+  }
+
+  asClone(query, inner) {
+    this.as(_e(query).clone(), inner)
     return this
   }
 
@@ -507,6 +519,7 @@ export default class Pragma extends Node {
     return this.containAry(childs.reverse(), 'prepend')
   }
 
+  // deprecate
   pragmatize(){
     this.element.appendTo(this.parent ? this.parent.element || "body" : "body")
     return this
@@ -516,6 +529,13 @@ export default class Pragma extends Node {
     this.element.appendTo(query)
     return this
   }
+
+  renderTo(element) {
+    _e(element).html("").append(this.element)
+    this.triggerEvent('render')
+    return this
+  }
+
 
   addListeners(listeners){
     for (let [ev, action] of Object.entries(listeners)){

@@ -45,6 +45,11 @@ h1 {
   min-height: 100vh;
 }
 
+#catalog {
+  max-width: 500px;
+  margin: auto;
+}
+
 .seperator { 
   border: none;
   height: 1px;

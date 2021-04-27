@@ -7,10 +7,6 @@ export { Script } from "./core/util/script"
 
 // API layer
 
-//const ε = function() {
-  //return new Element(...arguments)
-//}
-
 const π = (query, opt) => new Pragma(query, opt)
 const _p = π
 //const _e = ε
@@ -21,18 +17,6 @@ export * as util from "./core/util/index"
 
 export { _thread, runAsync, _runAsync } from "./core/util/thread"
 
-const exported = [ '_e', '_p', 'Pragma', 'util', '_thread' ]
-
-export function globalify() {
-  let pragmaModule = (globalThis || window)["pragma"]
-  if (pragmaModule !== "undefined" && pragmaModule.__esModule) {
-    for (let func of exported) {
-      globalThis[func] = pragmaModule[func]
-    }
-  } else {
-    console.error("Could not globalify [pragma]")
-  }
-}
 
 // function html(){
 
@@ -49,6 +33,16 @@ export function block(strings, ...values) {
   return _p().as(_html)
 }
 
-export function render(location){
-  window.location.href = location 
+
+const exported = [ '_e', '_p', 'Pragma', 'util', 'block', 'html' ]
+
+export function globalify() {
+  let pragmaModule = (globalThis || window)["pragma"]
+  if (pragmaModule && pragmaModule !== "undefined" && pragmaModule.__esModule) {
+    for (let func of exported) {
+      globalThis[func] = pragmaModule[func]
+    }
+  } else {
+    console.error("[pragmajs] seems to be missing...")
+  }
 }
