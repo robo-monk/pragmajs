@@ -7,274 +7,274 @@ let $tab = "<"
 let $sp = " "
 let $nl = "<br>"
 
-let demo = _ => _p()
-            .from(tpl.create.template.config({
-              name: 'demo',
-              value: function(){
-                console.log(`no demo set`)
-              }
-            }))
-            .run({
-              createElement(){
-                this.as(_e(`div.demo-block#demo-block-${this.key}`).css('margin 80px 0'))
-              },
-              createCodeBlock(){
-                this.codeBlock = _e(`pre#demo-code-${this.key}.js`)
-                        .css(`
-                          background-color #212530
-                          width 100%
-                          min-width 400px
-                          height fit-content
-                          min-height 50px   
-                          border-radius 5px
-                          margin auto
-                          padding 20px 30px
-                        `)
+// let demo = _ => _p()
+//             .from(tpl.create.template.config({
+//               name: 'demo',
+//               value: function(){
+//                 console.log(`no demo set`)
+//               }
+//             }))
+//             .run({
+//               createElement(){
+//                 this.as(_e(`div.demo-block#demo-block-${this.key}`).css('margin 80px 0'))
+//               },
+//               createCodeBlock(){
+//                 this.codeBlock = _e(`pre#demo-code-${this.key}.js`)
+//                         .css(`
+//                           background-color #212530
+//                           width 100%
+//                           min-width 400px
+//                           height fit-content
+//                           min-height 50px   
+//                           border-radius 5px
+//                           margin auto
+//                           padding 20px 30px
+//                         `)
                 
-                _e('div#play', 'play')
-                  .css(`
-                    margin 10px auto
-                    width fit-content
-                    cursor pointer
-                  `)
-                  .listenTo('click', () => {
-                      this.play()
-                    }
-                  )
-                  .appendTo(this)
-                this.append(this.codeBlock)
-              },
-              createTitle(){
-                return
-                this.prepend(_e(`h2#demo-title-${this.key}`)
-                              .html(this.title)
-                            )
-              },
-              editFuncBlock(){
-                this.editFuncBlock = func => {
-                  let str = func.toString()
-                  this.codeBlock.html(str)
-                  hljs.highlightBlock(this.codeBlock)
-                }
-              },
+//                 _e('div#play', 'play')
+//                   .css(`
+//                     margin 10px auto
+//                     width fit-content
+//                     cursor pointer
+//                   `)
+//                   .listenTo('click', () => {
+//                       this.play()
+//                     }
+//                   )
+//                   .appendTo(this)
+//                 this.append(this.codeBlock)
+//               },
+//               createTitle(){
+//                 return
+//                 this.prepend(_e(`h2#demo-title-${this.key}`)
+//                               .html(this.title)
+//                             )
+//               },
+//               editFuncBlock(){
+//                 this.editFuncBlock = func => {
+//                   let str = func.toString()
+//                   this.codeBlock.html(str)
+//                   hljs.highlightBlock(this.codeBlock)
+//                 }
+//               },
               
-              playMake(){
-                this.play = function(){
-                  // console.log(demo)
-                  this.value.bind(this)()
-                }
-              }
-            })
-            .do(function(){
-              this.editFuncBlock(this.value)
-            })
-            .run(function(){
-              this.export(
-                'element',
-                'actionChain',
-                'codeBlock',
-                'editFuncBlock',
-                'play',
-              )
-            })
+//               playMake(){
+//                 this.play = function(){
+//                   // console.log(demo)
+//                   this.value.bind(this)()
+//                 }
+//               }
+//             })
+//             .do(function(){
+//               this.editFuncBlock(this.value)
+//             })
+//             .run(function(){
+//               this.export(
+//                 'element',
+//                 'actionChain',
+//                 'codeBlock',
+//                 'editFuncBlock',
+//                 'play',
+//               )
+//             })
 
-// demo.value = demo1
-//
+// // demo.value = demo1
+// //
 
-function demoFactory(fac, title, e="#paper"){
-  if (typeof fac.before === 'function') fac.before()
-  let demoPragma = _p()
-          .from(demo().config({
-            title: title,
-            value: fac[title]
-          }))
-          .pragmatizeAt(e)
-  if (typeof fac.after === 'function') fac.after(demoPragma)
-}
+// function demoFactory(fac, title, e="#paper"){
+//   if (typeof fac.before === 'function') fac.before()
+//   let demoPragma = _p()
+//           .from(demo().config({
+//             title: title,
+//             value: fac[title]
+//           }))
+//           .pragmatizeAt(e)
+//   if (typeof fac.after === 'function') fac.after(demoPragma)
+// }
 
-const demos = {
-  _eSelect: {
-_eSelect(){
+// const demos = {
+//   _eSelect: {
+// _eSelect(){
 
-/*
-    If you want to create an element
-    from an HTMLElement that already 
-    exists in the DOM:
-*/
+// /*
+//     If you want to create an element
+//     from an HTMLElement that already 
+//     exists in the DOM:
+// */
 
-  let element = _e("#jeff")
-  console.log(element)
-},
-    after(dem){
-      _e("div#jeff")
-        .html("I'm an element with id = jeff. (Check your js console)") 
-        .prependTo(dem)
-    }
-  },
+//   let element = _e("#jeff")
+//   console.log(element)
+// },
+//     after(dem){
+//       _e("div#jeff")
+//         .html("I'm an element with id = jeff. (Check your js console)") 
+//         .prependTo(dem)
+//     }
+//   },
 
-  _eCreate: {
-_eCreate(){
-/*
-   If you want to create a new element
-   programatically and append it to the DOM
-   yourself, you can do:
-*/
-  let parentElement = this.element // ignore
+//   _eCreate: {
+// _eCreate(){
+// /*
+//    If you want to create a new element
+//    programatically and append it to the DOM
+//    yourself, you can do:
+// */
+//   let parentElement = this.element // ignore
 
-  let element = _e("div#elon.center-div.woo", "- Elon Musk")
-                    .appendTo(parentElement)
+//   let element = _e("div#elon.center-div.woo", "- Elon Musk")
+//                     .appendTo(parentElement)
 
-  // create a div element with id elon, classes center-div, woo
-  // and with Elon Musk as inner HTML, & append it under this
-  // code block
-  console.log(element)
- },
-    after(dem){
-      // _e("div#jeff")
-        // .html("I'm an element with id = jeff.") 
-        // .prependTo(dem)
-    }
-  },
-  _eCreateAndPrependToBody: {
-    _eCreateAndPrependToBody(){
-      // *** play the upper demo first to play this
-      let element = _e("#lucy", "'I'm tripping balls'")
-                      .prependTo('#elon')
+//   // create a div element with id elon, classes center-div, woo
+//   // and with Elon Musk as inner HTML, & append it under this
+//   // code block
+//   console.log(element)
+//  },
+//     after(dem){
+//       // _e("div#jeff")
+//         // .html("I'm an element with id = jeff.") 
+//         // .prependTo(dem)
+//     }
+//   },
+//   _eCreateAndPrependToBody: {
+//     _eCreateAndPrependToBody(){
+//       // *** play the upper demo first to play this
+//       let element = _e("#lucy", "'I'm tripping balls'")
+//                       .prependTo('#elon')
 
-      console.log(element)
-    },
-  },
+//       console.log(element)
+//     },
+//   },
 
-  _eDestroy: {
-_eDestroy(){
-  // *** play the upper demo first to play this
-  _e("#lucy").destroy() 
-  // select element with id=elon, and destroy it
-}
-  },
+//   _eDestroy: {
+// _eDestroy(){
+//   // *** play the upper demo first to play this
+//   _e("#lucy").destroy() 
+//   // select element with id=elon, and destroy it
+// }
+//   },
 
-  _eFun: {
-_eFun(){
-  let parentElement = this.element // ignore
+//   _eFun: {
+// _eFun(){
+//   let parentElement = this.element // ignore
   
-  _e("div#fun-div.with.fun.classes")
-    .html("woooo, this is so fun, <br> click me for magic")
-    .css(`
-      color whitesmoke
-      background #212530
-      border-radius 10px
-      padding 10px  
-      cursor pointer
-      text-align center
-      transition all .3s ease
-    `)
-    .listenTo('click', function(){
-      this.css('color #0074D9')
-    })
-    .appendTo(parentElement)
-}
-  },
+//   _e("div#fun-div.with.fun.classes")
+//     .html("woooo, this is so fun, <br> click me for magic")
+//     .css(`
+//       color whitesmoke
+//       background #212530
+//       border-radius 10px
+//       padding 10px  
+//       cursor pointer
+//       text-align center
+//       transition all .3s ease
+//     `)
+//     .listenTo('click', function(){
+//       this.css('color #0074D9')
+//     })
+//     .appendTo(parentElement)
+// }
+//   },
 
-  _pCreate: {
-_pCreate(){
-  // *** play the upper demo first to play this
-
-
-  let pragma1 = _p('name') 
-  // you can give the Pragma a 
-  // name (which is going to be its key), or leave
-  // it blank to generate a random one through 
-  // an overengineered random string generator
+//   _pCreate: {
+// _pCreate(){
+//   // *** play the upper demo first to play this
 
 
-  let element = _e('#fun-div') 
-      // an element that exists on the dom already ^^
+//   let pragma1 = _p('name') 
+//   // you can give the Pragma a 
+//   // name (which is going to be its key), or leave
+//   // it blank to generate a random one through 
+//   // an overengineered random string generator
+
+
+//   let element = _e('#fun-div') 
+//       // an element that exists on the dom already ^^
   
-  let pragma2 = _p() // blank for random name
-    .as(element)
-    .html("Now, im associated with a Pragma.")
+//   let pragma2 = _p() // blank for random name
+//     .as(element)
+//     .html("Now, im associated with a Pragma.")
 
-    /*
-     ** Note: when you call .html(), .css()
-     and other functions of _e in a _p, they just
-     redirect to the call to the _p's element.
+//     /*
+//      ** Note: when you call .html(), .css()
+//      and other functions of _e in a _p, they just
+//      redirect to the call to the _p's element.
      
-     Thus pragma.html('yo') will *do* the same as
-     pragma.elemetn.html('yo')
-     */
-}
-  },
+//      Thus pragma.html('yo') will *do* the same as
+//      pragma.elemetn.html('yo')
+//      */
+// }
+//   },
 
-  _pCreateTotallyNew: {
-_pCreateTotallyNew(){
-  let parentElement = this.element //ignore
+//   _pCreateTotallyNew: {
+// _pCreateTotallyNew(){
+//   let parentElement = this.element //ignore
 
-  let pragma = _p()
-                .as(_e("div#paul"))
-                .html("Paul McCartney")
-                .appendTo(parentElement)
+//   let pragma = _p()
+//                 .as(_e("div#paul"))
+//                 .html("Paul McCartney")
+//                 .appendTo(parentElement)
 
-  let pragma2 = _p()
-                .as(_e("div#john"))
-                .html("John Lennon")
-                .pragmatizeAt(parentElement) 
-                    // equevelant to appendTo (for Pragmas)
-}
-  },
+//   let pragma2 = _p()
+//                 .as(_e("div#john"))
+//                 .html("John Lennon")
+//                 .pragmatizeAt(parentElement) 
+//                     // equevelant to appendTo (for Pragmas)
+// }
+//   },
 
-  _pCreateBeatles: {
-_pCreateBeatles(){
+//   _pCreateBeatles: {
+// _pCreateBeatles(){
 
-  let parentElement = this.element // ignore
+//   let parentElement = this.element // ignore
 
-  let beatles = _p('beatles')
-                .as("div#beatles", 
-                  `Click here and enter a beatle to highlight!`)
-                .css("cursor pointer")
-                .appendTo(parentElement)
-                .do(function(){
-                  if (this._lv){
-                    // _lv is the last value the pragma had
-                    this.find(this._lv).css('color gray')
-                  }
-                  this.find(this.value).css('color yellow')
-                })
+//   let beatles = _p('beatles')
+//                 .as("div#beatles", 
+//                   `Click here and enter a beatle to highlight!`)
+//                 .css("cursor pointer")
+//                 .appendTo(parentElement)
+//                 .do(function(){
+//                   if (this._lv){
+//                     // _lv is the last value the pragma had
+//                     this.find(this._lv).css('color gray')
+//                   }
+//                   this.find(this.value).css('color yellow')
+//                 })
                 
 
-  let john = _p('john').as("div.", "John Lennon")
-  // div#, to make a new div
-  let paul = _p('paul').as("div.", "Paul McCartney")
-  let george = _p('george').as("div.", "George Harrison")
-  let ringo = _p('ringo').as("div.", "Ringo Starr")
+//   let john = _p('john').as("div.", "John Lennon")
+//   // div#, to make a new div
+//   let paul = _p('paul').as("div.", "Paul McCartney")
+//   let george = _p('george').as("div.", "George Harrison")
+//   let ringo = _p('ringo').as("div.", "Ringo Starr")
 
-  beatles.contain(john, paul, george, ringo)
-  beatles.on('click').do(function(){
-    this.value = prompt('enter john/paul/ringo/george')
-  })
-}
-},
+//   beatles.contain(john, paul, george, ringo)
+//   beatles.on('click').do(function(){
+//     this.value = prompt('enter john/paul/ringo/george')
+//   })
+// }
+// },
 
-timer: {
+// timer: {
 
-  timer(){
-  let parentElement = this.element
+//   timer(){
+//   let parentElement = this.element
 
-  let timer = _p('timer')
-              .as("div.")
-              .do(function(){
-                this.html(this.value)
-              })
-              .run(function(){
-                setInterval(_=>this.value++, 1000)
-              })
-              .setValue(0)
-              .pragmatizeAt(parentElement)
+//   let timer = _p('timer')
+//               .as("div.")
+//               .do(function(){
+//                 this.html(this.value)
+//               })
+//               .run(function(){
+//                 setInterval(_=>this.value++, 1000)
+//               })
+//               .setValue(0)
+//               .pragmatizeAt(parentElement)
 
-  console.log(timer)
-}
-}
-}
+//   console.log(timer)
+// }
+// }
+// }
 
-for (let [title, demo] of Object.entries(demos)){
-  demoFactory(demo, title)
-}
+// for (let [title, demo] of Object.entries(demos)){
+//   demoFactory(demo, title)
+// }

@@ -41,6 +41,18 @@ h1 {
   font-size: 2em;
 }
 
+.content { 
+  min-height: 100vh;
+}
+
+.seperator { 
+  border: none;
+  height: 1px;
+  width: 80vw;
+  position: relative;
+  background-color: #BCA3FF;
+}
+
 pre, code {
   font-family: "Space Mono", 'monospace';
   /*background-color: transparent  !important;*/
