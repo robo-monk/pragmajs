@@ -128,7 +128,7 @@ export default class Pragma extends Node {
 
     if (!this.element) this.as()
 
-    this.init()
+    this.init(...arguments)
   }
 
   init(){ return this }
