@@ -1,19 +1,26 @@
-import { Pragma, _e } from "../../index"
-import { rk8 } from "./index"
+import { html, _e } from "../../index"
+import { rk5 } from "./index"
 
-export class Script extends Pragma {
+export class Script {
+  static map = new Set
 
-  static load(url, name=rk8()) {
-    console.time(`${name} load`)
+  static load(src, _name=rk5()) {
     return new Promise (resolve => {
-      _e(`script#${name}-loader crossorigin`).appendTo('head').listenTo('load', function(){
-        resolve()
-        console.timeEnd(`${name} load`)
+      console.time(`[${_name}] ${src} load`)
+      let name = `${_name}-script`
+
+      if (Script.map.has(src) || _e('head').findAll(`#${name}`).length != 0) return resolve()
+
+      Script.map.add(src)
+
+      let element = html`
+        <script id="${name}" crossorigin src="${src}"></script>
+      `.appendTo('head').listenTo('load', function() {
+        resolve(element)
+        console.timeEnd(`[${name}] ${src} load`)
       })
-      .attr('src', url)
     })
   }
-
 }
 
 
